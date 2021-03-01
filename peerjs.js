@@ -16,8 +16,8 @@ peer.on('connection', function(conn) {
 peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
     console.log("Calling!!");
-    var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-    getUserMedia({
+    //var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
     }).then(function(stream){
@@ -32,8 +32,8 @@ peer.on('call', function(call) {
 
 
 function getPermission(otherId){
-    var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-    getUserMedia({
+    //var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
     }).then(function(stream){
