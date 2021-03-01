@@ -21,8 +21,9 @@ peer.on('call', function(call) {
         video: true,
         audio: true
     }).then(function(stream){
+        audioMeter(stream);
         call.answer(stream);
-        startSession(stream, call, call.peer);
+        startSession(stream, call);
     })
     .catch(function(err){
         console.log("ERROR: " + err);
@@ -37,15 +38,16 @@ function getPermission(otherId){
         video: true,
         audio: true
     }).then(function(stream){
+        audioMeter(stream);
         var call = peer.call(otherId, stream);
-        startSession(stream, call, otherId);
+        startSession(stream, call);
     })
     .catch(function(err){
         console.log("ERROR: " + err);
     });
 }
 
-function startSession(stream, call, otherId){
+function startSession(stream, call){
     console.log("video streaming..");
     var audio = document.createElement('video');
     audio.style.width = '100%';
@@ -61,19 +63,15 @@ function startSession(stream, call, otherId){
     call.on('stream', function(remoteStream) {
         // Show stream in some video/canvas element.
         console.log("video streaming..");
-        var mediaView = document.getElementById(otherId);
-        if(mediaView == null){
-            mediaView = document.createElement('video');
-            mediaView.id = otherId;
-            mediaView.style.width = '50%';
-            document.body.appendChild(mediaView);
-            if('srcObject' in mediaView) {
-                mediaView.srcObject = remoteStream;
-            } else {
-                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
-            }
-            mediaView.play();
+        var mediaView = document.createElement('video');
+        mediaView.style.width = '50%';
+        document.body.appendChild(mediaView);
+        if('srcObject' in mediaView) {
+            mediaView.srcObject = remoteStream;
+        } else {
+            mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
         }
+        mediaView.play();
     });
 }
 
@@ -102,3 +100,29 @@ document.getElementById('connect').addEventListener('click', function () {
         document.getElementById('messages').textContent += message + '\n';
     });
 });
+
+
+function audioMeter(stream){
+    var audioContext = new AudioContext();
+    var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    var processor = audioContext.createScriptProcessor(2048, 1, 1);
+
+    mediaStreamSource.connect(audioContext.destination);
+    mediaStreamSource.connect(processor);
+    processor.connect(audioContext.destination);
+
+    processor.onaudioprocess = function (e) {
+        var inputData = e.inputBuffer.getChannelData(0);
+        var inputDataLength = inputData.length;
+        var total = 0;
+
+        for (var i = 0; i < inputDataLength; i++) {
+            total += Math.abs(inputData[i++]);
+        }
+        
+        var rms = Math.sqrt(total / inputDataLength);
+        var percentage = rms * 100;
+        var meterElement = document.getElementById('meter');
+        meterElement.style.width = percentage + '%';
+    };
+}
