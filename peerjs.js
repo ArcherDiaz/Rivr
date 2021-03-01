@@ -93,8 +93,8 @@ document.getElementById('connect').addEventListener('click', function () {
         //     document.getElementById('messages').textContent += data + '\n';
         // });
 
-        var meesage = "hi!";
+        var message = "hi!";
         conn.send(message);
-        document.getElementById('messages').textContent += meesage + '\n';
+        document.getElementById('messages').textContent += message + '\n';
     });
 });
