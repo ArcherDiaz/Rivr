@@ -1,5 +1,4 @@
 var peer = new Peer();
-console.log("kjgg");
 
 peer.on('open', function(id) {
     document.getElementById('yourId').value = id;
@@ -14,7 +13,7 @@ document.getElementById('connect').addEventListener('click', function () {
         console.log("Connection Opened Successfully!!");
         startSession(otherId);
         conn.on('data', function(data) {
-            console.log('Received', data);
+            console.log('Received on Data', data);
             document.getElementById('messages').textContent += data + '\n';
           });
 
@@ -26,10 +25,15 @@ document.getElementById('connect').addEventListener('click', function () {
 
 peer.on('connection', function(conn) {
     conn.on('data', function(data){
-        console.log('Received', data);
+        console.log('Received on Connection', data);
         document.getElementById('messages').textContent += data + '\n';
     });
-  });
+    conn.on('open', function(){
+        console.log("Connection Opened Successfully!!");
+        var otherId = document.getElementById('otherId').value;
+        startSession(otherId);
+    });
+});
 
 
 
