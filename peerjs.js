@@ -10,12 +10,12 @@ document.getElementById('connect').addEventListener('click', function () {
     // on open will be launch when you successfully connect to PeerServer
     conn.on('open', function(){
         // here you have conn.id
-        console.log("Connection Opened Successfully!!");
+        console.log("Connection Opened Successfully!! : 1");
         startSession(otherId);
         conn.on('data', function(data) {
             console.log('Received on Data', data);
             document.getElementById('messages').textContent += data + '\n';
-          });
+        });
 
         conn.send('hi!');
         document.getElementById('messages').textContent += yourMessage + '\n';
@@ -24,14 +24,12 @@ document.getElementById('connect').addEventListener('click', function () {
 
 
 peer.on('connection', function(conn) {
+    console.log("Connection Opened Successfully!! : 2");
+    var otherId = document.getElementById('otherId').value;
+    startSession(otherId);
     conn.on('data', function(data){
         console.log('Received on Connection', data);
         document.getElementById('messages').textContent += data + '\n';
-    });
-    conn.on('open', function(){
-        console.log("Connection Opened Successfully!!");
-        var otherId = document.getElementById('otherId').value;
-        startSession(otherId);
     });
 });
 
@@ -44,7 +42,8 @@ function startSession(otherId){
         var call = peer.call(otherId, stream);
 
         peer.on('call', function(call) {
-            // Answer the call, providing our mediaStream
+            // Answer the call, providing our mediaStream.
+            console.log("Calling!!");
             call.answer(stream);
         });
 
