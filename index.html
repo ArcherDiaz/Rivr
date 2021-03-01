@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.9.3/simplepeer.min.js"></script> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Chat</title>
+</head>
+<body>
+    <div style="height:30px; width:50%; border:1px solid #000; margin:10px 10px 10px 10px;">
+        <div id="meter" style="background: #00ff00; width: 0%; height: 100%;"></div>
+    </div><br/>
+
+    <button id="init">Initiate Call</button>
+    <label> OR </label>
+    <button id="listen">Listen For Call</button><br/><br/>
+
+
+    <label>Your ID:</label><br/>
+    <textarea id="yourId"></textarea><br/>
+    <label>Other ID:</label><br/>
+    <textarea id="otherId"></textarea>
+    <button id="connect">connect</button><br/>
+
+    <label>Enter Message:</label><br/>
+    <textarea id="yourMessage"></textarea>
+    <button id="send">send</button>
+    <pre id="messages"></pre>
+
+    <script src="index.js" type="text/javascript"></script>
+</body>
+</html>
