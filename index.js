@@ -37,7 +37,7 @@ document.getElementById('send').addEventListener('click', function () {
 
 function getPermission(flag){
     navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true
     }).then(function(stream){
         audioMeter(stream);
@@ -78,10 +78,10 @@ function startSession (stream, flag){
 
     peer.on('stream', function (stream) {
         console.log("video streaming..");
-        var audio = document.createElement('audio');
+        var audio = document.createElement('video');
         audio.style.width = '100%';
         document.body.appendChild(audio);
-        if('srcObject' in video) {
+        if('srcObject' in audio) {
             audio.srcObject = stream;
         } else {
             audio.src = window.URL.createObjectURL(stream); // for older browsers
