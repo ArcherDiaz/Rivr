@@ -51,6 +51,7 @@ function startSession(stream, call){
     console.log("video streaming..");
     var audio = document.createElement('video');
     audio.style.width = '100%';
+    audio.volume = 0.0;
     document.body.appendChild(audio);
     if('srcObject' in audio) {
         audio.srcObject = stream;
