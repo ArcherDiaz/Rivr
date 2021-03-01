@@ -22,7 +22,7 @@ peer.on('call', function(call) {
         audio: true
     }).then(function(stream){
         call.answer(stream);
-        startSession(stream, call);
+        startSession(stream, call, call.peer);
     })
     .catch(function(err){
         console.log("ERROR: " + err);
@@ -38,14 +38,14 @@ function getPermission(otherId){
         audio: true
     }).then(function(stream){
         var call = peer.call(otherId, stream);
-        startSession(stream, call);
+        startSession(stream, call, otherId);
     })
     .catch(function(err){
         console.log("ERROR: " + err);
     });
 }
 
-function startSession(stream, call){
+function startSession(stream, call, otherId){
     console.log("video streaming..");
     var audio = document.createElement('video');
     audio.style.width = '100%';
@@ -61,15 +61,19 @@ function startSession(stream, call){
     call.on('stream', function(remoteStream) {
         // Show stream in some video/canvas element.
         console.log("video streaming..");
-        var audio = document.createElement('video');
-        audio.style.width = '100%';
-        document.body.appendChild(audio);
-        if('srcObject' in audio) {
-            audio.srcObject = remoteStream;
-        } else {
-            audio.src = window.URL.createObjectURL(remoteStream); // for older browsers
+        var mediaView = document.getElementById(otherId);
+        if(mediaView == null){
+            mediaView = document.createElement('video');
+            mediaView.id = otherId;
+            mediaView.style.width = '50%';
+            document.body.appendChild(mediaView);
+            if('srcObject' in mediaView) {
+                mediaView.srcObject = remoteStream;
+            } else {
+                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
+            }
+            mediaView.play();
         }
-        audio.play();
     });
 }
 
