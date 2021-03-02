@@ -1,6 +1,6 @@
 var meterElement = document.getElementById('meter');
-var callButton = document.getElementById('init');
 var connectButton = document.getElementById('connect');
+var callButton = document.getElementById('init');
 var sendButton = document.getElementById('send');
 
 var peer = new Peer();
@@ -26,7 +26,6 @@ peer.on('connection', function(conn) {
 peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
     console.log("You are being Called!!");
-    //var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
@@ -39,7 +38,6 @@ peer.on('call', function(call) {
         console.log("ERROR: " + err);
     });
 });
-
 
 
 function getPermission(otherId){
@@ -57,7 +55,7 @@ function getPermission(otherId){
 }
 
 function startSession(stream, call){
-    console.log(" My video streaming.");
+    console.log("My video streaming.");
     var video = document.createElement('video');
     video.id = "mine";
     video.style.width = '100%';
@@ -73,10 +71,10 @@ function startSession(stream, call){
 
     call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
         console.log("video streaming..");
-        var element =  document.getElementById(call.peer);
-        if (typeof(element) == 'undefined' || element == null){
+        var mediaView =  document.getElementById(call.peer);
+        if (typeof(mediaView) == 'undefined' || mediaView == null){
             // Does not exist.
-            var mediaView = document.createElement('video');
+            mediaView = document.createElement('video');
             mediaView.id = call.peer;
             mediaView.style.width = '50%';
             document.body.appendChild(mediaView);
@@ -129,14 +127,8 @@ connectButton.addEventListener('click', function () {
     });
 });
 
-callButton.addEventListener('click', function () {
-    var otherId = document.getElementById('otherId').value;
-    getPermission(otherId);
-});
-
 sendButton.addEventListener('click', function () {
     var message = document.getElementById('yourMessage').value;
     document.getElementById('messages').textContent += message + '\n';
-    peer.send(yourMessage);
+    conn.send(yourMessage);
 });
-
