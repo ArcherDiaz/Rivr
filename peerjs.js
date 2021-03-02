@@ -1,3 +1,8 @@
+var meterElement = document.getElementById('meter');
+var callButton = document.getElementById('init');
+var connectButton = document.getElementById('connect');
+var sendButton = document.getElementById('send');
+
 var peer = new Peer();
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 
@@ -6,10 +11,14 @@ peer.on('open', function(id) {
 });
 
 peer.on('connection', function(conn) {
-    console.log("You connected to another peer");
+    console.log("Peer: onConnection", "You connected to another peer");
+    getPermission(conn.peer);
     
+    conn.on('open', function(){
+        console.log("Peer: onConnection - conn: onOpen");
+    });
     conn.on('data', function(data){
-        console.log('Received on Connection', data);
+        console.log('Peer: onConnection - conn: onData', data);
         document.getElementById('messages').textContent += data + '\n';
     });
 });
@@ -34,7 +43,6 @@ peer.on('call', function(call) {
 
 
 function getPermission(otherId){
-    //var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
@@ -49,73 +57,45 @@ function getPermission(otherId){
 }
 
 function startSession(stream, call){
-    console.log("video streaming..");
-    var audio = document.createElement('video');
-    audio.style.width = '100%';
-    audio.volume = 0.0;
-    document.body.appendChild(audio);
-    if('srcObject' in audio) {
-        audio.srcObject = stream;
+    console.log(" My video streaming.");
+    var video = document.createElement('video');
+    video.id = "mine";
+    video.style.width = '100%';
+    video.volume = 0.0;
+    document.body.appendChild(video);
+    if('srcObject' in video) {
+        video.srcObject = stream;
     } else {
-        audio.src = window.URL.createObjectURL(stream); // for older browsers
+        video.src = window.URL.createObjectURL(stream); // for older browsers
     }
-    audio.play();
+    video.play();
 
 
-    call.on('stream', function(remoteStream) {
-        // Show stream in some video/canvas element.
+    call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
         console.log("video streaming..");
-        var mediaView = document.createElement('video');
-        mediaView.style.width = '50%';
-        document.body.appendChild(mediaView);
-        if('srcObject' in mediaView) {
-            mediaView.srcObject = remoteStream;
-        } else {
-            mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
+        var element =  document.getElementById(call.peer);
+        if (typeof(element) == 'undefined' || element == null){
+            // Does not exist.
+            var mediaView = document.createElement('video');
+            mediaView.id = call.peer;
+            mediaView.style.width = '50%';
+            document.body.appendChild(mediaView);
+            if('srcObject' in mediaView) {
+                mediaView.srcObject = remoteStream;
+            } else {
+                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
+            }
+            mediaView.play();
         }
-        mediaView.play();
     });
 }
-
-
-
-document.getElementById('init').addEventListener('click', function () {
-    var otherId = document.getElementById('otherId').value;
-    getPermission(otherId);
-});
-
-document.getElementById('connect').addEventListener('click', function () {
-    var otherId = document.getElementById('otherId').value;
-    var conn = peer.connect(otherId);
-    // on open will be launch when you successfully connect to PeerServer
-    conn.on('open', function(){
-        console.log("Connection Opened Successfully!! : 1");
-        // // here you have conn.id
-        // console.log("Connection Opened Successfully!! : 1");
-        // startSession(otherId);
-        // conn.on('data', function(data) {
-        //     console.log('Received on Data', data);
-        //     document.getElementById('messages').textContent += data + '\n';
-        // });
-
-        var message = "hi!";
-        conn.send(message);
-        document.getElementById('messages').textContent += message + '\n';
-    });
-});
-
-document.getElementById('send').addEventListener('click', function () {
-    var message = document.getElementById('yourMessage').value;
-    document.getElementById('messages').textContent += message + '\n';
-    peer.send(yourMessage);
-});
 
 function audioMeter(stream){
     var audioContext = new AudioContext();
     var mediaStreamSource = audioContext.createMediaStreamSource(stream);
     var processor = audioContext.createScriptProcessor(2048, 1, 1);
 
-    mediaStreamSource.connect(audioContext.destination);
+    //mediaStreamSource.connect(audioContext.destination); //this line makes the audio play, we kinda don't want that
     mediaStreamSource.connect(processor);
     processor.connect(audioContext.destination);
 
@@ -130,7 +110,33 @@ function audioMeter(stream){
         
         var rms = Math.sqrt(total / inputDataLength);
         var percentage = rms * 100;
-        var meterElement = document.getElementById('meter');
         meterElement.style.width = percentage + '%';
     };
 }
+
+
+
+connectButton.addEventListener('click', function () {
+    var otherId = document.getElementById('otherId').value;
+    var conn = peer.connect(otherId);
+    // on open will be launch when you successfully connect to PeerServer
+    conn.on('open', function(){
+        console.log("Connection Opened Successfully!! : 1");
+
+        var message = "hi!";
+        conn.send(message);
+        document.getElementById('messages').textContent += message + '\n';
+    });
+});
+
+callButton.addEventListener('click', function () {
+    var otherId = document.getElementById('otherId').value;
+    getPermission(otherId);
+});
+
+sendButton.addEventListener('click', function () {
+    var message = document.getElementById('yourMessage').value;
+    document.getElementById('messages').textContent += message + '\n';
+    peer.send(yourMessage);
+});
+
