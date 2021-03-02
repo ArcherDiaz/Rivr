@@ -12,7 +12,7 @@
         <div id="meter" style="background: #00ff00; width: 0%; height: 100%;"></div>
     </div><br/>
 
-    <button id="init">Initiate Call</button>
+    <button id="clear">Clear Room</button>
     <label> OR </label>
     <button id="listen">Listen For Call</button><br/><br/>
 
@@ -27,6 +27,29 @@
     <textarea id="yourMessage"></textarea>
     <button id="send">send</button>
     <pre id="messages"></pre>
+
+    
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+
+    <!-- https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+          apiKey: "AIzaSyCvS93QIaM2nNitvemjlfC3ZFl_9dwR6Ss",
+          authDomain: "watercrest.firebaseapp.com",
+          projectId: "watercrest",
+          storageBucket: "watercrest.appspot.com",
+          messagingSenderId: "514739392680",
+          appId: "1:514739392680:web:db87f21a969c3f05cff29d",
+          measurementId: "G-YPD3TB1HK6"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+      </script>
 
     <script src="peerjs.js" type="text/javascript"></script>
 </body>

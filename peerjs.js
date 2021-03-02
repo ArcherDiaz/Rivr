@@ -1,8 +1,14 @@
 var meterElement = document.getElementById('meter');
-var connectButton = document.getElementById('connect');
-var callButton = document.getElementById('init');
-var sendButton = document.getElementById('send');
+var clearRoomButton = document.getElementById('clear');
+clearRoomButton.addEventListener('click', function(){
+    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
+        console.log("Document Uodated:", "cleared!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+});
 
+var db = firebase.firestore();
 var peer = new Peer();
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
@@ -10,7 +16,17 @@ getPermission();
 
 
 peer.on('open', function(id) {
+    var username = "test";
     document.getElementById('yourId').value = id;
+    getOtherusers(id);
+    
+    db.collection("FakeZoom").doc("room303").set({
+        users: firebase.firestore.FieldValue.arrayUnion({id: id, username: username})
+    }, {merge: true}).then(function (){
+        console.log("Document Updated with your ID!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
 });
 
 peer.on('connection', function(conn) {
@@ -111,11 +127,20 @@ function audioMeter(stream){
 }
 
 
-
-connectButton.addEventListener('click', function () {
-    var otherId = document.getElementById('otherId').value;
+function getOtherusers(myID){
+    db.collection("FakeZoom").doc("room303").get().then((doc) => {
+        var map = doc.data();
+        console.log("Current data: ", doc.data());
+        doc.data().users.forEach(function(value){
+            if(value["id"] != myID){
+                connectOther(value["id"]);
+            }
+        });
+    });
+}
+function connectOther(otherId){
+    console.log("Connecting new user", otherId);
     var conn = peer.connect(otherId);
-    // on open will be launch when you successfully connect to PeerServer
     conn.on('open', function(){
         console.log("Connection Opened Successfully!! : 1");
 
@@ -123,23 +148,4 @@ connectButton.addEventListener('click', function () {
         conn.send(message);
         document.getElementById('messages').textContent += message + '\n';
     });
-});
-
-sendButton.addEventListener('click', function () {
-    var message = document.getElementById('yourMessage').value;
-    document.getElementById('messages').textContent += message + '\n';
-    conn.send(yourMessage);
-});
-
-/*
-document: sdjsdlnc0
-
-    {
-        viewers: [
-            myOwnID,
-            diazID,
-            kenekiID,
-            jdnsj,s
-        ],
-    }
-*/
+}
