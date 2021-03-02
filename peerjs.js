@@ -1,11 +1,12 @@
 var peer = new Peer();
+window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 
 peer.on('open', function(id) {
     document.getElementById('yourId').value = id;
 });
 
 peer.on('connection', function(conn) {
-    console.log("Connection Opened Successfully!! : 2");
+    console.log("You connected to another peer");
     
     conn.on('data', function(data){
         console.log('Received on Connection', data);
@@ -15,7 +16,7 @@ peer.on('connection', function(conn) {
 
 peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
-    console.log("Calling!!");
+    console.log("You are being Called!!");
     //var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
     navigator.mediaDevices.getUserMedia({
         video: true,
@@ -77,6 +78,7 @@ function startSession(stream, call){
 }
 
 
+
 document.getElementById('init').addEventListener('click', function () {
     var otherId = document.getElementById('otherId').value;
     getPermission(otherId);
@@ -102,6 +104,11 @@ document.getElementById('connect').addEventListener('click', function () {
     });
 });
 
+document.getElementById('send').addEventListener('click', function () {
+    var message = document.getElementById('yourMessage').value;
+    document.getElementById('messages').textContent += message + '\n';
+    peer.send(yourMessage);
+});
 
 function audioMeter(stream){
     var audioContext = new AudioContext();
