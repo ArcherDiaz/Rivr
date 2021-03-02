@@ -23,7 +23,7 @@ peer.on('open', function(id) {
     db.collection("FakeZoom").doc("room303").set({
         users: firebase.firestore.FieldValue.arrayUnion({id: id, username: username})
     }, {merge: true}).then(function (){
-        console.log("Document Updated with your ID!!");
+        console.log("Document Updated:", "with your ID!!");
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
@@ -32,7 +32,7 @@ peer.on('open', function(id) {
 peer.on('connection', function(conn) {
     console.log("Peer: onConnection", "You connected to another peer");
     var call = peer.call(conn.peer, stream);
-    startSession(stream, call);
+    startSession(call);
     
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen");
@@ -45,11 +45,11 @@ peer.on('connection', function(conn) {
 
 peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
-    console.log("You are being Called!!");
-    
+    console.log("Peer: onCalled", "You are being called by another peer");
     call.answer(stream);
-    startSession(stream, call);
+    startSession(call);
 });
+
 
 
 function getPermission(){
@@ -80,28 +80,6 @@ function getPermission(){
     });
 }
 
-function startSession(stream, call){
-    console.log("My video streaming.");
-
-    call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
-        console.log("video streaming..");
-        var mediaView =  document.getElementById(call.peer);
-        if (typeof(mediaView) == 'undefined' || mediaView == null){
-            // Does not exist.
-            mediaView = document.createElement('video');
-            mediaView.id = call.peer;
-            mediaView.style.width = '50%';
-            document.body.appendChild(mediaView);
-            if('srcObject' in mediaView) {
-                mediaView.srcObject = remoteStream;
-            } else {
-                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
-            }
-            mediaView.play();
-        }
-    });
-}
-
 function audioMeter(stream){
     var audioContext = new AudioContext();
     var mediaStreamSource = audioContext.createMediaStreamSource(stream);
@@ -126,10 +104,30 @@ function audioMeter(stream){
     };
 }
 
+function startSession(call){
+    call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
+        console.log("video streaming..");
+        var mediaView =  document.getElementById(call.peer);
+        if (typeof(mediaView) == 'undefined' || mediaView == null){
+            // Does not exist.
+            mediaView = document.createElement('video');
+            mediaView.id = call.peer;
+            mediaView.style.width = '50%';
+            document.body.appendChild(mediaView);
+            if('srcObject' in mediaView) {
+                mediaView.srcObject = remoteStream;
+            } else {
+                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
+            }
+            mediaView.play();
+        }
+    });
+}
+
+
 
 function getOtherusers(myID){
     db.collection("FakeZoom").doc("room303").get().then((doc) => {
-        var map = doc.data();
         console.log("Current data: ", doc.data());
         doc.data().users.forEach(function(value){
             if(value["id"] != myID){
@@ -139,13 +137,17 @@ function getOtherusers(myID){
     });
 }
 function connectOther(otherId){
-    console.log("Connecting new user", otherId);
+    console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
     conn.on('open', function(){
-        console.log("Connection Opened Successfully!! : 1");
+        console.log("Connection to new user successful!!", otherId);
 
         var message = "hi!";
         conn.send(message);
         document.getElementById('messages').textContent += message + '\n';
+    });
+    conn.on('data', function(data){
+        console.log('Recieved data from other user!!', otherId, data);
+        document.getElementById('messages').textContent += data + '\n';
     });
 }
