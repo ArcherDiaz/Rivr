@@ -4,7 +4,10 @@ var callButton = document.getElementById('init');
 var sendButton = document.getElementById('send');
 
 var peer = new Peer();
+var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
+getPermission();
+
 
 peer.on('open', function(id) {
     document.getElementById('yourId').value = id;
@@ -12,7 +15,8 @@ peer.on('open', function(id) {
 
 peer.on('connection', function(conn) {
     console.log("Peer: onConnection", "You connected to another peer");
-    getPermission(conn.peer);
+    var call = peer.call(conn.peer, stream);
+    startSession(stream, call);
     
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen");
@@ -26,28 +30,34 @@ peer.on('connection', function(conn) {
 peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
     console.log("You are being Called!!");
-    navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-    }).then(function(stream){
-        audioMeter(stream);
-        call.answer(stream);
-        startSession(stream, call);
-    })
-    .catch(function(err){
-        console.log("ERROR: " + err);
-    });
+    
+    call.answer(stream);
+    startSession(stream, call);
 });
 
 
-function getPermission(otherId){
+function getPermission(){
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
-    }).then(function(stream){
+    }).then(function(mediaStream){
+        stream = mediaStream;
         audioMeter(stream);
-        var call = peer.call(otherId, stream);
-        startSession(stream, call);
+        var video = document.getElementById('mine');
+        if (typeof(mediaView) == 'undefined' || mediaView == null){
+            // Does not exist.
+            video = document.createElement('video');
+            video.id = "mine";
+            video.style.width = '50%';
+            video.volume = 0.0;
+            document.body.appendChild(video);
+            if('srcObject' in video) {
+                video.srcObject = stream;
+            } else {
+                video.src = window.URL.createObjectURL(stream); // for older browsers
+            }
+            video.play();
+        }
     })
     .catch(function(err){
         console.log("ERROR: " + err);
@@ -56,18 +66,6 @@ function getPermission(otherId){
 
 function startSession(stream, call){
     console.log("My video streaming.");
-    var video = document.createElement('video');
-    video.id = "mine";
-    video.style.width = '100%';
-    video.volume = 0.0;
-    document.body.appendChild(video);
-    if('srcObject' in video) {
-        video.srcObject = stream;
-    } else {
-        video.src = window.URL.createObjectURL(stream); // for older browsers
-    }
-    video.play();
-
 
     call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
         console.log("video streaming..");
@@ -132,3 +130,16 @@ sendButton.addEventListener('click', function () {
     document.getElementById('messages').textContent += message + '\n';
     conn.send(yourMessage);
 });
+
+/*
+document: sdjsdlnc0
+
+    {
+        viewers: [
+            myOwnID,
+            diazID,
+            kenekiID,
+            jdnsj,s
+        ],
+    }
+*/
