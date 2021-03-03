@@ -2,7 +2,7 @@ var meterElement = document.getElementById('meter');
 var clearRoomButton = document.getElementById('clear');
 clearRoomButton.addEventListener('click', function(){
     db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
-        console.log("Document Uodated:", "cleared!!");
+        console.log("Document Updated:", "cleared!!");
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
