@@ -1,10 +1,9 @@
-var meterElement = document.getElementById('meter');
-
 var db = firebase.firestore();
 var peer = new Peer();
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 getPermission();
+var num = 0;
 
 
 function getPermission(){
@@ -13,7 +12,6 @@ function getPermission(){
         audio: true
     }).then(function(mediaStream){
         stream = mediaStream;
-        audioMeter(stream);
         var video = document.getElementById('mine');
         if (typeof(mediaView) == 'undefined' || mediaView == null){
             // Does not exist.
@@ -29,13 +27,14 @@ function getPermission(){
             }
             video.play();
         }
+        audioMeter(stream, "mine");
     })
     .catch(function(err){
         console.log("ERROR: " + err);
     });
 }
 
-function audioMeter(stream){
+function audioMeter(stream, elementID){
     var audioContext = new AudioContext();
     var mediaStreamSource = audioContext.createMediaStreamSource(stream);
     var processor = audioContext.createScriptProcessor(2048, 1, 1);
@@ -55,7 +54,11 @@ function audioMeter(stream){
         
         var rms = Math.sqrt(total / inputDataLength);
         var percentage = rms * 100;
-        meterElement.style.width = percentage + '%';
+        if(percentage > num){
+            num = percentage;
+            console.log(num);
+        }
+        document.getElementById(elementID).style.border = percentage + "px solid #0000FF";
     };
 }
 
@@ -151,6 +154,7 @@ function startSession(otherUserCall){
             }
             mediaView.play();
         }
+        audioMeter(remoteStream, otherUserCall.peer);
     });
 }
 
