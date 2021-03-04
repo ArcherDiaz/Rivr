@@ -1,55 +1,10 @@
 var meterElement = document.getElementById('meter');
-var clearRoomButton = document.getElementById('clear');
-clearRoomButton.addEventListener('click', function(){
-    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
-        console.log("Document Updated:", "cleared!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-});
 
 var db = firebase.firestore();
 var peer = new Peer();
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 getPermission();
-
-
-peer.on('open', function(id) {
-    var username = "test";
-    document.getElementById('yourId').value = id;
-    getOtherusers(id);
-    
-    db.collection("FakeZoom").doc("room303").set({
-        users: firebase.firestore.FieldValue.arrayUnion({id: id, username: username})
-    }, {merge: true}).then(function (){
-        console.log("Document Updated:", "with your ID!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-});
-
-peer.on('connection', function(conn) {
-    console.log("Peer: onConnection", "You connected to another peer");
-    var call = peer.call(conn.peer, stream);
-    startSession(call);
-    
-    conn.on('open', function(){
-        console.log("Peer: onConnection - conn: onOpen");
-    });
-    conn.on('data', function(data){
-        console.log('Peer: onConnection - conn: onData', data);
-        document.getElementById('messages').textContent += data + '\n';
-    });
-});
-
-peer.on('call', function(call) {
-    // Answer the call, providing our mediaStream.
-    console.log("Peer: onCalled", "You are being called by another peer");
-    call.answer(stream);
-    startSession(call);
-});
-
 
 
 function getPermission(){
@@ -104,39 +59,67 @@ function audioMeter(stream){
     };
 }
 
-function startSession(call){
-    call.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
-        console.log("video streaming..");
-        var mediaView =  document.getElementById(call.peer);
-        if (typeof(mediaView) == 'undefined' || mediaView == null){
-            // Does not exist.
-            mediaView = document.createElement('video');
-            mediaView.id = call.peer;
-            mediaView.style.width = '50%';
-            document.body.appendChild(mediaView);
-            if('srcObject' in mediaView) {
-                mediaView.srcObject = remoteStream;
-            } else {
-                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
-            }
-            mediaView.play();
-        }
+
+peer.on('open', function(id) {
+    document.getElementById('yourId').value = id;
+
+    var userID = "test";
+    var username = "test";
+    var userPhotoURL = "test";
+    
+    db.collection("FakeZoom").doc("room303").set({
+        users: firebase.firestore.FieldValue.arrayUnion({
+            "peer ID": id,
+            "user ID": userID,
+            "username": username,
+            "photo URL": userPhotoURL
+        })
+    }, {merge: true}).then(function (){
+        console.log("Document Updated:", "with your ID!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
     });
-}
+    
+    getOtherusers(id);
+});
+
+peer.on('connection', function(conn) {
+    console.log("Peer: onConnection", "You connected to another peer");
+    var call = peer.call(conn.peer, stream);
+    startSession(call);
+    
+    conn.on('open', function(){
+        console.log("Peer: onConnection - conn: onOpen");
+    });
+    conn.on('data', function(data){
+        console.log('Peer: onConnection - conn: onData', data);
+        document.getElementById('messages').textContent += data + '\n';
+    });
+});
+
+peer.on('call', function(call) {
+    // Answer the call, providing our mediaStream.
+    console.log("Peer: onCalled", "You are being called by another peer");
+    call.answer(stream);
+    startSession(call);
+});
+
 
 
 
 function getOtherusers(myID){
     db.collection("FakeZoom").doc("room303").get().then((doc) => {
         console.log("Current data: ", doc.data());
+
         doc.data().users.forEach(function(value){
-            if(value["id"] != myID){
-                connectOther(value["id"]);
+            if(value["peer ID"] != myID){
+                connectOtherUser(value["peer ID"]);
             }
         });
+
     });
 }
-function connectOther(otherId){
+function connectOtherUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
     conn.on('open', function(){
@@ -151,3 +134,35 @@ function connectOther(otherId){
         document.getElementById('messages').textContent += data + '\n';
     });
 }
+function startSession(otherUserCall){
+    otherUserCall.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
+        console.log("video streaming..");
+        var mediaView =  document.getElementById(otherUserCall.peer);
+        if (typeof(mediaView) == 'undefined' || mediaView == null){
+            // Does not exist.
+            mediaView = document.createElement('video');
+            mediaView.id = otherUserCall.peer;
+            mediaView.style.width = '50%';
+            document.body.appendChild(mediaView);
+            if('srcObject' in mediaView) {
+                mediaView.srcObject = remoteStream;
+            } else {
+                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
+            }
+            mediaView.play();
+        }
+    });
+}
+
+
+
+
+
+
+document.getElementById('clear').addEventListener('click', function(){
+    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
+        console.log("Document Updated:", "cleared!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+});
