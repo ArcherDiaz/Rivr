@@ -80,7 +80,7 @@ peer.on('open', function(id) {
         console.log("Error getting document:", error);
     });
     
-    getOtherusers(id);
+    getOtherUsers(id);
 });
 
 peer.on('connection', function(conn) {
@@ -107,7 +107,7 @@ peer.on('call', function(call) {
 
 
 
-function getOtherusers(myID){
+function getOtherUsers(myID){
     db.collection("FakeZoom").doc("room303").get().then((doc) => {
         console.log("Current data: ", doc.data());
 
