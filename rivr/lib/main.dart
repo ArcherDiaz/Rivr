@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'package:rivr/Screens/HomeScreen.dart';
 import 'package:universal_ui/universal_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/interop.dart';
@@ -6,7 +7,7 @@ import 'package:sad_lib/CustomWidgets.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: MyHomePage(),
+    home: HomeScreen(),
   ));
 }
 
