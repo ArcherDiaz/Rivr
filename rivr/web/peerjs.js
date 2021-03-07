@@ -13,23 +13,15 @@ function startPeer(){
 
     peer.on('connection', function(conn) {
         console.log("Peer: onConnection", "You connected to another peer");
+        handleConnection(conn);
         var call = peer.call(conn.peer, stream);
-        startSession(call);
-
-        conn.on('open', function(){
-            console.log("Peer: onConnection - conn: onOpen");
-        });
-        conn.on('data', function(data){
-            console.log('Peer: onConnection - conn: onData', data);
-            document.getElementById('messages').textContent += data + '\n';
-        });
+        handleCall(call);
     });
 
     peer.on('call', function(call) {
-        // Answer the call, providing our mediaStream.
         console.log("Peer: onCalled", "You are being called by another peer");
         call.answer(stream);
-        startSession(call);
+        handleCall(call);
     });
 }
 
@@ -77,82 +69,27 @@ function audioMeter(mediaStream, id){
 }
 
 
-
-
-function addMyData(){
-    var userID = "test";
-    var username = "test";
-    var userPhotoURL = "test";
-
-    db.collection("FakeZoom").doc("room303").set({
-        users: firebase.firestore.FieldValue.arrayUnion({
-            "peer ID": id,
-            "user ID": userID,
-            "username": username,
-            "photo URL": userPhotoURL
-        })
-    }, {merge: true}).then(function (){
-        console.log("Document Updated:", "with your ID!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-}
-function getOtherUsers(myID){
-    db.collection("FakeZoom").doc("room303").get().then((doc) => {
-        console.log("Current data: ", doc.data());
-
-        doc.data().users.forEach(function(value){
-            if(value["peer ID"] != myID){
-                connectOtherUser(value["peer ID"]);
-            }
-        });
-
-    });
-}
-
-function connectOtherUser(otherId){
+function connectNewUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
+    handleConnection(conn);
+}
+
+
+function handleConnection(conn){
     conn.on('open', function(){
-        console.log("Connection to new user successful!!", otherId);
+        console.log("Peer: onConnection - conn: onOpen", conn.peer);
 
         var message = "hi!";
         conn.send(message);
-        document.getElementById('messages').textContent += message + '\n';
     });
     conn.on('data', function(data){
-        console.log('Received data from other user!!', otherId, data);
-        document.getElementById('messages').textContent += data + '\n';
+            console.log('Peer: onConnection - conn: onData', conn.peer, data);
     });
 }
-function startSession(otherUserCall){
-    otherUserCall.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
+function handleCall(call){
+    call.on('stream', function(remoteStream) {
         console.log("video streaming..");
-        var mediaView =  document.getElementById(otherUserCall.peer);
-        if (typeof(mediaView) == 'undefined' || mediaView == null){
-            // Does not exist.
-            mediaView = document.createElement('video');
-            mediaView.id = otherUserCall.peer;
-            mediaView.style.width = '50%';
-            document.body.appendChild(mediaView);
-            if('srcObject' in mediaView) {
-                mediaView.srcObject = remoteStream;
-            } else {
-                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
-            }
-            mediaView.play();
-        }
-        audioMeter(remoteStream, otherUserCall.peer);
-    });
-}
-
-
-
-
-function clearRoom(){
-    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
-        console.log("Document Updated:", "cleared!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
+        audioMeter(remoteStream, call.peer);
     });
 }

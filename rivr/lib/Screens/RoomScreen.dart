@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
@@ -15,36 +16,36 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
 
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   PeerJS _peer;
-
   List<Map<String, dynamic>> _streams = List();
-  bool _hasPeerID;
+
+  DialogClass _dialogClass;
 
   Size _size;
   bool _isDesktop;
 
   @override
   void initState() {
+    _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;
-    _hasPeerID = false;
     super.initState();
     _peer = PeerJS(
       onPeer: (id){
         setState(() {
-          _hasPeerID = true;
+          _peer.myPeerID = id;
         });
-        _peer.getPermissionJS(id);
       },
       onPermissionResult: (flag){
         if(flag == true){ ///permission accepted
-          getOtherUsers();
+          _getOtherUsers();
         }else{ ///permission denied
 
         }
       },
       onStream: (String id, MediaStream stream, double streamVolume){
-        if(_streams.any((element) => element["peer ID"] == id,)){
-          int _index = _streams.indexWhere((element) => element["peer ID"] == id,);
+        if(_streams.any((element) => element["peer ID"] == id,)){ ///if any element in the streams array has its "peer ID" field == [id]
+          int _index = _streams.indexWhere((element) => element["peer ID"] == id,); ///get the index of the stream where "peer ID" field == [id]
           setState(() {
             if(streamVolume >= 5.5){
               _streams[_index]["is talking"] = true;
@@ -53,6 +54,7 @@ class _RoomScreenState extends State<RoomScreen> {
             }
           });
         }else{
+          ///else if there is no stream in the list with its "peer ID" field == [id], create it
           VideoElement video = VideoElement();
           video.attributes = {
             "id": id,
@@ -86,7 +88,9 @@ class _RoomScreenState extends State<RoomScreen> {
     return Material(
       color: colors.bg,
       child: SafeArea(
-        child: _hasPeerID == true ? _streamingView() : _loadingView(),
+        child: _peer.myPeerID == null
+            ? _loadingView()
+            : _streamingView(),
       ),
     );
   }
@@ -110,7 +114,7 @@ class _RoomScreenState extends State<RoomScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextView(text: "Microphone access is required to join a live room. Please allow the permissions requested to contine.",
+          TextView(text: "Microphone access is required to join a live room. Please allow the permissions requested to continue.",
             size: 17.5,
             align: TextAlign.center,
             isSelectable: true,
@@ -125,7 +129,7 @@ class _RoomScreenState extends State<RoomScreen> {
             color: colors.bgDark,
             margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0,),
             padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0,),
-            child: TextView(text: "Get Permission",
+            child: TextView(text: "Give Permission",
               size: 15.0,
               color: colors.white,
               fontWeight: FontWeight.w500,
@@ -175,12 +179,42 @@ class _RoomScreenState extends State<RoomScreen> {
 
   /*-------------------------------------------------------------------------*/
 
-  void getOtherUsers(){
-    ///in a firestore transaction do the following:
-      ///add my own data to the room document in database; peerID, username, photo,
-      ///from that same database document, get ther other user's  data; peer IDs, usernames and photos
+  void _getOtherUsers(){
+    DocumentReference _roomRef = _firestore.collection("FakeZoom").doc(widget.roomCode);
+    _firestore.runTransaction((transaction) async {
+      List<dynamic> _users = List();
+      DocumentSnapshot _snapshot = await transaction.get(_roomRef);
+      _users = _snapshot.data()["users"];
 
-    ///then with their data, connect to each one of them
+      transaction.update(_roomRef, {
+          "users": FieldValue.arrayUnion([
+            {
+              "peer ID": _peer.myPeerID,
+              "user ID": "",
+              "username": "",
+              "photo URL": "",
+            }
+          ]),
+      },);
+
+      return _users;
+    }).then((users){
+      users.forEach((element) {
+        _peer.connectNewUserJS(element["peer ID"],);
+      });
+    }).catchError((onError){
+      _dialogClass.assureDialog(context, message: "Something went wrong while trying to establish a connection."
+          "\nPlease check your internet connection and try again."
+          "\n\n${onError.toString()}");
+    });
+  }
+
+  void _clearRoom(){
+    _firestore.collection("FakeZoom").doc(widget.roomCode).set({}).then((value){
+      print("Document Cleared!");
+    }).catchError((onError){
+      print("ERROR Clearing Document!: ${onError.toString()}");
+    });
   }
 
 }

@@ -27,6 +27,10 @@ dependencies:
     git:
       url: git://github.com/ArcherDiaz/SAD.git
       path: sad_lib/
+
+  cloud_firestore: ^0.16.0
+  firebase_core: ^0.7.0
+
   js: ^0.6.2
   universal_ui: ^0.0.8
 
