@@ -36,7 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-    version: "1.1.0-nullsafety.1"
   cloud_firestore:
     dependency: "direct main"
     description:
@@ -58,7 +57,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0+2"
->>>>>>> defccb62a35f659be273bda0df7c12b652d12503
   collection:
     dependency: transitive
     description:
