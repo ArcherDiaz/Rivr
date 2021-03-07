@@ -2,18 +2,20 @@ var db = firebase.firestore();
 var peer = new Peer();
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
-getPermission();
+var audio = true;
+var video = true;
+getPermission(false);
 var num = 0;
 
 
-function getPermission(){
+function getPermission(reset){
     navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        video: video,
+        audio: audio
     }).then(function(mediaStream){
         stream = mediaStream;
         var video = document.getElementById('mine');
-        if (typeof(mediaView) == 'undefined' || mediaView == null){
+        if (typeof(video) == 'undefined' || video == null){
             // Does not exist.
             video = document.createElement('video');
             video.id = "mine";
@@ -26,8 +28,19 @@ function getPermission(){
                 video.src = window.URL.createObjectURL(stream); // for older browsers
             }
             video.play();
+        }else{
+            if(reset == true){
+                if('srcObject' in video) {
+                    video.srcObject = stream;
+                } else {
+                    video.src = window.URL.createObjectURL(stream); // for older browsers
+                }
+                video.play();
+            }
         }
-        audioMeter(stream, "mine");
+        if(stream.getAudioTracks().length > 0){
+            audioMeter(stream, "mine");
+        }
     })
     .catch(function(err){
         console.log("ERROR: " + err);
@@ -133,7 +146,7 @@ function connectOtherUser(otherId){
         document.getElementById('messages').textContent += message + '\n';
     });
     conn.on('data', function(data){
-        console.log('Recieved data from other user!!', otherId, data);
+        console.log('Received data from other user!!', otherId, data);
         document.getElementById('messages').textContent += data + '\n';
     });
 }
@@ -169,4 +182,26 @@ document.getElementById('clear').addEventListener('click', function(){
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
+});
+
+document.getElementById('video').addEventListener('click', function(){
+    if(video == true){
+        video = false;
+        document.getElementById('video').style.backgroundColor = "#FF0000";
+    }else{
+        video = true;
+        document.getElementById('video').style.backgroundColor = "#00FF00";
+    }
+    getPermission(true);
+});
+
+document.getElementById('audio').addEventListener('click', function(){
+    if(audio == true){
+        audio = false;
+        document.getElementById('audio').style.backgroundColor = "#FF0000";
+    }else{
+        audio = true;
+        document.getElementById('audio').style.backgroundColor = "#00FF00";
+    }
+    getPermission(true);
 });

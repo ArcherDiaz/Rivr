@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rivr/Utils/Colors.dart' as colors;
+import 'package:rivr/Screens/RoomScreen.dart';
+import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:sad_lib/CustomWidgets.dart';
+import 'package:sad_lib/DialogClass.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -8,6 +10,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  
+  DialogClass _dialogClass;
   Size _size;
 
   List<Map> _howItWorks = [
@@ -24,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
       "info": "Now that you have your code, and it’s somewhat working, simply skip the testing phase and JUST GET IT ON THE INTERNET!"
     },
   ];
+  
+  @override
+  void initState() {
+    _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,41 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           size: _size.width > 700 ? 40.0 : 30.0,
                           fontWeight: FontWeight.w700,
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ButtonView(
-                                onPressed: () {},
-                                child: TextView(
-                                  text: "Join Room",
-                                  color: colors.white,
-                                  size: 18.0,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                border: Border.all(color: colors.white),
-                                borderRadius: 0.0,
-                                padding: EdgeInsets.all(8.0),
-                                margin: EdgeInsets.only(right: 20.0,),
-                              ),
-                              ButtonView(
-                                onPressed: () {},
-                                child: TextView(
-                                  text: "Start Room",
-                                  color: colors.white,
-                                  size: 18.0,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                border: Border.all(color: colors.white),
-                                borderRadius: 0.0,
-                                padding: EdgeInsets.all(8.0),
-                              ),
-                            ],
-                          ),
-                        ),
+                        _roomButtons(),
 
                         Padding(
                           padding: EdgeInsets.only(top: 20.0, bottom: 40.0),
@@ -206,4 +182,52 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Widget _roomButtons(){
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        ButtonView(
+          onPressed: () {
+            _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
+              if(code != null && code.isNotEmpty){
+                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> RoomScreen(roomCode: code,),),);
+              }
+            });
+          },
+          border: Border.all(color: colors.white),
+          borderRadius: 0.0,
+          padding: EdgeInsets.all(8.0),
+          margin: EdgeInsets.only(right: 20.0,),
+          child: TextView(text: "Join Room",
+            color: colors.white,
+            size: 18.0,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        ButtonView(
+          onPressed: () {
+            _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
+              if(code != null && code.isNotEmpty){
+
+              }
+            });
+          },
+          border: Border.all(color: colors.white),
+          borderRadius: 0.0,
+          padding: EdgeInsets.all(8.0),
+          child: TextView(text: "Start Room",
+            color: colors.white,
+            size: 18.0,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+  
+
 }

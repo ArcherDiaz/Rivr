@@ -4,55 +4,6 @@ var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 var num = 0;
 
-
-function getPermission(id){
-    navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-    }).then(function(mediaStream){
-        onPermissionResult(true);
-        audioMeter(mediaStream, id);
-
-        stream = mediaStream;
-    })
-    .catch(function(err){
-        onPermissionResult(false);
-        console.log("ERROR: " + err);
-    });
-}
-
-function audioMeter(mediaStream, id){
-    var audioContext = new AudioContext();
-    var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
-    var processor = audioContext.createScriptProcessor(2048, 1, 1);
-
-    //mediaStreamSource.connect(audioContext.destination); //this line makes the audio play, we kinda don't want that
-    mediaStreamSource.connect(processor);
-    processor.connect(audioContext.destination);
-
-    processor.onaudioprocess = function (e) {
-        var inputData = e.inputBuffer.getChannelData(0);
-        var inputDataLength = inputData.length;
-        var total = 0;
-
-        for (var i = 0; i < inputDataLength; i++) {
-            total += Math.abs(inputData[i++]);
-        }
-        
-        var rms = Math.sqrt(total / inputDataLength);
-        var percentage = rms * 100;
-        if(percentage > num){
-            num = percentage;
-            console.log(num);
-        }
-        returnStream(mediaStream, id);
-        //document.getElementById(elementID).style.border = percentage + "px solid #0000FF";
-    };
-}
-
-
-
-
 function startPeer(){
     peer = new Peer();
 
@@ -81,6 +32,51 @@ function startPeer(){
         startSession(call);
     });
 }
+
+
+function getPermission(id){
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    }).then(function(mediaStream){
+        onPermissionResult(true);
+        audioMeter(mediaStream, id);
+
+        stream = mediaStream;
+    }).catch(function(err){
+        onPermissionResult(false);
+        console.log("ERROR: " + err);
+    });
+}
+
+function audioMeter(mediaStream, id){
+    var audioContext = new AudioContext();
+    var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
+    var processor = audioContext.createScriptProcessor(2048, 1, 1);
+
+    mediaStreamSource.connect(processor);
+    processor.connect(audioContext.destination);
+
+    processor.onaudioprocess = function (e) {
+        var inputData = e.inputBuffer.getChannelData(0);
+        var inputDataLength = inputData.length;
+        var total = 0;
+
+        for (var i = 0; i < inputDataLength; i++) {
+            total += Math.abs(inputData[i++]);
+        }
+        
+        var rms = Math.sqrt(total / inputDataLength);
+        var percentage = rms * 100;
+        if(percentage > num){
+            num = percentage;
+            console.log(num);
+        }
+        returnStream(id, mediaStream, percentage);
+    };
+}
+
+
 
 
 function addMyData(){
@@ -113,6 +109,7 @@ function getOtherUsers(myID){
 
     });
 }
+
 function connectOtherUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
@@ -124,7 +121,7 @@ function connectOtherUser(otherId){
         document.getElementById('messages').textContent += message + '\n';
     });
     conn.on('data', function(data){
-        console.log('Recieved data from other user!!', otherId, data);
+        console.log('Received data from other user!!', otherId, data);
         document.getElementById('messages').textContent += data + '\n';
     });
 }
