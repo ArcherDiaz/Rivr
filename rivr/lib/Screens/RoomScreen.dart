@@ -184,17 +184,18 @@ class _RoomScreenState extends State<RoomScreen> {
     _firestore.runTransaction((transaction) async {
       List<dynamic> _users = List();
       DocumentSnapshot _snapshot = await transaction.get(_roomRef);
-      _users = _snapshot.data()["users"];
+      if(_snapshot.exists == true && _snapshot.data().containsKey("users")){
+        _users = _snapshot.data()["users"];
+      }
+      _users.add({
+        "peer ID": _peer.myPeerID,
+        "user ID": "",
+        "username": "",
+        "photo URL": "",
+      });
 
-      transaction.update(_roomRef, {
-          "users": FieldValue.arrayUnion([
-            {
-              "peer ID": _peer.myPeerID,
-              "user ID": "",
-              "username": "",
-              "photo URL": "",
-            }
-          ]),
+      transaction.set(_roomRef, {
+          "users": FieldValue.arrayUnion(_users,),
       },);
 
       return _users;
