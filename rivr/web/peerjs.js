@@ -12,7 +12,7 @@ function startPeer(){
     });
 
     peer.on('connection', function(conn) {
-        console.log("Peer: onConnection", "You connected to another peer");
+        console.log("Peer: onConnection", "You connected to another peer", conn.peer);
         handleConnection(conn);
         var call = peer.call(conn.peer, stream);
         handleCall(call);
@@ -84,7 +84,7 @@ function handleConnection(conn){
         conn.send(message);
     });
     conn.on('data', function(data){
-            console.log('Peer: onConnection - conn: onData', conn.peer, data);
+        console.log('Peer: onConnection - conn: onData', conn.peer, data);
     });
 }
 function handleCall(call){

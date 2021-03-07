@@ -61,7 +61,9 @@ class _RoomScreenState extends State<RoomScreen> {
             "style": "object-fit: cover;"
           };
           video.srcObject = stream;
-          video.volume = 0.0;
+          if(id == _peer.myPeerID){
+            video.volume = 0.0;
+          }
           video.play();
           ui.platformViewRegistry.registerViewFactory(id, (viewID){
             return video;
@@ -201,7 +203,9 @@ class _RoomScreenState extends State<RoomScreen> {
       return _users;
     }).then((users){
       users.forEach((element) {
-        _peer.connectNewUserJS(element["peer ID"],);
+        if(element["peer ID"] != _peer.myPeerID){ ///if the "peer ID" field of this element != my own peer id, the connect to them
+          _peer.connectNewUserJS(element["peer ID"],);
+        }
       });
     }).catchError((onError){
       _dialogClass.assureDialog(context, message: "Something went wrong while trying to establish a connection."
