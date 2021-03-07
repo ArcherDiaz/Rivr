@@ -8,12 +8,12 @@ import 'package:js/js.dart';
 @JS()
 external void startPeer();
 @JS()
-external void getPermission(String id);
+external void getPermission(String myID);
 @JS()
-external void clearRoom();
+external void connectNewUser(String theirID);
 
 @JS("returnPeerID")
-external set _returnPeerID(void Function(String id) f);
+external set _returnPeerID(void Function(String myID) f);
 @JS("returnStream")
 external set _returnStream(void Function(String id, MediaStream stream, double streamVolume) f);
 @JS("onPermissionResult")
@@ -25,14 +25,14 @@ external set _onPermissionResult(void Function(bool flag) f);
 class PeerJS{
   String myPeerID;
 
-  dynamic Function(String id) onPeer;
+  dynamic Function(String myID) onPeer;
   dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
   dynamic Function(bool flag) onPermissionResult;
   PeerJS({@required this.onPeer, @required this.onStream, @required this.onPermissionResult}){
     if(onPeer != null){
-      _returnPeerID = allowInterop((id){
-        myPeerID = id;
-        onPeer(id);
+      _returnPeerID = allowInterop((myID){
+        myPeerID = myID;
+        onPeer(myID);
       });
     }
     if(onStream != null){
@@ -47,14 +47,13 @@ class PeerJS{
     startPeer();
   }
 
-  void getPermissionJS(String id){
-    getPermission(id);
+  void getPermissionJS(String myID){
+    getPermission(myID);
   }
 
-
-
-  void clearRoomJS(){
-    clearRoom();
+  void connectNewUserJS(String theirID){
+    connectNewUser(theirID);
   }
+
 
 }
