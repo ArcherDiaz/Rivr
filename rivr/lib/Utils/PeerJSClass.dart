@@ -55,5 +55,4 @@ class PeerJS{
     connectNewUser(theirID);
   }
 
-
 }

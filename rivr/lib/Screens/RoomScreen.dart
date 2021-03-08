@@ -151,7 +151,7 @@ class _RoomScreenState extends State<RoomScreen> {
         alignment: WrapAlignment.center,
         runAlignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 20.0, runSpacing: 20.0,
+        spacing: _isDesktop == true ? 20.0 : 0.0, runSpacing: 20.0,
         children: [
           if(_streams.any((element) => element["peer ID"] == _peer.myPeerID) == false)
             _permissionView(),
@@ -161,15 +161,22 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
 
           for(int i = 0; i < _streams.length; i++)
-            Container(
+            ButtonView.hover(
+              onPressed: (){
+
+              },
+              onHover: ContainerChanges(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.green, width: 2.5,),
+                ),
+              ),
               width: _isDesktop == true ? (_size.width/3- 20) : _size.width/2,
               height: _isDesktop == true ? _size.width/6 : _size.width/3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5.0,),
-                border: Border.all(
-                  color: _streams[i]["is talking"] == true ? Colors.lightBlue : Colors.transparent,
-                  width: 2.5,
-                ),
+              color: colors.bgLight,
+              borderRadius: 5.0,
+              border: Border.all(
+                color: _streams[i]["is talking"] == true ? Colors.lightBlue : Colors.transparent,
+                width: 2.5,
               ),
               child: _streams[i]["widget"],
             ),
