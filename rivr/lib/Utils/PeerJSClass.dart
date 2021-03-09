@@ -12,6 +12,11 @@ external void getPermission(String myID);
 @JS()
 external void connectNewUser(String theirID);
 
+@JS()
+external void muteMyVideo();
+@JS()
+external void muteMyAudio();
+
 @JS("returnPeerID")
 external set _returnPeerID(void Function(String myID) f);
 @JS("returnStream")
@@ -53,6 +58,14 @@ class PeerJS{
 
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);
+  }
+
+
+  void muteMyVideoJS(){
+    muteMyVideoJS();
+  }
+  void muteMyAudioJS(){
+    muteMyAudioJS();
   }
 
 }
