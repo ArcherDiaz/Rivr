@@ -92,3 +92,16 @@ function handleCall(call){
         audioMeter(remoteStream, call.peer);
     });
 }
+
+
+
+function muteMyVideo(){
+    if(stream != null && stream.getVideoTracks().length > 0){
+        stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled;
+    }
+}
+function muteMyAudio(){
+    if(stream != null && stream.getAudioTracks().length > 0){
+        stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
+    }
+}
