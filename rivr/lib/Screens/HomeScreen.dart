@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Screens/RoomScreen.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
+import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
 
 class HomeScreen extends StatefulWidget {
+  final RoutePathClass route;
+  final void Function(RoutePathClass route) updatePage;
+  HomeScreen({Key key,
+    @required this.route,
+    @required this.updatePage,
+  }) : super(key: key,);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
