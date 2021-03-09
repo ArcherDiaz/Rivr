@@ -80,7 +80,7 @@ class _RoomScreenState extends State<RoomScreen> {
         }
       },
     );
-    //_peer.startPeerJS();
+    _peer.startPeerJS();
   }
 
   @override
@@ -92,7 +92,7 @@ class _RoomScreenState extends State<RoomScreen> {
       child: SafeArea(
         child: _peer.myPeerID == null
             ? _loadingView()
-            : _streamingView(),
+            : _streamingControls(),
       ),
     );
   }

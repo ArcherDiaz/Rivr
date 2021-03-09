@@ -1,11 +1,15 @@
+import 'dart:html';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rivr/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Screens/RoomScreen.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
+import 'package:url_strategy/url_strategy.dart';
 
 void main() {
   Firebase.initializeApp();
+  setPathUrlStrategy();
   runApp(AppWrapper(),);
 }
 
