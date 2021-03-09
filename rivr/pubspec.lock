@@ -252,7 +252,7 @@ packages:
     description:
       path: "sad_lib/"
       ref: HEAD
-      resolved-ref: "4a1fa662b4958aafc273a5ad52bc3e93ba514b62"
+      resolved-ref: ee1794b7adf074315c3cfcb4b28dfabe43a39262
       url: "git://github.com/ArcherDiaz/SAD.git"
     source: git
     version: "0.0.1"
@@ -317,6 +317,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.8"
+  url_strategy:
+    dependency: "direct main"
+    description:
+      name: url_strategy
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.1"
   vector_math:
     dependency: transitive
     description:

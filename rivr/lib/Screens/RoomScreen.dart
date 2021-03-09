@@ -92,7 +92,7 @@ class _RoomScreenState extends State<RoomScreen> {
       child: SafeArea(
         child: _peer.myPeerID == null
             ? _loadingView()
-            : _streamingView(),
+            : _streamingControls(),
       ),
     );
   }
@@ -139,6 +139,47 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _streamingControls(){
+    return Stack(
+      children: [
+        _streamingView(),
+        Container(
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            color: colors.bgDark,
+            borderRadius: BorderRadius.circular(20.0),
+            boxShadow: [
+              BoxShadow(
+                color: colors.bgLight.withOpacity(0.15),
+              )
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ButtonView(
+                onPressed: () {
+                  setState(() {
+                    _peer.muteMyAudioJS();
+                  });
+                },
+                child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
+              ),
+              ButtonView(
+                onPressed: () {
+                  setState(() {
+                    _peer.muteMyVideoJS();
+                  });
+                },
+                child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

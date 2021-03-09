@@ -95,13 +95,13 @@ function handleCall(call){
 
 
 
-function muteMyVideo(){
+function muteMyVideo(bool flag){
     if(stream != null && stream.getVideoTracks().length > 0){
-        stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled;
+        stream.getVideoTracks()[0].enabled = flag;
     }
 }
-function muteMyAudio(){
+function muteMyAudio(bool flag){
     if(stream != null && stream.getAudioTracks().length > 0){
-        stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
+        stream.getAudioTracks()[0].enabled = flag;
     }
 }

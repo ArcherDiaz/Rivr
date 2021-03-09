@@ -4,6 +4,7 @@ library js_interop;
 import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:js/js.dart';
+import 'package:js/js_util.dart';
 
 @JS()
 external void startPeer();
@@ -13,9 +14,9 @@ external void getPermission(String myID);
 external void connectNewUser(String theirID);
 
 @JS()
-external void muteMyVideo();
+external void muteMyVideo(bool flag);
 @JS()
-external void muteMyAudio();
+external void muteMyAudio(bool flag);
 
 @JS("returnPeerID")
 external set _returnPeerID(void Function(String myID) f);
@@ -29,6 +30,8 @@ external set _onPermissionResult(void Function(bool flag) f);
 
 class PeerJS{
   String myPeerID;
+  bool isMicOn = true;
+  bool isVideoOn = true;
 
   dynamic Function(String myID) onPeer;
   dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
@@ -62,10 +65,12 @@ class PeerJS{
 
 
   void muteMyVideoJS(){
-    muteMyVideoJS();
+    isVideoOn = !isVideoOn;
+    muteMyVideo(isVideoOn);
   }
   void muteMyAudioJS(){
-    muteMyAudioJS();
+    isMicOn = !isMicOn;
+    muteMyAudio(isMicOn);
   }
 
 }
