@@ -75,12 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextView(
-                      text: "RIVR AUDIO LIVE\nSTREAMING",
-                      color: colors.white,
-                      size: _size.width > 700 ? 40.0 : 30.0,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    TextView.rich(textSpan: [
+                      TextView(
+                        text: "RIVR",
+                        color: colors.white,
+                        size: _size.width > 700 ? 45.0 : 40.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      TextView(
+                        text: " AUDIO LIVE\nSTREAMING",
+                        color: colors.white,
+                        letterSpacing: 1.0,
+                        size: _size.width > 700 ? 40.0 : 30.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],),
                     _roomButtons(),
 
                     _headerImage(),
