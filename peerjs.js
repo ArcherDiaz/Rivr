@@ -2,16 +2,14 @@ var db = firebase.firestore();
 var peer = new Peer();
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
-var audio = true;
-var video = true;
-getPermission(false);
+getPermission();
 var num = 0;
 
 
-function getPermission(reset){
+function getPermission(){
     navigator.mediaDevices.getUserMedia({
-        video: video,
-        audio: audio
+        video: true,
+        audio: true
     }).then(function(mediaStream){
         stream = mediaStream;
         var video = document.getElementById('mine');
@@ -28,16 +26,8 @@ function getPermission(reset){
                 video.src = window.URL.createObjectURL(stream); // for older browsers
             }
             video.play();
-        }else{
-            if(reset == true){
-                if('srcObject' in video) {
-                    video.srcObject = stream;
-                } else {
-                    video.src = window.URL.createObjectURL(stream); // for older browsers
-                }
-                video.play();
-            }
         }
+        console.log("get permission");
         if(stream.getAudioTracks().length > 0){
             audioMeter(stream, "mine");
         }
@@ -48,6 +38,7 @@ function getPermission(reset){
 }
 
 function audioMeter(stream, elementID){
+    console.log("audio meter");
     var audioContext = new AudioContext();
     var mediaStreamSource = audioContext.createMediaStreamSource(stream);
     var processor = audioContext.createScriptProcessor(2048, 1, 1);
@@ -174,8 +165,6 @@ function startSession(otherUserCall){
 
 
 
-
-
 document.getElementById('clear').addEventListener('click', function(){
     db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
         console.log("Document Updated:", "cleared!!");
@@ -185,23 +174,13 @@ document.getElementById('clear').addEventListener('click', function(){
 });
 
 document.getElementById('video').addEventListener('click', function(){
-    if(video == true){
-        video = false;
-        document.getElementById('video').style.backgroundColor = "#FF0000";
-    }else{
-        video = true;
-        document.getElementById('video').style.backgroundColor = "#00FF00";
+    if(stream != null && stream.getVideoTracks().length > 0){
+        stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled;
     }
-    getPermission(true);
 });
 
 document.getElementById('audio').addEventListener('click', function(){
-    if(audio == true){
-        audio = false;
-        document.getElementById('audio').style.backgroundColor = "#FF0000";
-    }else{
-        audio = true;
-        document.getElementById('audio').style.backgroundColor = "#00FF00";
+    if(stream != null && stream.getAudioTracks().length > 0){
+        stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
     }
-    getPermission(true);
 });
