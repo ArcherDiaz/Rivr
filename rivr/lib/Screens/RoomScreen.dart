@@ -149,6 +149,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Widget _streamingControls(){
     return Stack(
+      alignment: Alignment.bottomCenter,
       children: [
         _streamingView(),
         Container(
@@ -162,8 +163,7 @@ class _RoomScreenState extends State<RoomScreen> {
               )
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Wrap(
             children: [
               ButtonView(
                 onPressed: () {
