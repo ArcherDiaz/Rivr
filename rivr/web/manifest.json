@@ -1,11 +1,11 @@
 {
-    "name": "rivr",
-    "short_name": "rivr",
+    "name": "Rivr",
+    "short_name": "Rivr",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "An audio live streaming application",
+    "description": "A free and unlimited video and audio live streaming application where ever you go!",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -3,13 +3,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
+import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
 import 'package:universal_ui/universal_ui.dart';
 
 class RoomScreen extends StatefulWidget {
-  final String roomCode;
-  RoomScreen({Key key, this.roomCode,}) : super(key: key);
+  final RoutePathClass route;
+  final void Function(RoutePathClass route) updatePage;
+  RoomScreen({Key key,
+    @required this.route,
+    @required this.updatePage,
+  }) : super(key: key,);
   @override
   _RoomScreenState createState() => _RoomScreenState();
 }
@@ -230,7 +235,8 @@ class _RoomScreenState extends State<RoomScreen> {
   /*-------------------------------------------------------------------------*/
 
   void _getOtherUsers(){
-    DocumentReference _roomRef = _firestore.collection("FakeZoom").doc(widget.roomCode);
+    String _roomCode = widget.route.extra["code"];
+    DocumentReference _roomRef = _firestore.collection("FakeZoom").doc(_roomCode);
     _firestore.runTransaction((transaction) async {
       List<dynamic> _users = List();
       DocumentSnapshot _snapshot = await transaction.get(_roomRef);
@@ -263,7 +269,8 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   void _clearRoom(){
-    _firestore.collection("FakeZoom").doc(widget.roomCode).set({}).then((value){
+    String _roomCode = widget.route.extra["code"];
+    _firestore.collection("FakeZoom").doc(_roomCode).set({}).then((value){
       print("Document Cleared!");
     }).catchError((onError){
       print("ERROR Clearing Document!: ${onError.toString()}");

@@ -1,10 +1,9 @@
 @JS()
-library js_interop;
+library dart_peer_js;
 
 import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:js/js.dart';
-import 'package:js/js_util.dart';
 
 @JS()
 external void startPeer();

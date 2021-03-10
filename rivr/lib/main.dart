@@ -13,22 +13,20 @@ void main() {
   runApp(AppWrapper(),);
 }
 
-//TODO: rivr/home
-//TODO: rivr/live?code=${roomCode}
 /*
 Features:
 	Make Invite Only Rooms
 		Escape from the open world to a small paradise with your friend and family in a private Rivr room
 	Connect across all Platforms
-		From desktop for connecting to smartphones for connectig on the go, Rivr is available to you
+		From desktop for connecting to smart phones for connecting on the go, Rivr is available to you
 	Join Public Rooms
 		Meet and make new friends online through public video/audio chat rooms
 	Unlimited Chat
-		Chat unlimitedly with the benefit of our Auto-Traceless Tecchnology
+		Chat unlimitedly with the benefit of our Auto-Traceless Technology
 
 
-App Capabilites
-	Higly responsive
+App Capabilities
+	Highly responsive
 	High Security
 	Seamless connections
 	Minimalistic Design
@@ -81,7 +79,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePathClass> with ChangeNotifi
         if(_routeHistoryList.last.isLivePage)
           MaterialPage(
             child: RoomScreen(
-
+              key: ValueKey("RoomScreen"),
             ),
           ),
       ],

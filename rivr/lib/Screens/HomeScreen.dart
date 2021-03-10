@@ -205,7 +205,9 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
               if(code != null && code.isNotEmpty){
-                Navigator.of(context).push(MaterialPageRoute(builder: (context)=> RoomScreen(roomCode: code,),),);
+                widget.updatePage(RoutePathClass.live({
+                  "code": code,
+                }));
               }
             });
           },

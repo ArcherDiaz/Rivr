@@ -95,12 +95,12 @@ function handleCall(call){
 
 
 
-function muteMyVideo(bool flag){
+function muteMyVideo(flag){
     if(stream != null && stream.getVideoTracks().length > 0){
         stream.getVideoTracks()[0].enabled = flag;
     }
 }
-function muteMyAudio(bool flag){
+function muteMyAudio(flag){
     if(stream != null && stream.getAudioTracks().length > 0){
         stream.getAudioTracks()[0].enabled = flag;
     }
