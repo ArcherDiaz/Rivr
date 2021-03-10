@@ -5,7 +5,11 @@ window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 var num = 0;
 
 function startPeer(){
-    peer = new Peer();
+    peer = new Peer({
+        secure: true,
+        key: "peerjs",
+        host: 'rivr-peerjs-server.herokuapp.com',
+    });
 
     peer.on('open', function(id) {
         returnPeerID(id);

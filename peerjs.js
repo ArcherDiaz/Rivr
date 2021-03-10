@@ -1,5 +1,9 @@
 var db = firebase.firestore();
-var peer = new Peer();
+var peer = new Peer({
+    secure: true,
+    key: "peerjs",
+    host: 'rivr-peerjs-server.herokuapp.com',
+});
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 getPermission();
