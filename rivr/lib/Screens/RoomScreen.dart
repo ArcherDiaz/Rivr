@@ -1,5 +1,6 @@
 import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
@@ -149,41 +150,93 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Widget _streamingControls(){
     return Stack(
-      alignment: Alignment.bottomCenter,
       children: [
-        _streamingView(),
-        Container(
-          padding: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            color: colors.bgDark,
-            borderRadius: BorderRadius.circular(20.0),
-            boxShadow: [
-              BoxShadow(
-                color: colors.bgLight.withOpacity(0.15),
-              )
-            ],
-          ),
-          child: Wrap(
-            children: [
-              ButtonView(
-                onPressed: () {
-                  setState(() {
-                    _peer.muteMyAudioJS();
-                  });
-                },
-                child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
+        Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(15.0),
+              margin: EdgeInsets.symmetric(vertical: 20.0),
+              decoration: BoxDecoration(
+                color: colors.bgDark,
+                borderRadius: BorderRadius.circular(10.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.bgLight.withOpacity(0.15),
+                  )
+                ],
               ),
-              ButtonView(
-                onPressed: () {
-                  setState(() {
-                    _peer.muteMyVideoJS();
-                  });
-                },
-                child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
+              child: Row(
+                children: [
+                  ButtonView(
+                    onPressed: () {
+                      _peer.leaveCall();
+                      //Navigator.of(context).pop();
+                    },
+                    child: Icon(Icons.arrow_back_ios, size: 30.0, color: colors.white,),
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  ),
+                  TextView.rich(textSpan: [
+                    TextView(
+                      text: "RIVR/",
+                      color: colors.white,
+                      size: _size.width > 700 ? 30.0 : 25.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    TextView(
+                      text: widget.route.extra["code"],
+                      color: colors.white,
+                      letterSpacing: 1.0,
+                      size: _size.width > 700 ? 20.0 : 18.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],),
+                ],
               ),
-            ],
+            ),
+            _streamingView(),
+          ],
+        ),
+
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            padding: EdgeInsets.all(15.0),
+            margin: EdgeInsets.symmetric(vertical: 20.0),
+            decoration: BoxDecoration(
+              color: colors.bgDark,
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.bgLight.withOpacity(0.15),
+                )
+              ],
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: [
+                ButtonView(
+                  onPressed: () {
+                    setState(() {
+                      _peer.muteMyAudioJS();
+                    });
+                  },
+                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                ),
+                ButtonView(
+                  onPressed: () {
+                    setState(() {
+                      _peer.muteMyVideoJS();
+                    });
+                  },
+                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                ),
+              ],
+            ),
           ),
         ),
+
       ],
     );
   }

@@ -77,6 +77,9 @@ function connectNewUser(otherId){
     var conn = peer.connect(otherId);
     handleConnection(conn);
 }
+function hangUp() {
+    peer.destroy();
+}
 
 
 function handleConnection(conn){
