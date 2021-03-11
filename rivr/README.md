@@ -1,6 +1,7 @@
 # rivr
 
-An audio live streaming application
+A free and unlimited video and audio live streaming application where ever you go!
+Connect with old friends or meet meet new ones with our public rooms feature
 
 ## Getting Started
 

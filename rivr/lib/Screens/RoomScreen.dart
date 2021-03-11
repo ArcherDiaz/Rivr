@@ -24,7 +24,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   PeerJS _peer;
-  List<Map<String, dynamic>> _streams = List();
+  List<Map<String, dynamic>> _streams = [];
 
   DialogClass _dialogClass;
 
@@ -150,6 +150,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Widget _streamingControls(){
     return Stack(
+      alignment: Alignment.topCenter,
       children: [
         Column(
           children: [
@@ -220,8 +221,8 @@ class _RoomScreenState extends State<RoomScreen> {
                       _peer.muteMyAudioJS();
                     });
                   },
-                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
                 ),
                 ButtonView(
                   onPressed: () {
@@ -229,14 +230,13 @@ class _RoomScreenState extends State<RoomScreen> {
                       _peer.muteMyVideoJS();
                     });
                   },
-                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
                 ),
               ],
             ),
           ),
         ),
-
       ],
     );
   }
@@ -291,7 +291,7 @@ class _RoomScreenState extends State<RoomScreen> {
     String _roomCode = widget.route.extra["code"];
     DocumentReference _roomRef = _firestore.collection("FakeZoom").doc(_roomCode);
     _firestore.runTransaction((transaction) async {
-      List<dynamic> _users = List();
+      List<dynamic> _users = [];
       DocumentSnapshot _snapshot = await transaction.get(_roomRef);
       if(_snapshot.exists == true && _snapshot.data().containsKey("users")){
         _users = _snapshot.data()["users"];

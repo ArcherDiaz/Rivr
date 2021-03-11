@@ -1,4 +1,3 @@
-var db = firebase.firestore();
 var peer;
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
@@ -34,25 +33,17 @@ function startPeer(){
     });
 }
 
-function hangUp() {
-    connections.forEach(function users(value, key, map) {
-        value["data"].close();
-        value["media"].close();
-    });
-    peer.destroy();
-}
-
 function getPermission(id){
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
     }).then(function(mediaStream){
-        onPermissionResult(true);
+        returnPermissionResult(true);
         audioMeter(mediaStream, id);
 
         stream = mediaStream;
     }).catch(function(err){
-        onPermissionResult(false);
+        returnPermissionResult(false);
         console.log("ERROR: " + err);
     });
 }
@@ -97,12 +88,10 @@ function connectNewUser(otherId){
 function handleConnection(conn){
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen", conn.peer);
-
-        var message = "hi!";
-        conn.send(message);
     });
     conn.on('data', function(data){
         console.log('Peer: onConnection - conn: onData', conn.peer, data);
+        returnData(data);
     });
 }
 function handleCall(call){
@@ -112,6 +101,13 @@ function handleCall(call){
     });
 }
 
+function hangUp() {
+    connections.forEach(function users(value, key, map) {
+        value["data"].close();
+        value["media"].close();
+    });
+    peer.destroy();
+}
 
 
 function muteMyVideo(flag){
@@ -123,4 +119,18 @@ function muteMyAudio(flag){
     if(stream != null && stream.getAudioTracks().length > 0){
         stream.getAudioTracks()[0].enabled = flag;
     }
+}
+
+
+//THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
+function sendData(data){
+    connections.forEach(function(value, key, map) {
+        value["data"].send(data);
+    });
+}
+
+//PASS IN THE ID OF THE VIDEO WHOSE VOLUME YOU WANT TO CHANGE
+function volumeMeter(videoID, volume){
+    var video = document.getElementById(videoID);
+    video.volume = volume;
 }

@@ -12,19 +12,27 @@ external void getPermission(String myID);
 @JS()
 external void connectNewUser(String theirID);
 @JS()
-external void hangUp();
+external void sendData(dynamic data);
 
 @JS()
 external void muteMyVideo(bool flag);
 @JS()
 external void muteMyAudio(bool flag);
+@JS()
+external void hangUp();
+
+@JS()
+external void volumeMeter(String videoID, double volume);
+
 
 @JS("returnPeerID")
 external set _returnPeerID(void Function(String myID) f);
+@JS("returnPermissionResult")
+external set _returnPermissionResult(void Function(bool flag) f);
 @JS("returnStream")
 external set _returnStream(void Function(String id, MediaStream stream, double streamVolume) f);
-@JS("onPermissionResult")
-external set _onPermissionResult(void Function(bool flag) f);
+@JS("returnData")
+external set _returnData(void Function(dynamic data) f);
 
 
 
@@ -35,20 +43,24 @@ class PeerJS{
   bool isVideoOn = true;
 
   dynamic Function(String myID) onPeer;
-  dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
   dynamic Function(bool flag) onPermissionResult;
-  PeerJS({@required this.onPeer, @required this.onStream, @required this.onPermissionResult}){
+  dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
+  dynamic Function(bool flag) onDataReceived;
+  PeerJS({@required this.onPeer, @required this.onPermissionResult, @required this.onStream, this.onDataReceived,}){
     if(onPeer != null){
       _returnPeerID = allowInterop((myID){
         myPeerID = myID;
         onPeer(myID);
       });
     }
+    if(onPermissionResult != null) {
+      _returnPermissionResult = allowInterop(onPermissionResult);
+    }
     if(onStream != null){
       _returnStream = allowInterop(onStream);
     }
-    if(onPermissionResult != null) {
-      _onPermissionResult = allowInterop(onPermissionResult);
+    if(onDataReceived != null) {
+      _returnData = allowInterop(onDataReceived);
     }
   }
 
@@ -56,16 +68,15 @@ class PeerJS{
     startPeer();
   }
 
-  void leaveCall() {
-    hangUp();
-  }
 
   void getPermissionJS(String myID){
     getPermission(myID);
   }
-
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);
+  }
+  void sendDataJS(dynamic data){
+    sendData(data);
   }
 
 
@@ -76,6 +87,14 @@ class PeerJS{
   void muteMyAudioJS(){
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
+  }
+  void leaveCall() {
+    hangUp();
+  }
+
+
+  void volumeMeter(String videoID, double volume){
+    volumeMeter(videoID, volume);
   }
 
 }
