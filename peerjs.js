@@ -8,6 +8,7 @@ var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 getPermission();
 var num = 0;
+var connections = new Map();
 
 
 function getPermission(){
@@ -78,7 +79,7 @@ peer.on('open', function(id) {
     var username = "test";
     var userPhotoURL = "test";
     
-    db.collection("FakeZoom").doc("room303").set({
+    db.collection("FakeZoom").doc("meh").set({
         users: firebase.firestore.FieldValue.arrayUnion({
             "peer ID": id,
             "user ID": userID,
@@ -98,7 +99,10 @@ peer.on('connection', function(conn) {
     console.log("Peer: onConnection", "You connected to another peer");
     var call = peer.call(conn.peer, stream);
     startSession(call);
-    
+    connections.set(conn.peer, {
+        "data": conn,
+        "media": call,
+    });
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen");
     });
@@ -112,6 +116,7 @@ peer.on('call', function(call) {
     // Answer the call, providing our mediaStream.
     console.log("Peer: onCalled", "You are being called by another peer");
     call.answer(stream);
+    connections.get(call.peer)["media"] = call;
     startSession(call);
 });
 
@@ -119,7 +124,7 @@ peer.on('call', function(call) {
 
 
 function getOtherUsers(myID){
-    db.collection("FakeZoom").doc("room303").get().then((doc) => {
+    db.collection("FakeZoom").doc("meh").get().then((doc) => {
         console.log("Current data: ", doc.data());
 
         doc.data().users.forEach(function(value){
@@ -133,14 +138,14 @@ function getOtherUsers(myID){
 function connectOtherUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
+    connections.set(otherId, {
+        "data": conn,
+    });
     conn.on('open', function(){
         console.log("Connection to new user successful!!", otherId);
-
-        var message = "hi!";
-        conn.send(message);
-        document.getElementById('messages').textContent += message + '\n';
     });
     conn.on('data', function(data){
+        //RECIEVED A MESSAGE FROM ANOTHER USER
         console.log('Received data from other user!!', otherId, data);
         document.getElementById('messages').textContent += data + '\n';
     });
@@ -166,15 +171,25 @@ function startSession(otherUserCall){
     });
 }
 
-
-
-
-document.getElementById('clear').addEventListener('click', function(){
-    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
-        console.log("Document Updated:", "cleared!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
+//THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
+function sendMessage(message){
+    connections.forEach(function(value, key, map) {
+        value["data"].send(message);
     });
+    document.getElementById('messages').textContent += message + '\n';
+}
+
+//PASS IN THE ID OF THE VIDEO WHOSE VOLUME YOU WANT TO CHANGE
+function volumeMeter(vidoID, volume){
+    var video = document.getElementById(vidoID);
+    video.volume = volume;
+}
+
+
+
+document.getElementById('send').addEventListener('click', function(){
+    var msg = peer.id + ": " + document.getElementById('yourMessage').value;
+    sendMessage(msg);
 });
 
 document.getElementById('video').addEventListener('click', function(){
@@ -187,4 +202,12 @@ document.getElementById('audio').addEventListener('click', function(){
     if(stream != null && stream.getAudioTracks().length > 0){
         stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
     }
+});
+
+document.getElementById('clear').addEventListener('click', function(){
+    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
+        console.log("Document Updated:", "cleared!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
 });
