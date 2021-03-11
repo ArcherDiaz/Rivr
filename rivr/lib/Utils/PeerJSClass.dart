@@ -11,6 +11,8 @@ external void startPeer();
 external void getPermission(String myID);
 @JS()
 external void connectNewUser(String theirID);
+@JS()
+external void hangUp();
 
 @JS()
 external void muteMyVideo(bool flag);
@@ -52,6 +54,10 @@ class PeerJS{
 
   void startPeerJS(){
     startPeer();
+  }
+
+  void leaveCall() {
+    hangUp();
   }
 
   void getPermissionJS(String myID){
