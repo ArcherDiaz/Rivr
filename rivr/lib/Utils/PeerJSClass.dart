@@ -56,12 +56,12 @@ class PeerJS{
     startPeer();
   }
 
-  void getPermissionJS(String myID){
-    getPermission(myID);
-  }
-
   void leaveCall() {
     hangUp();
+  }
+
+  void getPermissionJS(String myID){
+    getPermission(myID);
   }
 
   void connectNewUserJS(String theirID){

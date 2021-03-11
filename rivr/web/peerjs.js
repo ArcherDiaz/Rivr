@@ -3,6 +3,7 @@ var peer;
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
 var num = 0;
+var connections = new Map();
 
 function startPeer(){
     peer = new Peer({
@@ -17,6 +18,10 @@ function startPeer(){
 
     peer.on('connection', function(conn) {
         var call = peer.call(conn.peer, stream);
+        connections.set(conn.peer, {
+            "data" : conn,
+            "media" : call,
+        });
         handleCall(call);
         handleConnection(conn);
     });
@@ -24,10 +29,18 @@ function startPeer(){
     peer.on('call', function(call) {
         console.log("Peer: onCalled", "You are being called by another peer");
         call.answer(stream);
+        connections.get(call.peer)["media"] = call;
         handleCall(call);
     });
 }
 
+function hangUp() {
+    connections.forEach(function users(value, key, map) {
+        value["data"].close();
+        value["media"].close();
+    });
+    peer.destroy();
+}
 
 function getPermission(id){
     navigator.mediaDevices.getUserMedia({
@@ -75,12 +88,11 @@ function audioMeter(mediaStream, id){
 function connectNewUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
+    connections.set(otherId, {
+        "data" : conn,
+    });
     handleConnection(conn);
 }
-function hangUp() {
-    peer.destroy();
-}
-
 
 function handleConnection(conn){
     conn.on('open', function(){
