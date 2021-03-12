@@ -42,6 +42,20 @@ function getPermission(){
     });
 }
 
+function getScreen(){
+    navigator.mediaDevices.getDisplayMedia({
+        video: {
+            cursor: "always",
+        },
+        audio: false,
+    }).then(function(screenStream){
+        screenStream.getVideoTracks()[0].onended = function(event){
+            updateStream(stream);
+        };
+        updateStream(screenStream);
+    });
+}
+
 function audioMeter(stream, elementID){
     console.log("audio meter");
     var audioContext = new AudioContext();
@@ -110,6 +124,12 @@ peer.on('connection', function(conn) {
         console.log('Peer: onConnection - conn: onData', data);
         document.getElementById('messages').textContent += data + '\n';
     });
+    conn.on('close', function() {
+        console.log("conn closed!!!!");
+    });
+    conn.on('error', function(err) {
+        console.log("conn error!!!!", err);
+    });
 });
 
 peer.on('call', function(call) {
@@ -118,6 +138,14 @@ peer.on('call', function(call) {
     call.answer(stream);
     connections.get(call.peer)["media"] = call;
     startSession(call);
+});
+
+peer.on('close', function() {
+    console.log("peer closed!!!!");
+});
+
+peer.on('error', function(err) {
+    console.log("peer error!!!!", err);
 });
 
 
@@ -149,9 +177,19 @@ function connectOtherUser(otherId){
         console.log('Received data from other user!!', otherId, data);
         document.getElementById('messages').textContent += data + '\n';
     });
+    conn.on('close', function() {
+        console.log("conn 'connectOtherUser()' closed!!!!");
+    });
+    conn.on('error', function(err) {
+        console.log("conn () error!!!!", err);
+    });
 }
 function startSession(otherUserCall){
     otherUserCall.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
+        remoteStream.onEnded = function(event){
+            console.log("their stream ended!!!");
+        };
+
         console.log("video streaming..");
         var mediaView =  document.getElementById(otherUserCall.peer);
         if (typeof(mediaView) == 'undefined' || mediaView == null){
@@ -168,6 +206,26 @@ function startSession(otherUserCall){
             mediaView.play();
         }
         audioMeter(remoteStream, otherUserCall.peer);
+    });
+
+    otherUserCall.on('close', function() {
+        console.log("video closed!!!!");
+    });
+    otherUserCall.on('error', function(err) {
+        console.log("call error!!!!", err);
+    });
+}
+
+
+//THIS FUNCTION WILL UPDATE THE CURRENT STREAM BEING SENT TO ALL OF ITS PEERS
+function updateStream(newStream){
+    connections.forEach(function(value, key, map) { //for each connection I currently have
+        value["media"].peerConnection.getSenders().forEach(function(sender){ //get the media senders of the connection
+            if(sender.track.kind == "video" && newStream.getVideoTracks().length > 0){
+                sender.replaceTrack(newStream.getVideoTracks()[0]); //update the media sender with the new media
+            }
+        });
+
     });
 }
 
@@ -187,6 +245,10 @@ function volumeMeter(vidoID, volume){
 
 
 
+document.getElementById('share').addEventListener('click', function(){
+    getScreen();
+});
+
 document.getElementById('send').addEventListener('click', function(){
     var msg = peer.id + ": " + document.getElementById('yourMessage').value;
     sendMessage(msg);
@@ -205,7 +267,7 @@ document.getElementById('audio').addEventListener('click', function(){
 });
 
 document.getElementById('clear').addEventListener('click', function(){
-    db.collection("FakeZoom").doc("room303").set({}, {merge: false}).then(function (){
+    db.collection("FakeZoom").doc("meh").set({}, {merge: false}).then(function (){
         console.log("Document Updated:", "cleared!!");
     }).catch((error) => {
         console.log("Error getting document:", error);
