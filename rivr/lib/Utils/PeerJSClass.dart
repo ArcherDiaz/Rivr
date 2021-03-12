@@ -10,6 +10,8 @@ external void startPeer();
 @JS()
 external void getPermission(String myID);
 @JS()
+external void shareScreen(String elementID);
+@JS()
 external void connectNewUser(String theirID);
 @JS()
 external void sendData(dynamic data);
@@ -71,6 +73,9 @@ class PeerJS{
 
   void getPermissionJS(String myID){
     getPermission(myID);
+  }
+  void shareScreenJS(String elementID){
+    shareScreen(elementID);
   }
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);

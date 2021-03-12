@@ -17,18 +17,13 @@ function startPeer(){
 
     peer.on('connection', function(conn) {
         var call = peer.call(conn.peer, stream);
-        connections.set(conn.peer, {
-            "data" : conn,
-            "media" : call,
-        });
-        handleCall(call);
         handleConnection(conn);
+        handleCall(call);
     });
 
     peer.on('call', function(call) {
         console.log("Peer: onCalled", "You are being called by another peer");
         call.answer(stream);
-        connections.get(call.peer)["media"] = call;
         handleCall(call);
     });
 }
@@ -46,6 +41,23 @@ function getPermission(id){
         returnPermissionResult(false);
         console.log("ERROR: " + err);
     });
+}
+
+function shareScreen(elementID){
+    navigator.mediaDevices.getDisplayMedia({
+        video: {
+            cursor: "always",
+        },
+        audio: false,
+    }).then(function(screenStream){
+        screenStream.getVideoTracks()[0].onended = function(event){
+            updatePeerStream(elementID, stream);
+        };
+        updatePeerStream(elementID, screenStream);
+
+    }).catch(function(err){
+          console.log("ERROR: " + err);
+      });
 }
 
 function audioMeter(mediaStream, id){
@@ -79,15 +91,19 @@ function audioMeter(mediaStream, id){
 function connectNewUser(otherId){
     console.log("Connecting new user!!", otherId);
     var conn = peer.connect(otherId);
-    connections.set(otherId, {
-        "data" : conn,
-    });
     handleConnection(conn);
 }
 
 function handleConnection(conn){
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen", conn.peer);
+        if(connections.hasKey(conn.peer)){
+            connections.get(conn.peer)["data"] = conn;
+        }else{
+            connections.set(conn.peer, {
+                "data" : conn,
+            });
+        }
     });
     conn.on('data', function(data){
         console.log('Peer: onConnection - conn: onData', conn.peer, data);
@@ -95,6 +111,13 @@ function handleConnection(conn){
     });
 }
 function handleCall(call){
+    if(connections.hasKey(call.peer)){
+        connections.get(call.peer)["media"] = call;
+    }else{
+        connections.set(call.peer, {
+            "media" : call,
+        });
+    }
     call.on('stream', function(remoteStream) {
         console.log("video streaming..");
         audioMeter(remoteStream, call.peer);
@@ -120,6 +143,27 @@ function muteMyAudio(flag){
     }
 }
 
+
+//THIS FUNCTION WILL UPDATE THE CURRENT STREAM BEING SENT TO ALL OF ITS PEERS
+function updatePeerStream(elementID, newStream){
+    connections.forEach(function(value, key, map) { //for each connection I currently have
+        value["media"].peerConnection.getSenders().forEach(function(sender){ //get the media senders of the connection
+            if(sender.track.kind == "video" && newStream.getVideoTracks().length > 0){
+                sender.replaceTrack(newStream.getVideoTracks()[0]); //update the media sender with the new media
+            }
+        });
+    });
+    //now update the video element's stream
+    var video = document.getElementById(elementID);
+    if (typeof(video) != 'undefined' && video != null){
+        if('srcObject' in video) {
+            video.srcObject = newStream;
+        } else {
+            video.src = window.URL.createObjectURL(newStream); // for older browsers
+        }
+        video.play();
+    }
+}
 
 //THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
 function sendData(data){

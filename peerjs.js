@@ -1,48 +1,50 @@
 var db = firebase.firestore();
-var peer = new Peer({
-    secure: true,
-    key: "peerjs",
-    host: 'rivr-peerjs-server.herokuapp.com',
-});
+var peer;
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
-getPermission();
 var num = 0;
 var connections = new Map();
+startPeer();
 
+function startPeer(){
+    peer = new Peer({
+        secure: true,
+        key: "peerjs",
+        host: 'rivr-peerjs-server.herokuapp.com',
+    });
 
-function getPermission(){
+    peer.on('open', function(id) {
+        getPermission(id);
+        getOtherUsers(id);
+    });
+
+    peer.on('connection', function(conn) {
+        var call = peer.call(conn.peer, stream);
+        handleConnection(conn);
+        handleCall(call);
+    });
+
+    peer.on('call', function(call) {
+        console.log("Peer: onCalled", "You are being called by another peer");
+        call.answer(stream);
+        handleCall(call);
+    });
+}
+
+function getPermission(id){
     navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true
     }).then(function(mediaStream){
+        audioMeter(mediaStream, id);
         stream = mediaStream;
-        var video = document.getElementById('mine');
-        if (typeof(video) == 'undefined' || video == null){
-            // Does not exist.
-            video = document.createElement('video');
-            video.id = "mine";
-            video.style.width = '50%';
-            video.volume = 0.0;
-            document.body.appendChild(video);
-            if('srcObject' in video) {
-                video.srcObject = stream;
-            } else {
-                video.src = window.URL.createObjectURL(stream); // for older browsers
-            }
-            video.play();
-        }
-        console.log("get permission");
-        if(stream.getAudioTracks().length > 0){
-            audioMeter(stream, "mine");
-        }
-    })
-    .catch(function(err){
+
+    }).catch(function(err){
         console.log("ERROR: " + err);
     });
 }
 
-function getScreen(){
+function shareScreen(elementID){
     navigator.mediaDevices.getDisplayMedia({
         video: {
             cursor: "always",
@@ -50,19 +52,20 @@ function getScreen(){
         audio: false,
     }).then(function(screenStream){
         screenStream.getVideoTracks()[0].onended = function(event){
-            updateStream(stream);
+            updatePeerStream(elementID, stream);
         };
-        updateStream(screenStream);
+        updatePeerStream(elementID, screenStream);
+
+    }).catch(function(err){
+        console.log("ERROR: " + err);
     });
 }
 
-function audioMeter(stream, elementID){
-    console.log("audio meter");
+function audioMeter(mediaStream, id){
     var audioContext = new AudioContext();
-    var mediaStreamSource = audioContext.createMediaStreamSource(stream);
+    var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
     var processor = audioContext.createScriptProcessor(2048, 1, 1);
 
-    //mediaStreamSource.connect(audioContext.destination); //this line makes the audio play, we kinda don't want that
     mediaStreamSource.connect(processor);
     processor.connect(audioContext.destination);
 
@@ -81,73 +84,100 @@ function audioMeter(stream, elementID){
             num = percentage;
             console.log(num);
         }
-        document.getElementById(elementID).style.border = percentage + "px solid #0000FF";
+        returnStream(id, mediaStream, percentage);
     };
 }
 
 
-peer.on('open', function(id) {
-    document.getElementById('yourId').value = id;
+function connectNewUser(otherId){
+    console.log("Connecting new user!!", otherId);
+    var conn = peer.connect(otherId);
+    handleConnection(conn);
+}
 
-    var userID = "test";
-    var username = "test";
-    var userPhotoURL = "test";
-    
-    db.collection("FakeZoom").doc("meh").set({
-        users: firebase.firestore.FieldValue.arrayUnion({
-            "peer ID": id,
-            "user ID": userID,
-            "username": username,
-            "photo URL": userPhotoURL
-        })
-    }, {merge: true}).then(function (){
-        console.log("Document Updated:", "with your ID!!");
-    }).catch((error) => {
-        console.log("Error getting document:", error);
-    });
-    
-    getOtherUsers(id);
-});
-
-peer.on('connection', function(conn) {
-    console.log("Peer: onConnection", "You connected to another peer");
-    var call = peer.call(conn.peer, stream);
-    startSession(call);
-    connections.set(conn.peer, {
-        "data": conn,
-        "media": call,
-    });
+function handleConnection(conn){
     conn.on('open', function(){
-        console.log("Peer: onConnection - conn: onOpen");
+        console.log("Peer: onConnection - conn: onOpen", conn.peer);
+        if(connections.hasKey(conn.peer)){
+            connections.get(conn.peer)["data"] = conn;
+        }else{
+            connections.set(conn.peer, {
+                "data" : conn,
+            });
+        }
     });
     conn.on('data', function(data){
-        console.log('Peer: onConnection - conn: onData', data);
-        document.getElementById('messages').textContent += data + '\n';
+        console.log('Peer: onConnection - conn: onData', conn.peer, data);
+        returnData(data);
     });
-    conn.on('close', function() {
-        console.log("conn closed!!!!");
+}
+function handleCall(call){
+    if(connections.hasKey(call.peer)){
+        connections.get(call.peer)["media"] = call;
+    }else{
+        connections.set(call.peer, {
+            "media" : call,
+        });
+    }
+    call.on('stream', function(remoteStream) {
+        console.log("video streaming..");
+        audioMeter(remoteStream, call.peer);
     });
-    conn.on('error', function(err) {
-        console.log("conn error!!!!", err);
+}
+
+function hangUp() {
+    connections.forEach(function(value, key, map) {
+        value["data"].close();
     });
-});
+    peer.destroy();
+}
 
-peer.on('call', function(call) {
-    // Answer the call, providing our mediaStream.
-    console.log("Peer: onCalled", "You are being called by another peer");
-    call.answer(stream);
-    connections.get(call.peer)["media"] = call;
-    startSession(call);
-});
 
-peer.on('close', function() {
-    console.log("peer closed!!!!");
-});
+function muteMyVideo(flag){
+    if(stream != null && stream.getVideoTracks().length > 0){
+        stream.getVideoTracks()[0].enabled = flag;
+    }
+}
+function muteMyAudio(flag){
+    if(stream != null && stream.getAudioTracks().length > 0){
+        stream.getAudioTracks()[0].enabled = flag;
+    }
+}
 
-peer.on('error', function(err) {
-    console.log("peer error!!!!", err);
-});
 
+//THIS FUNCTION WILL UPDATE THE CURRENT STREAM BEING SENT TO ALL OF ITS PEERS
+function updatePeerStream(elementID, newStream){
+    connections.forEach(function(value, key, map) { //for each connection I currently have
+        value["media"].peerConnection.getSenders().forEach(function(sender){ //get the media senders of the connection
+            if(sender.track.kind == "video" && newStream.getVideoTracks().length > 0){
+                sender.replaceTrack(newStream.getVideoTracks()[0]); //update the media sender with the new media
+            }
+        });
+    });
+    //now update the video element's stream
+    var video = document.getElementById(elementID);
+    if (typeof(video) != 'undefined' && video != null){
+        if('srcObject' in video) {
+            video.srcObject = newStream;
+        } else {
+            video.src = window.URL.createObjectURL(newStream); // for older browsers
+        }
+        video.play();
+    }
+}
+
+//THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
+function sendData(data){
+    connections.forEach(function(value, key, map) {
+        value["data"].send(data);
+    });
+}
+
+//PASS IN THE ID OF THE VIDEO WHOSE VOLUME YOU WANT TO CHANGE
+function volumeMeter(videoID, volume){
+    var video = document.getElementById(videoID);
+    video.volume = volume;
+}
 
 
 
@@ -157,113 +187,49 @@ function getOtherUsers(myID){
 
         doc.data().users.forEach(function(value){
             if(value["peer ID"] != myID){
-                connectOtherUser(value["peer ID"]);
+                connectNewUser(value["peer ID"]);
             }
         });
 
     });
 }
-function connectOtherUser(otherId){
-    console.log("Connecting new user!!", otherId);
-    var conn = peer.connect(otherId);
-    connections.set(otherId, {
-        "data": conn,
-    });
-    conn.on('open', function(){
-        console.log("Connection to new user successful!!", otherId);
-    });
-    conn.on('data', function(data){
-        //RECIEVED A MESSAGE FROM ANOTHER USER
-        console.log('Received data from other user!!', otherId, data);
-        document.getElementById('messages').textContent += data + '\n';
-    });
-    conn.on('close', function() {
-        console.log("conn 'connectOtherUser()' closed!!!!");
-    });
-    conn.on('error', function(err) {
-        console.log("conn () error!!!!", err);
-    });
-}
-function startSession(otherUserCall){
-    otherUserCall.on('stream', function(remoteStream) { // Show stream in some video/canvas element.
-        remoteStream.onEnded = function(event){
-            console.log("their stream ended!!!");
-        };
 
-        console.log("video streaming..");
-        var mediaView =  document.getElementById(otherUserCall.peer);
-        if (typeof(mediaView) == 'undefined' || mediaView == null){
-            // Does not exist.
-            mediaView = document.createElement('video');
-            mediaView.id = otherUserCall.peer;
-            mediaView.style.width = '50%';
-            document.body.appendChild(mediaView);
-            if('srcObject' in mediaView) {
-                mediaView.srcObject = remoteStream;
-            } else {
-                mediaView.src = window.URL.createObjectURL(remoteStream); // for older browsers
-            }
-            mediaView.play();
+function returnStream(elementID, mediaStream, percentage){
+    var video = document.getElementById(elementID);
+    if (typeof(video) == 'undefined' || video == null){
+        // Does not exist.
+        video = document.createElement('video');
+        video.id = elementID;
+        video.style.width = '50%';
+        video.style.border = percentage + "px solid #0000FF";
+        video.volume = 0.0;
+        document.body.appendChild(video);
+        if('srcObject' in video) {
+            video.srcObject = mediaStream;
+        } else {
+            video.src = window.URL.createObjectURL(mediaStream); // for older browsers
         }
-        audioMeter(remoteStream, otherUserCall.peer);
-    });
-
-    otherUserCall.on('close', function() {
-        console.log("video closed!!!!");
-    });
-    otherUserCall.on('error', function(err) {
-        console.log("call error!!!!", err);
-    });
+        video.play();
+    }else{
+        video.style.border = percentage + "px solid #0000FF";
+    }
 }
-
-
-//THIS FUNCTION WILL UPDATE THE CURRENT STREAM BEING SENT TO ALL OF ITS PEERS
-function updateStream(newStream){
-    connections.forEach(function(value, key, map) { //for each connection I currently have
-        value["media"].peerConnection.getSenders().forEach(function(sender){ //get the media senders of the connection
-            if(sender.track.kind == "video" && newStream.getVideoTracks().length > 0){
-                sender.replaceTrack(newStream.getVideoTracks()[0]); //update the media sender with the new media
-            }
-        });
-
-    });
-}
-
-//THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
-function sendMessage(message){
-    connections.forEach(function(value, key, map) {
-        value["data"].send(message);
-    });
-    document.getElementById('messages').textContent += message + '\n';
-}
-
-//PASS IN THE ID OF THE VIDEO WHOSE VOLUME YOU WANT TO CHANGE
-function volumeMeter(vidoID, volume){
-    var video = document.getElementById(vidoID);
-    video.volume = volume;
-}
-
-
 
 document.getElementById('share').addEventListener('click', function(){
-    getScreen();
+    shareScreen(peer.id);
 });
 
 document.getElementById('send').addEventListener('click', function(){
     var msg = peer.id + ": " + document.getElementById('yourMessage').value;
-    sendMessage(msg);
+    sendData(msg);
 });
 
 document.getElementById('video').addEventListener('click', function(){
-    if(stream != null && stream.getVideoTracks().length > 0){
-        stream.getVideoTracks()[0].enabled = !stream.getVideoTracks()[0].enabled;
-    }
+    muteMyVideo(!stream.getVideoTracks()[0].enabled);
 });
 
 document.getElementById('audio').addEventListener('click', function(){
-    if(stream != null && stream.getAudioTracks().length > 0){
-        stream.getAudioTracks()[0].enabled = !stream.getAudioTracks()[0].enabled;
-    }
+    muteMyAudio(!stream.getAudioTracks()[0].enabled);
 });
 
 document.getElementById('clear').addEventListener('click', function(){
