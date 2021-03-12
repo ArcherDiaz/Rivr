@@ -64,7 +64,7 @@ class _RoomScreenState extends State<RoomScreen> {
           VideoElement video = VideoElement();
           video.attributes = {
             "id": id,
-            "style": "object-fit: cover;"
+            "style": "object-fit: cover; -webkit-transform:rotateY(180deg);",
           };
           video.srcObject = stream;
           if(id == _peer.myPeerID){
@@ -157,7 +157,7 @@ class _RoomScreenState extends State<RoomScreen> {
             Container(
               width: _size.width,
               padding: EdgeInsets.all(15.0),
-              margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+              margin: EdgeInsets.symmetric(horizontal: 10.0),
               decoration: BoxDecoration(
                 color: colors.bgDark,
                 borderRadius: BorderRadius.circular(20.0),

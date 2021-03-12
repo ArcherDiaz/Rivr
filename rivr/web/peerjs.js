@@ -102,9 +102,8 @@ function handleCall(call){
 }
 
 function hangUp() {
-    connections.forEach(function users(value, key, map) {
+    connections.forEach(function(value, key, map) {
         value["data"].close();
-        value["media"].close();
     });
     peer.destroy();
 }
