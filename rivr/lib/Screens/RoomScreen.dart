@@ -155,49 +155,37 @@ class _RoomScreenState extends State<RoomScreen> {
         Column(
           children: [
             Container(
+              width: _size.width,
               padding: EdgeInsets.all(15.0),
-              margin: EdgeInsets.symmetric(vertical: 20.0),
+              margin: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
               decoration: BoxDecoration(
                 color: colors.bgDark,
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(20.0),
                 boxShadow: [
                   BoxShadow(
                     color: colors.bgLight.withOpacity(0.15),
                   )
                 ],
               ),
-              child: Row(
-                children: [
-                  ButtonView(
-                    onPressed: () {
-                      _peer.leaveCall();
-                      //Navigator.of(context).pop();
-                    },
-                    child: Icon(Icons.arrow_back_ios, size: 30.0, color: colors.white,),
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  ),
-                  TextView.rich(textSpan: [
-                    TextView(
-                      text: "RIVR/",
-                      color: colors.white,
-                      size: _size.width > 700 ? 30.0 : 25.0,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    TextView(
-                      text: widget.route.extra["code"],
-                      color: colors.white,
-                      letterSpacing: 1.0,
-                      size: _size.width > 700 ? 20.0 : 18.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],),
-                ],
-              ),
+              child: TextView.rich(textSpan: [
+                TextView(
+                  text: "RIVR/",
+                  color: colors.white,
+                  size: _size.width > 700 ? 30.0 : 25.0,
+                  fontWeight: FontWeight.w700,
+                ),
+                TextView(
+                  text: widget.route.extra["code"],
+                  color: colors.white,
+                  letterSpacing: 1.0,
+                  size: _size.width > 700 ? 20.0 : 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ],),
             ),
             _streamingView(),
           ],
         ),
-
         Align(
           alignment: Alignment.bottomCenter,
           child: Container(
@@ -213,6 +201,7 @@ class _RoomScreenState extends State<RoomScreen> {
               ],
             ),
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               alignment: WrapAlignment.spaceEvenly,
               children: [
                 ButtonView(
@@ -232,6 +221,27 @@ class _RoomScreenState extends State<RoomScreen> {
                   },
                   margin: EdgeInsets.symmetric(horizontal: 5.0),
                   child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  width: 1,
+                  height: 30.0,
+                  color: colors.bgLight,
+                ),
+                ButtonView(
+                  onPressed: () {},
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Icon(Icons.chat, size: 25.0, color: colors.white,),
+                ),
+                ButtonView(
+                  onPressed: () {
+                    setState(() {
+                      _peer.leaveCall();
+                    });
+                  },
+                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  child: Icon(Icons.call_end, size: 30.0, color: colors.red,),
                 ),
               ],
             ),
