@@ -81,7 +81,7 @@ function audioMeter(mediaStream, id){
         var percentage = rms * 100;
         if(percentage > num){
             num = percentage;
-            console.log(num);
+            //console.log(num);
         }
         returnStream(id, mediaStream, percentage);
     };
@@ -97,7 +97,7 @@ function connectNewUser(otherId){
 function handleConnection(conn){
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen", conn.peer);
-        if(connections.hasKey(conn.peer)){
+        if(connections.has(conn.peer)){
             connections.get(conn.peer)["data"] = conn;
         }else{
             connections.set(conn.peer, {
@@ -111,7 +111,7 @@ function handleConnection(conn){
     });
 }
 function handleCall(call){
-    if(connections.hasKey(call.peer)){
+    if(connections.has(call.peer)){
         connections.get(call.peer)["media"] = call;
     }else{
         connections.set(call.peer, {

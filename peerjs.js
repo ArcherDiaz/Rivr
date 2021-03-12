@@ -98,7 +98,7 @@ function connectNewUser(otherId){
 function handleConnection(conn){
     conn.on('open', function(){
         console.log("Peer: onConnection - conn: onOpen", conn.peer);
-        if(connections.hasKey(conn.peer)){
+        if(connections.has(conn.peer)){
             connections.get(conn.peer)["data"] = conn;
         }else{
             connections.set(conn.peer, {
@@ -112,7 +112,7 @@ function handleConnection(conn){
     });
 }
 function handleCall(call){
-    if(connections.hasKey(call.peer)){
+    if(connections.has(call.peer)){
         connections.get(call.peer)["media"] = call;
     }else{
         connections.set(call.peer, {
@@ -182,6 +182,19 @@ function volumeMeter(videoID, volume){
 
 
 function getOtherUsers(myID){
+    db.collection("FakeZoom").doc("meh").set({
+        users: firebase.firestore.FieldValue.arrayUnion({
+            "peer ID": myID,
+            "user ID": "",
+            "username": "",
+            "photo URL": "",
+        })
+    }, {merge: true}).then(function (){
+        console.log("Document Updated:", "with your ID!!");
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
+
     db.collection("FakeZoom").doc("meh").get().then((doc) => {
         console.log("Current data: ", doc.data());
 
