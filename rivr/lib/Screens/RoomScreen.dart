@@ -157,31 +157,69 @@ class _RoomScreenState extends State<RoomScreen> {
             Container(
               width: _size.width,
               padding: EdgeInsets.all(15.0),
-              margin: EdgeInsets.symmetric(horizontal: 10.0),
               decoration: BoxDecoration(
                 color: colors.bgDark,
-                borderRadius: BorderRadius.circular(20.0),
                 boxShadow: [
                   BoxShadow(
                     color: colors.bgLight.withOpacity(0.15),
                   )
                 ],
               ),
-              child: TextView.rich(textSpan: [
-                TextView(
-                  text: "RIVR/",
-                  color: colors.white,
-                  size: _size.width > 700 ? 30.0 : 25.0,
-                  fontWeight: FontWeight.w700,
-                ),
-                TextView(
-                  text: widget.route.extra["code"],
-                  color: colors.white,
-                  letterSpacing: 1.0,
-                  size: _size.width > 700 ? 20.0 : 18.0,
-                  fontWeight: FontWeight.w500,
-                ),
-              ],),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextView.rich(textSpan: [
+                    TextView(
+                      text: "RIVR/",
+                      color: colors.white,
+                      size: _size.width > 700 ? 30.0 : 25.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    TextView(
+                      text: widget.route.extra["code"],
+                      color: colors.white,
+                      letterSpacing: 1.0,
+                      size: _size.width > 700 ? 20.0 : 18.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ],),
+                  Container(
+                    padding: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                      color: colors.red,
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.stop, size: 30.0, color: colors.white,),
+                        TextView(
+                          text: "00:00:00",
+                          color: colors.white,
+                          letterSpacing: 1.0,
+                          size: _size.width > 700 ? 18.0 : 15.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ],
+                    ),
+                  ),
+                  ButtonView(
+                    alignment: Alignment.center,
+                    onPressed: () {},
+                    margin: EdgeInsets.symmetric(horizontal: 5.0),
+                    children: [
+                      Icon(Icons.call_end, size: 30.0, color: colors.red,),
+                      TextView(
+                        text: "Leave",
+                        color: colors.red,
+                        size: _size.width > 700 ? 20.0 : 18.0,
+                        fontWeight: FontWeight.w700,
+                        padding: EdgeInsets.only(left: 10.0),
+                      )
+                    ],
+                  ),
+                ],
+              ),
             ),
             _streamingView(),
           ],
@@ -197,12 +235,14 @@ class _RoomScreenState extends State<RoomScreen> {
               boxShadow: [
                 BoxShadow(
                   color: colors.bgLight.withOpacity(0.15),
+                  offset: Offset(2.5, 2.5),
+                  blurRadius: 5.0,
                 )
               ],
             ),
             child: Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.spaceEvenly,
+              alignment: WrapAlignment.spaceBetween,
               children: [
                 ButtonView(
                   onPressed: () {
@@ -210,8 +250,11 @@ class _RoomScreenState extends State<RoomScreen> {
                       _peer.muteMyAudioJS();
                     });
                   },
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: colors.white,),
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: _peer.isMicOn == true ? colors.bg : colors.white,),
+                  borderRadius: 90.0,
+                  color: _peer.isMicOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+                  padding: EdgeInsets.all(5.0),
                 ),
                 ButtonView(
                   onPressed: () {
@@ -219,29 +262,21 @@ class _RoomScreenState extends State<RoomScreen> {
                       _peer.muteMyVideoJS();
                     });
                   },
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: colors.white,),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  width: 1,
-                  height: 30.0,
-                  color: colors.bgLight,
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: _peer.isVideoOn == true ? colors.bg : colors.white,),
+                  borderRadius: 90.0,
+                  color: _peer.isVideoOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+                  padding: EdgeInsets.all(5.0),
                 ),
                 ButtonView(
                   onPressed: () {},
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Icon(Icons.chat, size: 25.0, color: colors.white,),
                 ),
                 ButtonView(
-                  onPressed: () {
-                    setState(() {
-                      _peer.leaveCall();
-                    });
-                  },
-                  margin: EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Icon(Icons.call_end, size: 30.0, color: colors.red,),
+                  onPressed: () {},
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Icon(Icons.ios_share, size: 25.0, color: colors.white,),
                 ),
               ],
             ),
