@@ -203,20 +203,29 @@ class _RoomScreenState extends State<RoomScreen> {
                       ],
                     ),
                   ),
-                  ButtonView(
-                    alignment: Alignment.center,
+                  ButtonView.hover(
                     onPressed: () {},
-                    margin: EdgeInsets.symmetric(horizontal: 5.0),
-                    children: [
-                      Icon(Icons.call_end, size: 30.0, color: colors.red,),
-                      TextView(
-                        text: "Leave",
-                        color: colors.red,
-                        size: _size.width > 700 ? 20.0 : 18.0,
-                        fontWeight: FontWeight.w700,
-                        padding: EdgeInsets.only(left: 10.0),
-                      )
-                    ],
+                    onHover: ContainerChanges(
+                      decoration: BoxDecoration(
+                        color: colors.red.withOpacity(0.60),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(5.0),
+                    builder: (isHovering){
+                      return Row(
+                        children: [
+                          Icon(Icons.call_end, size: 30.0, color: isHovering == true ? colors.white : colors.red,),
+                          TextView(
+                            text: "Leave",
+                            color: isHovering == true ? colors.white : colors.red,
+                            size: _size.width > 700 ? 20.0 : 18.0,
+                            fontWeight: FontWeight.w700,
+                            padding: EdgeInsets.only(left: 10.0),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
