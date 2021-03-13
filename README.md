@@ -22,15 +22,11 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 
 ### **The Stack**
 
-<img src="https://images.ctfassets.net/1khq4uysbvty/2MbBsf9yEw40SMw6gK0Mmg/35f39d41f167b6615bd80517b4b67bcd/1_6XgfDCVn81AYX68Xvd2I-g_2x.png?&w=736" height="100">
-
-<img src="https://cdn.statically.io/img/strattonapps.com/wp-content/uploads/2020/02/flutter-logo-5086DD11C5-seeklogo.com_.png" height="100">
-
-<img src="https://firebase.google.com/images/brand-guidelines/logo-built_white.png" height="100">
-
-<img src="https://avatars.githubusercontent.com/u/3409784?s=200&v=4" height="100">
-
-<img src="https://brand.heroku.com/static/media/heroku-logotype-vertical.f7e1193f.svg" height="100">
+[<img src="https://images.ctfassets.net/1khq4uysbvty/2MbBsf9yEw40SMw6gK0Mmg/35f39d41f167b6615bd80517b4b67bcd/1_6XgfDCVn81AYX68Xvd2I-g_2x.png?&w=736" height="100">](https://figma.com/)
+[<img src="https://cdn.statically.io/img/strattonapps.com/wp-content/uploads/2020/02/flutter-logo-5086DD11C5-seeklogo.com_.png" height="100">](https://flutter.dev/)
+[<img src="https://firebase.google.com/images/brand-guidelines/logo-built_white.png" height="100">](https://firebase.google.com/)
+[<img src="https://avatars.githubusercontent.com/u/3409784?s=200&v=4" height="100">](https://peerjs.com/)
+[<img src="https://brand.heroku.com/static/media/heroku-logotype-vertical.f7e1193f.svg" height="100">](https://heroku.com/)
 
 ### **Overview**
 
