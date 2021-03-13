@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        ButtonView(
+        ButtonView.hover(
           onPressed: () {
             _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
               if(code != null && code.isNotEmpty){
@@ -211,18 +211,27 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             });
           },
-          border: Border.all(color: colors.white),
-          borderRadius: 0.0,
+          onHover: ContainerChanges(
+            decoration: BoxDecoration(
+              color: colors.bgDark,
+              border: Border.all(color: colors.bgDark, width: 1.5,),
+              borderRadius: BorderRadius.circular(5.0)
+            ),
+          ),
+          borderRadius: 2.5,
+          border: Border.all(color: colors.white, width: 1.5,),
           padding: EdgeInsets.all(8.0),
           margin: EdgeInsets.only(right: 20.0,),
-          child: TextView(text: "Join Room",
-            color: colors.white,
-            size: 18.0,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w500,
-          ),
+          builder: (isHovering){
+            return TextView(text: "Join Room",
+              color: colors.white,
+              size: 18.0,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w500,
+            );
+          },
         ),
-        ButtonView(
+        ButtonView.hover(
           onPressed: () {
             _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
               if(code != null && code.isNotEmpty){
@@ -230,15 +239,24 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             });
           },
-          border: Border.all(color: colors.white),
-          borderRadius: 0.0,
-          padding: EdgeInsets.all(8.0),
-          child: TextView(text: "Start Room",
-            color: colors.white,
-            size: 18.0,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w500,
+          onHover: ContainerChanges(
+            decoration: BoxDecoration(
+              color: colors.bgDark,
+              border: Border.all(color: colors.bgDark, width: 1.5,),
+              borderRadius: BorderRadius.circular(5.0)
+            ),
           ),
+          borderRadius: 2.5,
+          border: Border.all(color: colors.white, width: 1.5,),
+          padding: EdgeInsets.all(8.0),
+          builder: (isHovering){
+            return TextView(text: "Start Room",
+              color: colors.white,
+              size: 18.0,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.w500,
+            );
+          },
         ),
       ],
     );
