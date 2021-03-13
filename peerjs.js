@@ -51,9 +51,9 @@ function shareScreen(elementID){
         },
         audio: false,
     }).then(function(screenStream){
-        screenStream.getVideoTracks()[0].onended = function(event){
+        screenStream.getVideoTracks()[0].addEventListener("ended", function(event){
             updatePeerStream(elementID, stream);
-        };
+        });
         updatePeerStream(elementID, screenStream);
 
     }).catch(function(err){
@@ -82,10 +82,19 @@ function audioMeter(mediaStream, id){
         var percentage = rms * 100;
         if(percentage > num){
             num = percentage;
-            console.log(num);
+            //console.log(num);
         }
         returnStream(id, mediaStream, percentage);
     };
+
+    mediaStream.getVideoTracks()[0].addEventListener("mute", function(event){
+        console.log("stream video muted", id, event);
+        connections.get(id)["data"].send("ping!");
+    });
+    mediaStream.getAudioTracks()[0].addEventListener("mute", function(event){
+        console.log("stream audio muted", id, event);
+        connections.get(id)["data"].send("ping!");
+    });
 }
 
 
@@ -110,6 +119,9 @@ function handleConnection(conn){
         console.log('Peer: onConnection - conn: onData', conn.peer, data);
         returnData(data);
     });
+    conn.on('error', function(err){
+        console.log('Peer: onConnection - conn: onError', conn.peer, err);
+    });
 }
 function handleCall(call){
     if(connections.has(call.peer)){
@@ -122,6 +134,9 @@ function handleCall(call){
     call.on('stream', function(remoteStream) {
         console.log("video streaming..");
         audioMeter(remoteStream, call.peer);
+    });
+    call.on('error', function(err){
+        console.log('video streaming: onError', call.peer, err);
     });
 }
 
