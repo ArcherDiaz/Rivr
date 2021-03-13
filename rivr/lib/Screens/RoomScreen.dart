@@ -1,6 +1,5 @@
 import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
@@ -71,6 +70,7 @@ class _RoomScreenState extends State<RoomScreen> {
             video.volume = 0.0;
           }
           video.play();
+
           ui.platformViewRegistry.registerViewFactory(id, (viewID){
             return video;
           });
@@ -283,7 +283,9 @@ class _RoomScreenState extends State<RoomScreen> {
                   child: Icon(Icons.chat, size: 25.0, color: colors.white,),
                 ),
                 ButtonView(
-                  onPressed: () {},
+                  onPressed: () {
+                    _peer.shareScreenJS(_peer.myPeerID,);
+                  },
                   margin: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Icon(Icons.ios_share, size: 25.0, color: colors.white,),
                 ),
@@ -331,7 +333,10 @@ class _RoomScreenState extends State<RoomScreen> {
                 color: _streams[i]["is talking"] == true ? Colors.lightBlue : Colors.transparent,
                 width: 2.5,
               ),
-              child: _streams[i]["widget"],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5.0,),
+                child: _streams[i]["widget"],
+              ),
             ),
 
         ],

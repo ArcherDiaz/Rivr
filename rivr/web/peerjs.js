@@ -50,9 +50,9 @@ function shareScreen(elementID){
         },
         audio: false,
     }).then(function(screenStream){
-        screenStream.getVideoTracks()[0].onended = function(event){
+        screenStream.getVideoTracks()[0].addEventListener("ended", function(event){
             updatePeerStream(elementID, stream);
-        };
+        });
         updatePeerStream(elementID, screenStream);
 
     }).catch(function(err){

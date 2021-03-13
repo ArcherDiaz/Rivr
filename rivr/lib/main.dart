@@ -11,26 +11,6 @@ void main() {
   runApp(AppWrapper(),);
 }
 
-/*
-Features:
-	Make Invite Only Rooms
-		Escape from the open world to a small paradise with your friend and family in a private Rivr room
-	Connect across all Platforms
-		From desktop for connecting to smart phones for connecting on the go, Rivr is available to you
-	Join Public Rooms
-		Meet and make new friends online through public video/audio chat rooms
-	Unlimited Chat
-		Chat unlimitedly with the benefit of our Auto-Traceless Technology
-
-
-App Capabilities
-	Highly responsive
-	High Security
-	Seamless connections
-	Minimalistic Design
-
-*/
-
 
 class AppWrapper extends StatelessWidget {
 

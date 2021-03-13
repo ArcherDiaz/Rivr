@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rivr/Screens/RoomScreen.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
@@ -90,11 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
       color: colors.bg,
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: _size.width > 700 ? 100.0 : 40.0, vertical: _size.width > 700 ? 50.0 : 25.0),
+          padding: EdgeInsets.symmetric(horizontal: _size.width > 700 ? 100.0 : 40.0,),
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 80.0, bottom: 20.0),
+                padding: EdgeInsets.only(top: _size.width > 700 ? 50.0 : 25.0, left: 80.0, bottom: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -118,7 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: _size.width,
                 padding: EdgeInsets.all(30.0),
                 decoration: BoxDecoration(
-                    border: Border.all(color: colors.white)
+                    border: Border(
+                      top: BorderSide(color: colors.white, width: 1.0,),
+                      left: BorderSide(color: colors.white, width: 1.0,),
+                      right: BorderSide(color: colors.white, width: 1.0,),
+                    ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,10 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                       TextView(
-                        text: " AUDIO LIVE\nSTREAMING",
+                        text: " AUDIO & VIDEO LIVE\nSTREAMING",
                         color: colors.white,
                         letterSpacing: 1.0,
-                        size: _size.width > 700 ? 40.0 : 30.0,
+                        size: _size.width > 700 ? 35.0 : 25.0,
                         fontWeight: FontWeight.w500,
                       ),
                     ],),
@@ -241,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         text: _cardInfo[i]["title"],
                                         padding: EdgeInsets.only( left: 20.0),
                                         color: colors.darkPurple,
-                                        size: 20.0,
+                                        size: 17.5,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
