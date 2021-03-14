@@ -10,21 +10,21 @@ function startPeer(){
         key: "peerjs",
         host: 'rivr-peerjs-server.herokuapp.com',
     });
-
     peer.on('open', function(id) {
         returnPeerID(id);
     });
-
     peer.on('connection', function(conn) {
         var call = peer.call(conn.peer, stream);
         handleConnection(conn);
         handleCall(call);
     });
-
     peer.on('call', function(call) {
-        console.log("Peer: onCalled", "You are being called by another peer");
+        console.log("Peer: onCall", "You are being called by another peer");
         call.answer(stream);
         handleCall(call);
+    });
+    peer.on('close', function() {
+        console.log("Peer: onClose");
     });
 }
 
@@ -111,6 +111,12 @@ function handleConnection(conn){
         console.log('Peer: onConnection - conn: onData', conn.peer, data);
         returnData(data);
     });
+    conn.on('close', function(){
+        console.log('Peer: onConnection - conn: onClose', conn.peer);
+    });
+    conn.on('error', function(err){
+        console.log('Peer: onConnection - conn: onError', conn.peer, err);
+    });
 }
 function handleCall(call){
     if(connections.has(call.peer)){
@@ -121,16 +127,29 @@ function handleCall(call){
         });
     }
     call.on('stream', function(remoteStream) {
-        console.log("video streaming..");
+        console.log("video stream: onStream..");
         audioMeter(remoteStream, call.peer);
+    });
+    call.on('close', function(){
+        console.log('Peer: onCall - stream: onClose', call.peer);
+    });
+    call.on('error', function(err){
+        console.log('Peer: onCall - stream: onError', call.peer, err);
     });
 }
 
-function hangUp() {
+function leaveCall() {
     connections.forEach(function(value, key, map) {
+        //for each connected peer/user, close both the data and media connection between us
         value["data"].close();
+        value["media"].close();
     });
+    //destroy the peer object itself
     peer.destroy();
+    stream.getTracks().forEach(function(track) {
+        //for each media track in our own stream (audio and video), stop them
+        track.stop();
+    });
 }
 
 
@@ -179,3 +198,7 @@ function volumeMeter(videoID, volume){
     var video = document.getElementById(videoID);
     video.volume = volume;
 }
+
+window.addEventListener("beforeunload", function(){
+    hangUp();
+});

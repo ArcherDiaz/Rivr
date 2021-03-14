@@ -22,6 +22,17 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
 
+  //TODO: listen for when a user leaves the call, so that you can remove their video box
+  //TODO: listen for when a user mutes their video so that we can put only the circle instead of a black box
+  //TODO: listen for when a user mutes their audio so that we can put the mute icon by them
+
+  //TODO: random idea i got from someone while looking for hang up call fixes, have room notifications:
+  //  when a user just enters a room send out the message; [notify]: A new user has entered the room
+  //  then on retrieval of this message, because it has "[notify]:" it won't show up in the chat but rather as a notification
+  //  [notify]: A user has left the room
+  //  [notify]: A user is sharing their screen
+  //  [notify]: A user is being an ass
+
   FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   DialogClass _dialogClass;
 
@@ -286,7 +297,16 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView.hover(
             onPressed: () {
-              _peer.leaveCall();
+              if(_peer.isSharingScreen){
+                _dialogClass.assureDialog(context,
+                  message: "Please stop live streaming your device screen first before leaving the room.",
+                  positive: "Okay",
+                  negativeButton: false,
+                );
+              }else{
+                _peer.leaveCallJS();
+                Navigator.of(context).pop();
+              }
             },
             onHover: ContainerChanges(
               decoration: BoxDecoration(

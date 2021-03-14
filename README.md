@@ -70,15 +70,3 @@ Instructions on how to use them in your own application are linked below.
 MIT
 
 **Free Software, Hell Yeah!**
-
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
-
-   [Figma]: <https://figma.com/>
-
-   [Flutter]: <https://flutter.com/>
-
-   [Firebase]: <https://firebase.google.com/>
-
-   [PeerJS]: <https://peerjs.com/>
-
-   [Heroku]: <https://heroku.com/>

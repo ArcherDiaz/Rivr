@@ -29,6 +29,10 @@ function startPeer(){
         call.answer(stream);
         handleCall(call);
     });
+
+    peer.on('close', function() {
+        console.log("Peer: onClose");
+    });
 }
 
 function getPermission(id){
@@ -86,15 +90,6 @@ function audioMeter(mediaStream, id){
         }
         returnStream(id, mediaStream, percentage);
     };
-
-    mediaStream.getVideoTracks()[0].addEventListener("mute", function(event){
-        console.log("stream video muted", id, event);
-        connections.get(id)["data"].send("ping!");
-    });
-    mediaStream.getAudioTracks()[0].addEventListener("mute", function(event){
-        console.log("stream audio muted", id, event);
-        connections.get(id)["data"].send("ping!");
-    });
 }
 
 
@@ -119,6 +114,9 @@ function handleConnection(conn){
         console.log('Peer: onConnection - conn: onData', conn.peer, data);
         returnData(data);
     });
+    conn.on('close', function(){
+        console.log('Peer: onConnection - conn: onClose', conn.peer);
+    });
     conn.on('error', function(err){
         console.log('Peer: onConnection - conn: onError', conn.peer, err);
     });
@@ -135,6 +133,9 @@ function handleCall(call){
         console.log("video streaming..");
         audioMeter(remoteStream, call.peer);
     });
+    call.on('close', function(){
+        console.log('video streaming: onClose', call.peer);
+    });
     call.on('error', function(err){
         console.log('video streaming: onError', call.peer, err);
     });
@@ -143,8 +144,12 @@ function handleCall(call){
 function hangUp() {
     connections.forEach(function(value, key, map) {
         value["data"].close();
+        value["media"].close();
     });
     peer.destroy();
+    stream.getTracks().forEach(function(track) {
+        track.stop();
+    });
 }
 
 
@@ -241,10 +246,6 @@ function returnStream(elementID, mediaStream, percentage){
     }else{
         video.style.border = percentage + "px solid #0000FF";
     }
-
-    video.addEventListener("ended", function(){
-        console.log("ended!!", elementID);
-    });
 }
 
 document.getElementById('share').addEventListener('click', function(){
@@ -267,7 +268,12 @@ document.getElementById('audio').addEventListener('click', function(){
 document.getElementById('clear').addEventListener('click', function(){
     db.collection("FakeZoom").doc("meh").set({}, {merge: false}).then(function (){
         console.log("Document Updated:", "cleared!!");
+        hangUp();
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
+});
+
+window.addEventListener("beforeunload", function(){
+    hangUp();
 });

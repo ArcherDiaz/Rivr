@@ -21,7 +21,7 @@ external void muteMyVideo(bool flag);
 @JS()
 external void muteMyAudio(bool flag);
 @JS()
-external void hangUp();
+external void leaveCall();
 
 @JS()
 external void volumeMeter(String videoID, double volume);
@@ -100,8 +100,8 @@ class PeerJS{
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
   }
-  void leaveCall() {
-    hangUp();
+  void leaveCallJS() {
+    leaveCall();
   }
 
 
