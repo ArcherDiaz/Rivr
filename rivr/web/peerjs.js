@@ -52,10 +52,12 @@ function shareScreen(elementID){
     }).then(function(screenStream){
         screenStream.getVideoTracks()[0].addEventListener("ended", function(event){
             updatePeerStream(elementID, stream);
+            onScreenShareClosed();
         });
         updatePeerStream(elementID, screenStream);
 
     }).catch(function(err){
+          onScreenShareClosed();
           console.log("ERROR: " + err);
       });
 }

@@ -241,6 +241,10 @@ function returnStream(elementID, mediaStream, percentage){
     }else{
         video.style.border = percentage + "px solid #0000FF";
     }
+
+    video.addEventListener("ended", function(){
+        console.log("ended!!", elementID);
+    });
 }
 
 document.getElementById('share').addEventListener('click', function(){

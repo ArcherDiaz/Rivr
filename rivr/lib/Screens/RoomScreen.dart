@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
+import 'package:rivr/Utils/StreamWidget.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
@@ -21,11 +22,12 @@ class RoomScreen extends StatefulWidget {
 
 class _RoomScreenState extends State<RoomScreen> {
 
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  DialogClass _dialogClass;
+
   PeerJS _peer;
   List<Map<String, dynamic>> _streams = [];
-
-  DialogClass _dialogClass;
+  String _focusedStream;
 
   Size _size;
   bool _isDesktop;
@@ -40,12 +42,18 @@ class _RoomScreenState extends State<RoomScreen> {
         setState(() {
           _peer.myPeerID = id;
         });
+        _peer.getPermissionJS(id);
       },
       onPermissionResult: (flag){
         if(flag == true){ ///permission accepted
+          setState(() {
+            _peer.permissionOn = true;
+          });
           _getOtherUsers();
         }else{ ///permission denied
-
+          setState(() {
+            _peer.permissionOn = false;
+          });
         }
       },
       onStream: (String id, MediaStream stream, double streamVolume){
@@ -76,11 +84,9 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           setState(() {
             _streams.add({
+              "id": id,
               "peer ID": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
-              "widget": HtmlElementView(
-                viewType: id,
-              ),
             });
           });
         }
@@ -96,18 +102,31 @@ class _RoomScreenState extends State<RoomScreen> {
     return Material(
       color: colors.bg,
       child: SafeArea(
-        child: _peer.myPeerID == null
+        child: _peer.myPeerID == null || _peer.permissionOn == null
             ? _loadingView()
-            : _streamingControls(),
+            : _peer.permissionOn == true ? _streamingControls() : _permissionView(),
       ),
     );
   }
 
   Widget _loadingView(){
     return Center(
-      child: CustomLoader(
-        color1: colors.white,
-        color2: colors.bgDark,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomLoader(
+            color1: colors.white,
+            color2: colors.bgDark,
+          ),
+          TextView(text: _peer.myPeerID == null ? "Starting up servers.. " : "Retrieving access to media devices.. " ,
+            padding: EdgeInsets.all(20.0),
+            size: 12.5,
+            align: TextAlign.center,
+            isSelectable: true,
+            color: _peer.myPeerID == null ? colors.darkPurple : colors.blue,
+            fontWeight: FontWeight.w500,
+          ),
+        ],
       ),
     );
   }
@@ -120,6 +139,7 @@ class _RoomScreenState extends State<RoomScreen> {
         border: Border.all(color: colors.bgLight, width: 1.0,),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           TextView(text: "Microphone access is required to join a live room. Please allow the permissions requested to continue.",
@@ -149,148 +169,19 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 
   Widget _streamingControls(){
-    return Stack(
-      alignment: Alignment.topCenter,
+    return Column(
       children: [
-        Column(
-          children: [
-            Container(
-              width: _size.width,
-              padding: EdgeInsets.all(15.0),
-              decoration: BoxDecoration(
-                color: colors.bgDark,
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.bgLight.withOpacity(0.15),
-                  )
-                ],
+        _topPanel(),
+        Expanded(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              _streamingView(),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _controlPanel(),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextView.rich(textSpan: [
-                    TextView(
-                      text: "RIVR/",
-                      color: colors.white,
-                      size: _size.width > 700 ? 30.0 : 25.0,
-                      fontWeight: FontWeight.w700,
-                    ),
-                    TextView(
-                      text: widget.route.extra["code"],
-                      color: colors.white,
-                      letterSpacing: 1.0,
-                      size: _size.width > 700 ? 20.0 : 18.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],),
-                  Container(
-                    padding: EdgeInsets.all(5.0),
-                    decoration: BoxDecoration(
-                      color: colors.red,
-                      borderRadius: BorderRadius.circular(50.0),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.stop, size: 30.0, color: colors.white,),
-                        TextView(
-                          text: "00:00:00",
-                          color: colors.white,
-                          letterSpacing: 1.0,
-                          size: _size.width > 700 ? 18.0 : 15.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ButtonView.hover(
-                    onPressed: () {},
-                    onHover: ContainerChanges(
-                      decoration: BoxDecoration(
-                        color: colors.red.withOpacity(0.60),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    padding: EdgeInsets.all(5.0),
-                    builder: (isHovering){
-                      return Row(
-                        children: [
-                          Icon(Icons.call_end, size: 30.0, color: isHovering == true ? colors.white : colors.red,),
-                          TextView(
-                            text: "Leave",
-                            color: isHovering == true ? colors.white : colors.red,
-                            size: _size.width > 700 ? 20.0 : 18.0,
-                            fontWeight: FontWeight.w700,
-                            padding: EdgeInsets.only(left: 10.0),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            _streamingView(),
-          ],
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            padding: EdgeInsets.all(15.0),
-            margin: EdgeInsets.symmetric(vertical: 20.0),
-            decoration: BoxDecoration(
-              color: colors.bgDark,
-              borderRadius: BorderRadius.circular(20.0),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.bgLight.withOpacity(0.15),
-                  offset: Offset(2.5, 2.5),
-                  blurRadius: 5.0,
-                )
-              ],
-            ),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.spaceBetween,
-              children: [
-                ButtonView(
-                  onPressed: () {
-                    setState(() {
-                      _peer.muteMyAudioJS();
-                    });
-                  },
-                  margin: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off, size: 30.0, color: _peer.isMicOn == true ? colors.bg : colors.white,),
-                  borderRadius: 90.0,
-                  color: _peer.isMicOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
-                  padding: EdgeInsets.all(5.0),
-                ),
-                ButtonView(
-                  onPressed: () {
-                    setState(() {
-                      _peer.muteMyVideoJS();
-                    });
-                  },
-                  margin: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off, size: 30.0, color: _peer.isVideoOn == true ? colors.bg : colors.white,),
-                  borderRadius: 90.0,
-                  color: _peer.isVideoOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
-                  padding: EdgeInsets.all(5.0),
-                ),
-                ButtonView(
-                  onPressed: () {},
-                  margin: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Icon(Icons.chat, size: 25.0, color: colors.white,),
-                ),
-                ButtonView(
-                  onPressed: () {
-                    _peer.shareScreenJS(_peer.myPeerID,);
-                  },
-                  margin: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Icon(Icons.ios_share, size: 25.0, color: colors.white,),
-                ),
-              ],
-            ),
+            ],
           ),
         ),
       ],
@@ -300,6 +191,7 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget _streamingView(){
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
+      physics: BouncingScrollPhysics(),
       padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: _isDesktop == true ? 20.0 : 0.0,),
       child: Wrap(
         direction: Axis.horizontal,
@@ -308,7 +200,7 @@ class _RoomScreenState extends State<RoomScreen> {
         crossAxisAlignment: WrapCrossAlignment.center,
         spacing: _isDesktop == true ? 20.0 : 0.0, runSpacing: 20.0,
         children: [
-          if(_streams.any((element) => element["peer ID"] == _peer.myPeerID) == false)
+          if(_peer.permissionOn == null || _peer.permissionOn == false)
             _permissionView(),
 
           SizedBox(
@@ -316,27 +208,27 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
 
           for(int i = 0; i < _streams.length; i++)
-            ButtonView.hover(
+            StreamWidget(
               onPressed: (){
-
+                if(_focusedStream == _streams[i]["peer ID"]){
+                  ///if this stream is already being focused on, remove the focus
+                  setState(() {
+                    _focusedStream = null;
+                  });
+                }else {
+                  ///else set the focus
+                  setState(() {
+                    _focusedStream = _streams[i]["peer ID"];
+                  });
+                }
               },
-              onHover: ContainerChanges(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 2.5,),
-                ),
-              ),
-              width: _isDesktop == true ? (_size.width/3- 20) : _size.width/2,
-              height: _isDesktop == true ? _size.width/6 : _size.width/3,
-              color: colors.bgLight,
-              borderRadius: 5.0,
-              border: Border.all(
-                color: _streams[i]["is talking"] == true ? Colors.lightBlue : Colors.transparent,
-                width: 2.5,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5.0,),
-                child: _streams[i]["widget"],
-              ),
+              streamData: _streams[i],
+              state: _focusedStream == _streams[i]["peer ID"]
+                  ? SizeState.focused
+                  : _isDesktop == true ? SizeState.desktop : SizeState.mobile,
+              mobileSize: Size(_size.width/2, _size.width/3,),
+              desktopSize: Size((_size.width/3.5- 20), _size.width/6,),
+              focusedSize: Size(_size.width, _size.height,),
             ),
 
         ],
@@ -346,10 +238,177 @@ class _RoomScreenState extends State<RoomScreen> {
 
   /*-------------------------------------------------------------------------*/
 
+  Widget _topPanel(){
+    return Container(
+      width: _size.width,
+      color: colors.bgDark,
+      padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 20.0,),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          TextView.rich(
+            textSpan: [
+              TextView(text: "RIVR/",
+                color: colors.white,
+                size: 20.0,
+                letterSpacing: 2.0,
+              ),
+              TextView(text: widget.route.extra["code"],
+                color: colors.blue,
+                letterSpacing: 0.5,
+                size: 15.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ],
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 5.0,),
+            padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 5.0,),
+            decoration: BoxDecoration(
+              color: colors.red,
+              borderRadius: BorderRadius.circular(50.0),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.stop,
+                  size: _isDesktop == true ? 25.0 : 30.0,
+                  color: colors.white,
+                ),
+                TextView(text: "00:00:00",
+                  color: colors.white,
+                  letterSpacing: 1.0,
+                  size: 15.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ],
+            ),
+          ),
+          ButtonView.hover(
+            onPressed: () {
+              _peer.leaveCall();
+            },
+            onHover: ContainerChanges(
+              decoration: BoxDecoration(
+                color: colors.red.withOpacity(0.50),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 5.0,),
+            builder: (isHovering){
+              return Row(
+                children: [
+                  Icon(Icons.call_end,
+                    size: _isDesktop == true ? 25.0 : 30.0,
+                    color: isHovering == true ? colors.white : colors.red,
+                  ),
+                  TextView(text: "Leave",
+                    color: isHovering == true ? colors.white : colors.red,
+                    size: 17.5,
+                    fontWeight: FontWeight.w500,
+                    padding: EdgeInsets.only(left: 10.0),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _controlPanel(){
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 7.5, horizontal: 20.0,),
+      margin: EdgeInsets.symmetric(vertical: 20.0),
+      decoration: BoxDecoration(
+        color: colors.bgDark,
+        borderRadius: BorderRadius.circular(20.0),
+        boxShadow: [
+          BoxShadow(
+            color: colors.bgDark.withOpacity(0.5,),
+            offset: Offset(0.0, 5.0,),
+            blurRadius: 7.5,
+          )
+        ],
+      ),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        spacing: 10.0, runSpacing: 10.0,
+        children: [
+          ButtonView(
+            onPressed: () {
+              setState(() {
+                _peer.muteMyAudioJS();
+              });
+            },
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            borderRadius: 90.0,
+            color: _peer.isMicOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+            padding: EdgeInsets.all(5.0),
+            child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off,
+              size: _isDesktop == true ? 25.0 : 30.0,
+              color: _peer.isMicOn == true ? colors.bg : colors.white,
+            ),
+          ),
+          ButtonView(
+            onPressed: () {
+              setState(() {
+                _peer.muteMyVideoJS();
+              });
+            },
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            borderRadius: 90.0,
+            color: _peer.isVideoOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+            padding: EdgeInsets.all(5.0),
+            child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off,
+              size: _isDesktop == true ? 25.0 : 30.0,
+              color: _peer.isVideoOn == true ? colors.bg : colors.white,
+            ),
+          ),
+          ButtonView(
+            onPressed: () {
+
+            },
+            borderRadius: 90.0,
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Icon(Icons.chat,
+              size: _isDesktop == true ? 25.0 : 30.0,
+              color: colors.white,
+            ),
+          ),
+          ButtonView(
+            onPressed: () {
+              setState(() {
+                _peer.shareScreenJS(_peer.myPeerID, (){
+                  ///when the screen share is closed, this little function is triggered
+                  setState(() {
+                    _peer.isSharingScreen = false;
+                  });
+                });
+              });
+            },
+            borderRadius: 90.0,
+            color: _peer.isSharingScreen == true ? colors.white : colors.bg,
+            padding: EdgeInsets.all(5.0),
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            child: Icon(Icons.ios_share,
+              size: _isDesktop == true ? 25.0 : 30.0,
+              color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*-------------------------------------------------------------------------*/
+
   void _getOtherUsers(){
     String _roomCode = widget.route.extra["code"];
-    DocumentReference _roomRef = _firestore.collection("FakeZoom").doc(_roomCode);
-    _firestore.runTransaction((transaction) async {
+    DocumentReference _roomRef = _fireStore.collection("FakeZoom").doc(_roomCode);
+    _fireStore.runTransaction((transaction) async {
       List<dynamic> _users = [];
       DocumentSnapshot _snapshot = await transaction.get(_roomRef);
       if(_snapshot.exists == true && _snapshot.data().containsKey("users")){
@@ -382,7 +441,7 @@ class _RoomScreenState extends State<RoomScreen> {
 
   void _clearRoom(){
     String _roomCode = widget.route.extra["code"];
-    _firestore.collection("FakeZoom").doc(_roomCode).set({}).then((value){
+    _fireStore.collection("FakeZoom").doc(_roomCode).set({}).then((value){
       print("Document Cleared!");
     }).catchError((onError){
       print("ERROR Clearing Document!: ${onError.toString()}");

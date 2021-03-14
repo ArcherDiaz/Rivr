@@ -31,6 +31,8 @@ external void volumeMeter(String videoID, double volume);
 external set _returnPeerID(void Function(String myID) f);
 @JS("returnPermissionResult")
 external set _returnPermissionResult(void Function(bool flag) f);
+@JS("onScreenShareClosed")
+external set _onScreenShareClosed(void Function() f);
 @JS("returnStream")
 external set _returnStream(void Function(String id, MediaStream stream, double streamVolume) f);
 @JS("returnData")
@@ -41,6 +43,8 @@ external set _returnData(void Function(dynamic data) f);
 
 class PeerJS{
   String myPeerID;
+  bool permissionOn;
+  bool isSharingScreen = false;
   bool isMicOn = true;
   bool isVideoOn = true;
 
@@ -50,10 +54,7 @@ class PeerJS{
   dynamic Function(bool flag) onDataReceived;
   PeerJS({@required this.onPeer, @required this.onPermissionResult, @required this.onStream, this.onDataReceived,}){
     if(onPeer != null){
-      _returnPeerID = allowInterop((myID){
-        myPeerID = myID;
-        onPeer(myID);
-      });
+      _returnPeerID = allowInterop(onPeer);
     }
     if(onPermissionResult != null) {
       _returnPermissionResult = allowInterop(onPermissionResult);
@@ -74,8 +75,14 @@ class PeerJS{
   void getPermissionJS(String myID){
     getPermission(myID);
   }
-  void shareScreenJS(String elementID){
-    shareScreen(elementID);
+  void shareScreenJS(String elementID, Function() onClose){
+    isSharingScreen = !isSharingScreen;
+    if(isSharingScreen == true){
+      shareScreen(elementID);
+      _onScreenShareClosed = allowInterop((){
+        onClose();
+      });
+    }
   }
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);
