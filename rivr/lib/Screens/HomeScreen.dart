@@ -148,55 +148,57 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 1.0,
                       color: colors.white,
                     ),
-                    Wrap(
-                      direction: Axis.horizontal,
-                      alignment: WrapAlignment.spaceEvenly,
-                      spacing: _size.width > 700 ? 30.0 : 20.0, runSpacing: _size.width > 700 ? 30.0 : 20.0,
-                      children: [
-                        for(int i = 0; i < _info.length; i++)
-                          HoverWidget(
-                            duration: Duration(milliseconds: 500),
-                            width: _size.width > 700 ? _size.width / 4.44 : _size.width,
-                            idle: ContainerChanges(
-                              padding: EdgeInsets.all(0.0),
-                              margin: EdgeInsets.all(20.0),
-                            ),
-                            onHover: ContainerChanges(
-                              decoration: BoxDecoration(
-                                color: colors.bgDark,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                            ),
-                            child: Container(
+                    Align(
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        alignment: WrapAlignment.spaceEvenly,
+                        spacing: _size.width > 700 ? 30.0 : 20.0, runSpacing: _size.width > 700 ? 30.0 : 20.0,
+                        children: [
+                          for(int i = 0; i < _info.length; i++)
+                            HoverWidget(
+                              duration: Duration(milliseconds: 500),
                               width: _size.width > 700 ? _size.width / 4.44 : _size.width,
-                              //height: _size.width > 700 ? _size.width / 5.0 : _size.width / 2.5,
-                              padding: EdgeInsets.all(20.0),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(_info[i]["icon"], size: 50.0, color: colors.blue,),
-                                  TextView(
-                                    text: _info[i]["title"],
-                                    padding: EdgeInsets.only(bottom: 5.0),
-                                    color: colors.white,
-                                    size: 15.0,
-                                    fontWeight: FontWeight.w700,
-                                    align: TextAlign.center,
-                                  ),
-                                  TextView(
-                                    text: _info[i]["info"],
-                                    color: colors.white,
-                                    size: 15.0,
-                                    fontWeight: FontWeight.w400,
-                                    align: TextAlign.center,
-                                  ),
-                                ],
+                              idle: ContainerChanges(
+                                padding: EdgeInsets.all(0.0),
+                                margin: EdgeInsets.all(20.0),
+                              ),
+                              onHover: ContainerChanges(
+                                decoration: BoxDecoration(
+                                  color: colors.bgDark,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              child: Container(
+                                width: _size.width > 700 ? _size.width / 4.44 : _size.width,
+                                //height: _size.width > 700 ? _size.width / 5.0 : _size.width / 2.5,
+                                padding: EdgeInsets.all(20.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(_info[i]["icon"], size: 50.0, color: colors.blue,),
+                                    TextView(
+                                      text: _info[i]["title"],
+                                      padding: EdgeInsets.only(bottom: 5.0),
+                                      color: colors.white,
+                                      size: 15.0,
+                                      fontWeight: FontWeight.w700,
+                                      align: TextAlign.center,
+                                    ),
+                                    TextView(
+                                      text: _info[i]["info"],
+                                      color: colors.white,
+                                      size: 15.0,
+                                      fontWeight: FontWeight.w400,
+                                      align: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
 
                     Divider(
