@@ -21,7 +21,7 @@ external void muteMyVideo(bool flag);
 @JS()
 external void muteMyAudio(bool flag);
 @JS()
-external void hangUp();
+external void leaveCall();
 
 @JS()
 external void volumeMeter(String videoID, double volume);
@@ -31,6 +31,8 @@ external void volumeMeter(String videoID, double volume);
 external set _returnPeerID(void Function(String myID) f);
 @JS("returnPermissionResult")
 external set _returnPermissionResult(void Function(bool flag) f);
+@JS("onScreenShareClosed")
+external set _onScreenShareClosed(void Function() f);
 @JS("returnStream")
 external set _returnStream(void Function(String id, MediaStream stream, double streamVolume) f);
 @JS("returnData")
@@ -41,19 +43,18 @@ external set _returnData(void Function(dynamic data) f);
 
 class PeerJS{
   String myPeerID;
+  bool permissionOn;
+  bool isSharingScreen = false;
   bool isMicOn = true;
   bool isVideoOn = true;
 
   dynamic Function(String myID) onPeer;
   dynamic Function(bool flag) onPermissionResult;
   dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
-  dynamic Function(bool flag) onDataReceived;
+  dynamic Function(dynamic data) onDataReceived;
   PeerJS({@required this.onPeer, @required this.onPermissionResult, @required this.onStream, this.onDataReceived,}){
     if(onPeer != null){
-      _returnPeerID = allowInterop((myID){
-        myPeerID = myID;
-        onPeer(myID);
-      });
+      _returnPeerID = allowInterop(onPeer);
     }
     if(onPermissionResult != null) {
       _returnPermissionResult = allowInterop(onPermissionResult);
@@ -74,8 +75,14 @@ class PeerJS{
   void getPermissionJS(String myID){
     getPermission(myID);
   }
-  void shareScreenJS(String elementID){
-    shareScreen(elementID);
+  void shareScreenJS(String elementID, Function() onClose){
+    isSharingScreen = !isSharingScreen;
+    if(isSharingScreen == true){
+      shareScreen(elementID);
+      _onScreenShareClosed = allowInterop((){
+        onClose();
+      });
+    }
   }
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);
@@ -93,8 +100,8 @@ class PeerJS{
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
   }
-  void leaveCall() {
-    hangUp();
+  void leaveCallJS() {
+    leaveCall();
   }
 
 
