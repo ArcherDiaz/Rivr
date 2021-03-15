@@ -30,7 +30,7 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 
 ### **Overview**
 
-Like most projects, Rivr started out as a joke and a simple side project and would propbably never be finsihed. But this quickly changed when the development process went at super sonic speeds! Hitting milestones after milestones before leaving photons in the dust as it propelled itself across the milky way.
+Like most projects, Rivr started out as a joke and a simple side project that would probably never be finished. But this quickly changed when the development process went at super sonic speeds! Hitting milestones after milestones before leaving photons in the dust! As it propelled itself across the milky way.
 
 ## Installation
 
