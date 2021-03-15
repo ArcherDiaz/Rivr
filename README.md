@@ -65,6 +65,16 @@ Instructions on how to use them in your own application are linked below.
 | Medium | [plugins/medium/README.md][PlMe] |
 | Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
 
+##TODO
+ - transform to invert video stream
+ - pinging system for detecting dead user
+ - randomized urls
+ - random profile photos
+ - for mobile, there is no screenshare, so just put camera swap
+ - for mobile, upon stream focusing, prompt for turning to landscape
+ - mobile landscape mode on stream focused bug
+ - mobile landscape mode stream freezing bug
+
 ## License
 
 MIT
