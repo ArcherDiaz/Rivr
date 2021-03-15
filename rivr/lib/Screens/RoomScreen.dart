@@ -27,11 +27,11 @@ class _RoomScreenState extends State<RoomScreen> {
   //TODO: listen for when a user mutes their audio so that we can put the mute icon by them
 
   //TODO: random idea i got from someone while looking for hang up call fixes, have room notifications:
-  //  when a user just enters a room send out the message; [notify]: A new user has entered the room
-  //  then on retrieval of this message, because it has "[notify]:" it won't show up in the chat but rather as a notification
-  //  [notify]: A user has left the room
-  //  [notify]: A user is sharing their screen
-  //  [notify]: A user is being an ass
+    //  when a user just enters a room send out the message; [notify]: A new user has entered the room
+    //  then on retrieval of this message, because it has "[notify]:" it won't show up in the chat but rather as a notification
+    //  [notify]: A user has left the room
+    //  [notify]: A user is sharing their screen
+    //  [notify]: A user is being an ass
 
   FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   DialogClass _dialogClass;
@@ -66,6 +66,9 @@ class _RoomScreenState extends State<RoomScreen> {
             _peer.permissionOn = false;
           });
         }
+      },
+      onDataReceived: (data){
+
       },
       onStream: (String id, MediaStream stream, double streamVolume){
         if(_streams.any((element) => element["peer ID"] == id,)){ ///if any element in the streams array has its "peer ID" field == [id]
@@ -106,16 +109,35 @@ class _RoomScreenState extends State<RoomScreen> {
     _peer.startPeerJS();
   }
 
+  Future<bool> _onBackPressed(){
+    print("back pressed!!");
+    if(_peer.isSharingScreen){
+      return _dialogClass.assureDialog(context,
+        message: "Please stop live streaming your device screen first before leaving the room.",
+        positive: "Okay",
+        negativeButton: false,
+      ).then((flag){
+        return false;
+      });
+    }else{
+      _peer.leaveCallJS();
+      return Future.value(true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _isDesktop = _size.width > 700 ? true : false;
-    return Material(
-      color: colors.bg,
-      child: SafeArea(
-        child: _peer.myPeerID == null || _peer.permissionOn == null
-            ? _loadingView()
-            : _peer.permissionOn == true ? _streamingControls() : _permissionView(),
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Material(
+        color: colors.bg,
+        child: SafeArea(
+          child: _peer.myPeerID == null || _peer.permissionOn == null
+              ? _loadingView()
+              : _peer.permissionOn == true ? _streamingControls() : _permissionView(),
+        ),
       ),
     );
   }

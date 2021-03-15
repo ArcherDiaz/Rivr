@@ -51,7 +51,7 @@ class PeerJS{
   dynamic Function(String myID) onPeer;
   dynamic Function(bool flag) onPermissionResult;
   dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
-  dynamic Function(bool flag) onDataReceived;
+  dynamic Function(dynamic data) onDataReceived;
   PeerJS({@required this.onPeer, @required this.onPermissionResult, @required this.onStream, this.onDataReceived,}){
     if(onPeer != null){
       _returnPeerID = allowInterop(onPeer);
