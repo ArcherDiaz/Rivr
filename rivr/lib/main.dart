@@ -6,7 +6,6 @@ import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
-  print("My Guy");
   Firebase.initializeApp();
   setPathUrlStrategy();
   runApp(AppWrapper(),);
