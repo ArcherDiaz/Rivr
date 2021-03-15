@@ -296,7 +296,7 @@ class _RoomScreenState extends State<RoomScreen> {
             ],
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 5.0,),
+            margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
             padding: EdgeInsets.symmetric(vertical: 2.5, horizontal: 5.0,),
             decoration: BoxDecoration(
               color: colors.red,
@@ -433,9 +433,9 @@ class _RoomScreenState extends State<RoomScreen> {
             },
             borderRadius: 90.0,
             color: _peer.isSharingScreen == true ? colors.white : colors.bg,
-            padding: EdgeInsets.all(5.0),
+            padding: EdgeInsets.all(7.0),
             margin: EdgeInsets.symmetric(horizontal: 10.0),
-            child: Icon(Icons.ios_share,
+            child: Icon(_peer.isSharingScreen == true ? Icons.stop_screen_share_outlined : Icons.screen_share_outlined,
               size: _isDesktop == true ? 25.0 : 30.0,
               color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
             ),
