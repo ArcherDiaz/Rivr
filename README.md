@@ -19,6 +19,7 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 > **Started**: March 5th, 2021
 
 > **Finished**: -
+> [Camera Swap Url](https://stackoverflow.com/questions/57225594/is-there-any-way-to-switch-camera-on-onpressed-event-in-flutter)
 
 ### **The Stack**
 
