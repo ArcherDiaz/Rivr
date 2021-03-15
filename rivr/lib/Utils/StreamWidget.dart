@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:sad_lib/CustomWidgets.dart';
+import 'dart:html' as html;
 
 enum SizeState {mobile, desktop, focused}
 
@@ -31,6 +32,16 @@ class _StreamWidgetState extends State<StreamWidget> {
   }
 
   @override
+  void didUpdateWidget(covariant StreamWidget oldWidget) {
+    // TODO: implement didUpdateWidget
+    html.VideoElement video = html.document.getElementById(widget.streamData["id"]);
+    if(video != null && video.paused){
+      video.play();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 750,),
@@ -44,9 +55,7 @@ class _StreamWidgetState extends State<StreamWidget> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5.0,),
-            child: HtmlElementView(
-              viewType: widget.streamData["id"],
-            ),
+            child: widget.streamData["widget"],
           ),
           ButtonView.hover(
             onPressed: widget.onPressed,

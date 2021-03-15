@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
 import 'package:rivr/Utils/StreamWidget.dart';
+import 'package:rivr/Utils/StreamingContainer.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
 import 'package:universal_ui/universal_ui.dart';
+import 'package:flutter/services.dart';
 
 class RoomScreen extends StatefulWidget {
   final RoutePathClass route;
@@ -98,6 +100,9 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           setState(() {
             _streams.add({
+              "widget" : HtmlElementView(
+                viewType: id,
+              ),
               "id": id,
               "peer ID": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
@@ -128,7 +133,7 @@ class _RoomScreenState extends State<RoomScreen> {
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
-    _isDesktop = _size.width > 700 ? true : false;
+    _isDesktop = _size.width > 700 && _size.height > 700 ? true : false;
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Material(
@@ -209,7 +214,22 @@ class _RoomScreenState extends State<RoomScreen> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              _streamingView(),
+              StreamContainer(
+                isDesktop: _isDesktop,
+                size: _size,
+                streams: _streams,
+                onMobileFocused: (flag) {
+                  if(flag == true && _isDesktop == false) {
+                    SystemChrome.setPreferredOrientations([
+                      DeviceOrientation.landscapeLeft,
+                      DeviceOrientation.landscapeRight,
+                    ]);
+                  } else if(_isDesktop == false){
+                    SystemChrome.setPreferredOrientations([]);
+                  }
+
+                },
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _controlPanel(),
@@ -280,20 +300,23 @@ class _RoomScreenState extends State<RoomScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          TextView.rich(
-            textSpan: [
-              TextView(text: "RIVR/",
-                color: colors.white,
-                size: 20.0,
-                letterSpacing: 2.0,
-              ),
-              TextView(text: widget.route.extra["code"],
-                color: colors.blue,
-                letterSpacing: 0.5,
-                size: 15.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ],
+          GestureDetector(
+            child: TextView.rich(
+              textSpan: [
+                TextView(text: "RIVR/",
+                  color: colors.white,
+                  size: 20.0,
+                  letterSpacing: 2.0,
+                ),
+                TextView(text: widget.route.extra["code"],
+                  color: colors.blue,
+                  letterSpacing: 0.5,
+                  size: 15.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ],
+            ),
+            onTap: () {Clipboard.setData(new ClipboardData(text: "https://rivrlive.web.app/live?code=${widget.route.extra["code"]}"));},
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
