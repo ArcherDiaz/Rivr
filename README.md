@@ -19,7 +19,6 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 > **Started**: March 5th, 2021
 
 > **Finished**: -
-> [Camera Swap Url](https://stackoverflow.com/questions/57225594/is-there-any-way-to-switch-camera-on-onpressed-event-in-flutter)
 
 ### **The Stack**
 
@@ -71,7 +70,7 @@ Instructions on how to use them in your own application are linked below.
  - pinging system for detecting dead user
  - randomized urls
  - random profile photos
- - for mobile, there is no screenshare, so just put camera swap
+ - for mobile, there is no screenshare, so just put camera swap [Camera Swap Url](https://stackoverflow.com/questions/57225594/is-there-any-way-to-switch-camera-on-onpressed-event-in-flutter)
  - for mobile, upon stream focusing, prompt for turning to landscape
  - mobile landscape mode on stream focused bug
  - mobile landscape mode stream freezing bug
