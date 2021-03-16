@@ -14,7 +14,7 @@ function startPeer(){
     });
 
     peer.on('open', function(id) {
-        getPermission(id);
+        getPermission(id, "user",);
         getOtherUsers(id);
     });
 
@@ -35,13 +35,21 @@ function startPeer(){
     });
 }
 
-function getPermission(id){
+function getPermission(elementID, facingMode){
     navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        video: {
+            facingMode: {
+                exact: facingMode,
+              },
+        },
+        audio: true,
     }).then(function(mediaStream){
-        audioMeter(mediaStream, id);
+        audioMeter(mediaStream, elementID);
         stream = mediaStream;
+        if(connections.length > 0){
+            //if there are any users connected to us, update their stream of us to this new one
+            updatePeerStream(elementID, stream);
+        }
 
     }).catch(function(err){
         console.log("ERROR: " + err);
@@ -49,7 +57,7 @@ function getPermission(id){
 }
 
 function shareScreen(elementID){
-    navigator.mediaDevices.getDisplayMedia({
+    navigator.mediaDevices.getUserMedia({
         video: {
             cursor: "always",
         },
@@ -65,7 +73,7 @@ function shareScreen(elementID){
     });
 }
 
-function audioMeter(mediaStream, id){
+function audioMeter(mediaStream, elementID){
     var audioContext = new AudioContext();
     var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
     var processor = audioContext.createScriptProcessor(2048, 1, 1);
@@ -88,8 +96,18 @@ function audioMeter(mediaStream, id){
             num = percentage;
             //console.log(num);
         }
-        returnStream(id, mediaStream, percentage);
+        if(elementID != peer.id){
+            console.log(elementID, percentage);
+        }
+        returnStream(elementID, mediaStream, percentage);
     };
+
+    mediaStream.getAudioTracks()[0].addEventListener("mute", function(){
+        console.log(elementID,"ENEDED 2!!!");
+        mediaStreamSource.disconnect(processor);
+        processor.disconnect(audioContext.destination);
+    });
+    
 }
 
 
@@ -249,7 +267,8 @@ function returnStream(elementID, mediaStream, percentage){
 }
 
 document.getElementById('share').addEventListener('click', function(){
-    shareScreen(peer.id);
+    getPermission(peer.id, "environment");
+    //shareScreen(peer.id);
 });
 
 document.getElementById('send').addEventListener('click', function(){
