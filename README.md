@@ -66,14 +66,14 @@ Instructions on how to use them in your own application are linked below.
 | Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
 
 ##TODO
- - transform to invert video stream
+ - transform widget to invert video stream
  - pinging system for detecting dead user
  - randomized urls
  - random profile photos
  - for mobile, there is no screenshare, so just put camera swap [Camera Swap Url](https://stackoverflow.com/questions/57225594/is-there-any-way-to-switch-camera-on-onpressed-event-in-flutter)
- - for mobile, upon stream focusing, prompt for turning to landscape
- - mobile landscape mode on stream focused bug
- - mobile landscape mode stream freezing bug
+ - for mobile, upon stream focusing, prompt for turning to landscape orientation
+ - mobile landscape mode, on stream focused bug. the stream freezes/pauses. uhh maybe have pause check on the ontap of the stream
+ - mobile landscape mode sizes too big...
 
 ## License
 
