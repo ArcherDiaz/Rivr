@@ -26,18 +26,18 @@ class StreamWidget extends StatefulWidget {
 
 class _StreamWidgetState extends State<StreamWidget> {
 
+  bool _isInverted;
+
   @override
   void initState() {
+    _isInverted = false;
     super.initState();
+    _playVideo();
   }
 
   @override
   void didUpdateWidget(covariant StreamWidget oldWidget) {
-    // TODO: implement didUpdateWidget
-    html.VideoElement video = html.document.getElementById(widget.streamData["id"]);
-    if(video != null && video.paused){
-      video.play();
-    }
+    _playVideo();
     super.didUpdateWidget(oldWidget);
   }
 
@@ -51,11 +51,15 @@ class _StreamWidgetState extends State<StreamWidget> {
       height: widget.state == SizeState.focused
           ?  widget.focusedSize.height
           : widget.state == SizeState.desktop ? widget.desktopSize.height : widget.mobileSize.height,
+      transformAlignment: FractionalOffset.center,
+      transform: Matrix4.identity()..rotateY(_isInverted == true ? 3.14 : 0.0,),
       child: Stack(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5.0,),
-            child: widget.streamData["widget"],
+            child: HtmlElementView(
+              viewType: widget.streamData["id"],
+            ),
           ),
           ButtonView.hover(
             onPressed: widget.onPressed,
@@ -71,9 +75,37 @@ class _StreamWidgetState extends State<StreamWidget> {
               width: 2.5,
             ),
           ),
+
+          Align(
+            alignment: Alignment.topLeft,
+            child: ButtonView(
+              onPressed: (){
+                setState(() {
+                  _isInverted = !_isInverted;
+                });
+              },
+              padding: EdgeInsets.all(5.0,),
+              child: Icon(Icons.switch_camera_outlined,
+                color: colors.white,
+                size: 25.0,
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  void _playVideo(){
+    try{
+      html.VideoElement video = html.document.getElementById(widget.streamData["id"]);
+      //html.VideoElement video = html.querySelector("#${widget.streamData["id"]}");
+      if(video.paused){
+        video.play();
+      }
+    }catch(e){
+      print(e.toString());
+    }
   }
 
 }

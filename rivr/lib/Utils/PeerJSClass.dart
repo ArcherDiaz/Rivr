@@ -8,7 +8,7 @@ import 'package:js/js.dart';
 @JS()
 external void startPeer();
 @JS()
-external void getPermission(String myID);
+external void getPermission(String myID, bool isGettingPermission, String facingMode);
 @JS()
 external void shareScreen(String elementID);
 @JS()
@@ -42,8 +42,12 @@ external set _returnData(void Function(dynamic data) f);
 
 
 class PeerJS{
+  final String frontCam = "user";
+  final String backCam = "environment";
+
   String myPeerID;
   bool permissionOn;
+  bool isCamFacingFront = true;
   bool isSharingScreen = false;
   bool isMicOn = true;
   bool isVideoOn = true;
@@ -72,8 +76,8 @@ class PeerJS{
   }
 
 
-  void getPermissionJS(String myID){
-    getPermission(myID);
+  void getPermissionJS(String myID, bool isGettingPermission, String facingMode){
+    getPermission(myID, isGettingPermission, facingMode);
   }
   void shareScreenJS(String elementID, Function() onClose){
     isSharingScreen = !isSharingScreen;

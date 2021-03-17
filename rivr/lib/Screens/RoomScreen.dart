@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
-import 'package:rivr/Utils/StreamWidget.dart';
 import 'package:rivr/Utils/StreamingContainer.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
@@ -40,7 +39,6 @@ class _RoomScreenState extends State<RoomScreen> {
 
   PeerJS _peer;
   List<Map<String, dynamic>> _streams = [];
-  String _focusedStream;
 
   Size _size;
   bool _isDesktop;
@@ -55,7 +53,7 @@ class _RoomScreenState extends State<RoomScreen> {
         setState(() {
           _peer.myPeerID = id;
         });
-        _peer.getPermissionJS(id);
+        _peer.getPermissionJS(id, true, _peer.frontCam,);
       },
       onPermissionResult: (flag){
         if(flag == true){ ///permission accepted
@@ -64,13 +62,17 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           _getOtherUsers();
         }else{ ///permission denied
-          setState(() {
-            _peer.permissionOn = false;
-          });
+          if(_peer.permissionOn == true){
+            _dialogClass.assureDialog(context, message: "Error!!!", negativeButton: false, positive: "OKAY",);
+          }else {
+            setState(() {
+              _peer.permissionOn = false;
+            });
+          }
         }
       },
       onDataReceived: (data){
-
+        print(data.toString());
       },
       onStream: (String id, MediaStream stream, double streamVolume){
         if(_streams.any((element) => element["peer ID"] == id,)){ ///if any element in the streams array has its "peer ID" field == [id]
@@ -85,9 +87,10 @@ class _RoomScreenState extends State<RoomScreen> {
         }else{
           ///else if there is no stream in the list with its "peer ID" field == [id], create it
           VideoElement video = VideoElement();
+          video.autoplay = true;
           video.attributes = {
             "id": id,
-            "style": "object-fit: cover; -webkit-transform:rotateY(180deg);",
+            "style": "object-fit: cover;",
           };
           video.srcObject = stream;
           if(id == _peer.myPeerID){
@@ -100,9 +103,6 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           setState(() {
             _streams.add({
-              "widget" : HtmlElementView(
-                viewType: id,
-              ),
               "id": id,
               "peer ID": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
@@ -190,7 +190,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView(
             onPressed: (){
-              _peer.getPermissionJS(_peer.myPeerID);
+              _peer.getPermissionJS(_peer.myPeerID, true, _peer.frontCam,);
             },
             color: colors.bgDark,
             margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0,),
@@ -238,54 +238,6 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _streamingView(){
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      physics: BouncingScrollPhysics(),
-      padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: _isDesktop == true ? 20.0 : 0.0,),
-      child: Wrap(
-        direction: Axis.horizontal,
-        alignment: WrapAlignment.center,
-        runAlignment: WrapAlignment.center,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: _isDesktop == true ? 20.0 : 0.0, runSpacing: 20.0,
-        children: [
-          if(_peer.permissionOn == null || _peer.permissionOn == false)
-            _permissionView(),
-
-          SizedBox(
-            width: _size.width,
-          ),
-
-          for(int i = 0; i < _streams.length; i++)
-            StreamWidget(
-              onPressed: (){
-                if(_focusedStream == _streams[i]["peer ID"]){
-                  ///if this stream is already being focused on, remove the focus
-                  setState(() {
-                    _focusedStream = null;
-                  });
-                }else {
-                  ///else set the focus
-                  setState(() {
-                    _focusedStream = _streams[i]["peer ID"];
-                  });
-                }
-              },
-              streamData: _streams[i],
-              state: _focusedStream == _streams[i]["peer ID"]
-                  ? SizeState.focused
-                  : _isDesktop == true ? SizeState.desktop : SizeState.mobile,
-              mobileSize: Size(_size.width/2, _size.width/3,),
-              desktopSize: Size((_size.width/3.5- 20), _size.width/6,),
-              focusedSize: Size(_size.width, _size.height,),
-            ),
-
-        ],
-      ),
     );
   }
 
@@ -410,7 +362,7 @@ class _RoomScreenState extends State<RoomScreen> {
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
             borderRadius: 90.0,
-            color: _peer.isMicOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+            color: _peer.isMicOn == true ? colors.white : colors.red,
             padding: EdgeInsets.all(5.0),
             child: Icon(_peer.isMicOn == true ? Icons.mic : Icons.mic_off,
               size: _isDesktop == true ? 25.0 : 30.0,
@@ -425,7 +377,7 @@ class _RoomScreenState extends State<RoomScreen> {
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
             borderRadius: 90.0,
-            color: _peer.isVideoOn == true ? colors.white.withOpacity(0.80) : colors.red.withOpacity(0.80),
+            color: _peer.isVideoOn == true ? colors.white : colors.red,
             padding: EdgeInsets.all(5.0),
             child: Icon(_peer.isVideoOn == true ? Icons.videocam : Icons.videocam_off,
               size: _isDesktop == true ? 25.0 : 30.0,
@@ -443,26 +395,48 @@ class _RoomScreenState extends State<RoomScreen> {
               color: colors.white,
             ),
           ),
-          ButtonView(
-            onPressed: () {
-              setState(() {
-                _peer.shareScreenJS(_peer.myPeerID, (){
-                  ///when the screen share is closed, this little function is triggered
-                  setState(() {
-                    _peer.isSharingScreen = false;
+          if(_isDesktop == true)
+            ButtonView(
+              onPressed: () {
+                setState(() {
+                  _peer.shareScreenJS(_peer.myPeerID, (){
+                    ///when the screen share is closed, this little function is triggered
+                    setState(() {
+                      _peer.isSharingScreen = false;
+                    });
                   });
                 });
-              });
-            },
-            borderRadius: 90.0,
-            color: _peer.isSharingScreen == true ? colors.white : colors.bg,
-            padding: EdgeInsets.all(7.0),
-            margin: EdgeInsets.symmetric(horizontal: 10.0),
-            child: Icon(_peer.isSharingScreen == true ? Icons.stop_screen_share_outlined : Icons.screen_share_outlined,
-              size: _isDesktop == true ? 25.0 : 30.0,
-              color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
+              },
+              borderRadius: 90.0,
+              color: _peer.isSharingScreen == true ? colors.white : colors.bg,
+              padding: EdgeInsets.all(7.0),
+              margin: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Icon(_peer.isSharingScreen == true ? Icons.stop_screen_share_outlined : Icons.screen_share_outlined,
+                size: _isDesktop == true ? 25.0 : 30.0,
+                color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
+              ),
             ),
-          ),
+
+          if(_isDesktop == false)
+            ButtonView(
+              onPressed: () {
+                if(_peer.isCamFacingFront == true){
+                  _peer.isCamFacingFront = false;
+                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.backCam);
+                }else{
+                  _peer.isCamFacingFront = true;
+                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.frontCam);
+                }
+              },
+              borderRadius: 90.0,
+              color: _peer.isSharingScreen == true ? colors.white : colors.bg,
+              padding: EdgeInsets.all(7.0),
+              margin: EdgeInsets.symmetric(horizontal: 10.0),
+              child: Icon(Icons.flip_camera_ios_outlined,
+                size: _isDesktop == true ? 25.0 : 30.0,
+                color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
+              ),
+            ),
         ],
       ),
     );

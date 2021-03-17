@@ -317,10 +317,10 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         ButtonView.hover(
           onPressed: () {
-            _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
+            _dialogClass.nameDialog(context, title: "Enter Room Code", compare: [], positive: "join", negative: "cancel",).then((code){
               if(code != null && code.isNotEmpty){
                 widget.updatePage(RoutePathClass.live({
-                  "code": code,
+                  "code": code.toLowerCase(),
                 }));
               }
             });
@@ -347,11 +347,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         ButtonView.hover(
           onPressed: () {
-            _dialogClass.textInputDialog(context, title: "Enter Room Code", positive: "join", negative: "cancel",).then((code){
-              if(code != null && code.isNotEmpty){
-
-              }
-            });
           },
           onHover: ContainerChanges(
             decoration: BoxDecoration(

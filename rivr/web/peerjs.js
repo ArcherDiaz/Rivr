@@ -28,17 +28,30 @@ function startPeer(){
     });
 }
 
-function getPermission(id){
+function getPermission(id, gettingPermission, facingMode){
     navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        video: {
+           facingMode: {
+               exact: facingMode,
+           },
+        },
+        audio: true,
     }).then(function(mediaStream){
-        returnPermissionResult(true);
-        audioMeter(mediaStream, id);
-
+        if(gettingPermission == true){
+            returnPermissionResult(true);
+            audioMeter(mediaStream, id);
+        }
         stream = mediaStream;
+        if(gettingPermission == false || connections.length > 0){
+            //if the user is simply switching their camera OR
+            //if there are any users connected to us, update their stream of us to this new one
+            updatePeerStream(elementID, stream);
+        }
     }).catch(function(err){
-        returnPermissionResult(false);
+        if(gettingPermission == true){
+            returnPermissionResult(false);
+        }
+        sendData(err);
         console.log("ERROR: " + err);
     });
 }
@@ -138,7 +151,7 @@ function handleCall(call){
     });
 }
 
-function leaveCall() {
+function leaveCall(){
     connections.forEach(function(value, key, map) {
         //for each connected peer/user, close both the data and media connection between us
         value["data"].close();
@@ -200,5 +213,5 @@ function volumeMeter(videoID, volume){
 }
 
 window.addEventListener("beforeunload", function(){
-    hangUp();
+    leaveCall();
 });
