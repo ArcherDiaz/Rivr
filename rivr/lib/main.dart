@@ -132,6 +132,7 @@ class AppRouteInformationParser extends RouteInformationParser<RoutePathClass> {
       path.extra.forEach((key, value) {
         _parameters = "$_parameters?$key=${value.toString()}";
       });
+      _parameters.toLowerCase();
       return RouteInformation(location: '/live$_parameters');
     }
 

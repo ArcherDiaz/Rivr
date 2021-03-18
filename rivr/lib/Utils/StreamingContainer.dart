@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/StreamWidget.dart';
-import 'package:rivr/Utils/WhiteBoard.dart';
 
 class StreamContainer extends StatefulWidget {
   final bool isDesktop;
