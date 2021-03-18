@@ -43,11 +43,13 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Size _size;
   bool _isDesktop;
+  bool showBoard;
 
   @override
   void initState() {
     _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;
+    showBoard = false;
     super.initState();
     _peer = PeerJS(
       onPeer: (id){
@@ -230,6 +232,13 @@ class _RoomScreenState extends State<RoomScreen> {
                   }
                 },
               ),
+              if(showBoard == true)
+                Container(
+                color: colors.white,
+                width: _size.width / 2,
+                height: _size.width / 2,
+                child: WhiteBoard(),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _controlPanel(),
@@ -386,7 +395,9 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => WhiteBoard()));
+              setState(() {
+                showBoard = !showBoard;
+              });
             },
             borderRadius: 90.0,
             margin: EdgeInsets.symmetric(horizontal: 10.0),

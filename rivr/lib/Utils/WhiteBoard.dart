@@ -31,131 +31,136 @@ class _WhiteBoardState extends State<WhiteBoard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          decoration: BoxDecoration(
-            color: colors.darkPurple,
-            borderRadius: BorderRadius.circular(20.0),
+    return Stack(
+      children: [
+        GestureDetector(
+          onPanUpdate: (details) {
+            setState(() {
+              RenderBox renderBox = context.findRenderObject();
+              points.add(DrawingPoints(
+                  points: renderBox.globalToLocal(details.globalPosition),
+                  paint: Paint()
+                    ..strokeCap = strokeCap
+                    ..isAntiAlias = true
+                    ..color = selectedColor.withOpacity(opacity)
+                    ..strokeWidth = strokeWidth
+              ));
+            });
+          },
+          onPanStart: (details) {
+            setState(() {
+              RenderBox renderBox = context.findRenderObject();
+              points.add(DrawingPoints(
+                  points: renderBox.globalToLocal(details.globalPosition),
+                  paint: Paint()
+                    ..strokeCap = strokeCap
+                    ..isAntiAlias = true
+                    ..color = selectedColor.withOpacity(opacity)
+                    ..strokeWidth = strokeWidth
+              ));
+            });
+          },
+          onPanEnd: (details) {
+            setState(() {
+              points.add(null);
+            });
+          },
+          child: CustomPaint(
+            size: Size.infinite,
+            painter: DrawingPainter(pointsList: points),
           ),
+        ),
+        Align(
+          alignment: Alignment.topCenter,
           child: Padding(
             padding: EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              decoration: BoxDecoration(
+                color: colors.darkPurple,
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    ButtonView(
-                      onPressed: () {
-                        setState(() {
-                          if(selectedMode == SelectedMode.StrokeWidth) {
-                            showBottomList = !showBottomList;
-                          }
-                          selectedMode = SelectedMode.StrokeWidth;
-                        });
-                      },
-                      child: Icon(Icons.album),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ButtonView(
+                          onPressed: () {
+                            setState(() {
+                              if(selectedMode == SelectedMode.StrokeWidth) {
+                                showBottomList = !showBottomList;
+                              }
+                              selectedMode = SelectedMode.StrokeWidth;
+                            });
+                          },
+                          child: Icon(Icons.album),
+                        ),
+                        ButtonView(
+                          onPressed: () {
+                            setState(() {
+                              if(selectedMode == SelectedMode.Opacity) {
+                                showBottomList = !showBottomList;
+                              }
+                              selectedMode = SelectedMode.Opacity;
+                            });
+                          },
+                          child: Icon(Icons.opacity),
+                        ),
+                        ButtonView(
+                          onPressed: () {
+                            setState(() {
+                              if(selectedMode == SelectedMode.Color) {
+                                showBottomList = !showBottomList;
+                              }
+                              selectedMode = SelectedMode.Color;
+                            });
+                          },
+                          child: Icon(Icons.color_lens),
+                        ),
+                        ButtonView(
+                          onPressed: () {
+                            setState(() {
+                              showBottomList = false;
+                              points.clear();
+                            });
+                          },
+                          child: Icon(Icons.clear),
+                        ),
+                      ],
                     ),
-                    ButtonView(
-                      onPressed: () {
-                        setState(() {
-                          if(selectedMode == SelectedMode.Opacity) {
-                            showBottomList = !showBottomList;
-                          }
-                          selectedMode = SelectedMode.Opacity;
-                        });
-                      },
-                      child: Icon(Icons.opacity),
-                    ),
-                    ButtonView(
-                      onPressed: () {
-                        setState(() {
-                          if(selectedMode == SelectedMode.Color) {
-                            showBottomList = !showBottomList;
-                          }
-                          selectedMode = SelectedMode.Color;
-                        });
-                      },
-                      child: Icon(Icons.color_lens),
-                    ),
-                    ButtonView(
-                      onPressed: () {
-                        setState(() {
-                          showBottomList = false;
-                          points.clear();
-                        });
-                      },
-                      child: Icon(Icons.clear),
+                    Visibility(
+                      child: (selectedMode == SelectedMode.Color) ?
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: getColorList(),
+                      ) :
+                      Slider(
+                        value: (selectedMode == SelectedMode.StrokeWidth) ? strokeWidth : opacity,
+                        max: (selectedMode == SelectedMode.StrokeWidth) ? 50.0 : 1.0,
+                        min: 0.0,
+                        onChanged: (val) {
+                          setState(() {
+                            if(selectedMode == SelectedMode.StrokeWidth) {
+                              strokeWidth = val;
+                            } else {
+                              opacity = val;
+                            }
+                          });
+                        },
+                      ),
+                      visible: showBottomList,
                     ),
                   ],
                 ),
-                Visibility(
-                  child: (selectedMode == SelectedMode.Color) ?
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: getColorList(),
-                  ) :
-                  Slider(
-                    value: (selectedMode == SelectedMode.StrokeWidth) ? strokeWidth : opacity,
-                    max: (selectedMode == SelectedMode.StrokeWidth) ? 50.0 : 1.0,
-                    min: 0.0,
-                    onChanged: (val) {
-                      setState(() {
-                        if(selectedMode == SelectedMode.StrokeWidth) {
-                          strokeWidth = val;
-                        } else {
-                          opacity = val;
-                        }
-                      });
-                    },
-                  ),
-                  visible: showBottomList,
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
-      body: GestureDetector(
-        onPanUpdate: (details) {
-          setState(() {
-            RenderBox renderBox = context.findRenderObject();
-            points.add(DrawingPoints(
-              points: renderBox.globalToLocal(details.globalPosition),
-              paint: Paint()
-                ..strokeCap = strokeCap
-                ..isAntiAlias = true
-                ..color = selectedColor.withOpacity(opacity)
-                ..strokeWidth = strokeWidth
-            ));
-          });
-        },
-        onPanStart: (details) {
-          setState(() {
-            RenderBox renderBox = context.findRenderObject();
-            points.add(DrawingPoints(
-                points: renderBox.globalToLocal(details.globalPosition),
-                paint: Paint()
-                  ..strokeCap = strokeCap
-                  ..isAntiAlias = true
-                  ..color = selectedColor.withOpacity(opacity)
-                  ..strokeWidth = strokeWidth
-            ));
-          });
-        },
-        onPanEnd: (details) {
-          setState(() {
-            points.add(null);
-          });
-        },
-        child: CustomPaint(
-          size: Size.infinite,
-          painter: DrawingPainter(pointsList: points),
-        ),
-      ),
+      ],
     );
   }
 
