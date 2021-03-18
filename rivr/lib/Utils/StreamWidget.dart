@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
+import 'package:rivr/Utils/WhiteBoard.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'dart:html' as html;
 
@@ -12,6 +13,7 @@ class StreamWidget extends StatefulWidget {
   final Size desktopSize;
   final Size focusedSize;
   final SizeState state;
+  final bool showWhiteboard;
   const StreamWidget({Key key,
     @required this.onPressed,
     @required this.streamData,
@@ -19,6 +21,7 @@ class StreamWidget extends StatefulWidget {
     @required this.mobileSize,
     @required this.desktopSize,
     @required this.focusedSize,
+    this.showWhiteboard,
   }) : super(key: key);
   @override
   _StreamWidgetState createState() => _StreamWidgetState();
@@ -32,7 +35,8 @@ class _StreamWidgetState extends State<StreamWidget> {
   void initState() {
     _isInverted = false;
     super.initState();
-    _playVideo();
+    if(widget.showWhiteboard == false)
+      _playVideo();
   }
 
   @override
@@ -57,7 +61,7 @@ class _StreamWidgetState extends State<StreamWidget> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5.0,),
-            child: HtmlElementView(
+            child: widget.showWhiteboard == true ? WhiteBoard() : HtmlElementView(
               viewType: widget.streamData["id"],
             ),
           ),

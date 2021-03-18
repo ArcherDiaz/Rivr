@@ -35,6 +35,8 @@ dependencies:
   universal_ui: ^0.0.8
   url_strategy: ^0.2.0
 
+  flutter_colorpicker: ^0.3.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/StreamWidget.dart';
+import 'package:rivr/Utils/WhiteBoard.dart';
 
 class StreamContainer extends StatefulWidget {
   final bool isDesktop;
   final Size size;
   final List<Map<String, dynamic>> streams;
   final void Function(bool focus) onMobileFocused;
+  final bool showWhiteboard;
 
-  StreamContainer({Key key, this.isDesktop, this.size, this.streams, this.onMobileFocused,}) : super(key: key);
+  StreamContainer({Key key, this.isDesktop, this.size, this.streams, this.onMobileFocused, this.showWhiteboard,}) : super(key: key);
   @override
   _StreamContainerState createState() => _StreamContainerState();
 }
@@ -45,6 +47,7 @@ class _StreamContainerState extends State<StreamContainer> {
             },
             streamData: widget.streams[_focusedStream],
             state: SizeState.focused,
+            showWhiteboard: widget.showWhiteboard == true ? widget.showWhiteboard : null,
             mobileSize: null,
             desktopSize: null,
             focusedSize: Size(double.infinity, double.infinity,),
@@ -100,6 +103,7 @@ class _StreamContainerState extends State<StreamContainer> {
               },
               streamData: widget.streams[_focusedStream],
               state: SizeState.focused,
+              showWhiteboard: widget.showWhiteboard == true ? widget.showWhiteboard : null,
               mobileSize: null,
               desktopSize: null,
               focusedSize: Size((double.infinity), double.infinity),

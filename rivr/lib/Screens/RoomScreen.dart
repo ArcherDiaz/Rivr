@@ -42,11 +42,13 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Size _size;
   bool _isDesktop;
+  bool showDraw;
 
   @override
   void initState() {
     _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;
+    showDraw = false;
     super.initState();
     _peer = PeerJS(
       onPeer: (id){
@@ -227,8 +229,8 @@ class _RoomScreenState extends State<RoomScreen> {
                   } else if(_isDesktop == false){
                     SystemChrome.setPreferredOrientations([]);
                   }
-
                 },
+                showWhiteboard: showDraw,
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -386,7 +388,9 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView(
             onPressed: () {
-
+              setState(() {
+                showDraw = !showDraw;
+              });
             },
             borderRadius: 90.0,
             margin: EdgeInsets.symmetric(horizontal: 10.0),
