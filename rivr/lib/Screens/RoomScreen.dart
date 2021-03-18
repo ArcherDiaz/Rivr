@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/PeerJSClass.dart';
 import 'package:rivr/Utils/StreamingContainer.dart';
+import 'package:rivr/Utils/WhiteBoard.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
@@ -42,13 +43,11 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Size _size;
   bool _isDesktop;
-  bool showDraw;
 
   @override
   void initState() {
     _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;
-    showDraw = false;
     super.initState();
     _peer = PeerJS(
       onPeer: (id){
@@ -230,7 +229,6 @@ class _RoomScreenState extends State<RoomScreen> {
                     SystemChrome.setPreferredOrientations([]);
                   }
                 },
-                showWhiteboard: showDraw,
               ),
               Align(
                 alignment: Alignment.bottomCenter,
@@ -388,9 +386,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView(
             onPressed: () {
-              setState(() {
-                showDraw = !showDraw;
-              });
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => WhiteBoard()));
             },
             borderRadius: 90.0,
             margin: EdgeInsets.symmetric(horizontal: 10.0),

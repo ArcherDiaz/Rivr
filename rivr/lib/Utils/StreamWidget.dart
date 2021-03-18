@@ -13,7 +13,6 @@ class StreamWidget extends StatefulWidget {
   final Size desktopSize;
   final Size focusedSize;
   final SizeState state;
-  final bool showWhiteboard;
   const StreamWidget({Key key,
     @required this.onPressed,
     @required this.streamData,
@@ -21,7 +20,6 @@ class StreamWidget extends StatefulWidget {
     @required this.mobileSize,
     @required this.desktopSize,
     @required this.focusedSize,
-    this.showWhiteboard,
   }) : super(key: key);
   @override
   _StreamWidgetState createState() => _StreamWidgetState();
@@ -35,8 +33,7 @@ class _StreamWidgetState extends State<StreamWidget> {
   void initState() {
     _isInverted = false;
     super.initState();
-    if(widget.showWhiteboard == false)
-      _playVideo();
+    _playVideo();
   }
 
   @override
@@ -61,7 +58,7 @@ class _StreamWidgetState extends State<StreamWidget> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(5.0,),
-            child: widget.showWhiteboard == true ? WhiteBoard() : HtmlElementView(
+            child: HtmlElementView(
               viewType: widget.streamData["id"],
             ),
           ),

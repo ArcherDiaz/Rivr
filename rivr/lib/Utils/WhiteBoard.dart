@@ -19,7 +19,7 @@ class _WhiteBoardState extends State<WhiteBoard> {
   List<DrawingPoints> points = List();
   bool showBottomList = false;
   double opacity = 1.0;
-  StrokeCap strokeCap = (Platform.isAndroid) ? StrokeCap.butt : StrokeCap.round;
+  StrokeCap strokeCap = StrokeCap.butt;
   SelectedMode selectedMode = SelectedMode.StrokeWidth;
   List<Color> boardColors = [
     Colors.red,
@@ -94,7 +94,10 @@ class _WhiteBoardState extends State<WhiteBoard> {
                 ),
                 Visibility(
                   child: (selectedMode == SelectedMode.Color) ?
-                  Row() :
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: getColorList(),
+                  ) :
                   Slider(
                     value: (selectedMode == SelectedMode.StrokeWidth) ? strokeWidth : opacity,
                     max: (selectedMode == SelectedMode.StrokeWidth) ? 50.0 : 1.0,
@@ -179,8 +182,8 @@ class _WhiteBoardState extends State<WhiteBoard> {
                 ),
               ),
               actions: <Widget>[
-                FlatButton(
-                  child: const Text('Save'),
+                ButtonView(
+                  child: Text('Save'),
                   onPressed: () {
                     setState(() => selectedColor = pickerColor);
                     Navigator.of(context).pop();
