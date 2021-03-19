@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
   DialogClass _dialogClass;
   Size _size;
+  bool _isDesktop;
 
   List<Map> _info = [
     {
@@ -84,15 +85,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
+    _isDesktop = _size.width > 700 ? true : false;
     return Material(
       color: colors.bg,
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: _size.width > 700 ? 100.0 : 40.0,),
+          padding: EdgeInsets.symmetric(
+            vertical: _isDesktop ? 50.0 : 25.0,
+            horizontal: _isDesktop ? 100.0 : 15.0,
+          ),
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(top: _size.width > 700 ? 50.0 : 25.0, left: 80.0, bottom: 20.0),
+                padding: EdgeInsets.only(left: _size.width/6, bottom: 20.0,),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -114,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 width: _size.width,
-                padding: EdgeInsets.all(30.0),
+                padding: EdgeInsets.all(_isDesktop ? 50 : 15.0,),
                 decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(color: colors.white, width: 1.0,),
@@ -123,170 +128,83 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    TextView.rich(textSpan: [
-                      TextView(
-                        text: "RIVR",
-                        color: colors.white,
-                        size: _size.width > 700 ? 45.0 : 40.0,
-                        fontWeight: FontWeight.w700,
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: TextView.rich(
+                        textSpan: [
+                          TextView(
+                            text: "RIVR",
+                            color: colors.white,
+                            size: _isDesktop ? 50.0 : 40.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          TextView(
+                            text: " AN ANTIGUAN AUDIO & VIDEO \nLIVE STREAMING PLATFORM",
+                            color: colors.white,
+                            letterSpacing: 1.0,
+                            size: _isDesktop ? 30.0 : 20.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ],
+                        align: TextAlign.start,
+                        padding: EdgeInsets.only(bottom: _isDesktop ? 40 : 20.0,),
                       ),
-                      TextView(
-                        text: " AUDIO & VIDEO LIVE\nSTREAMING",
-                        color: colors.white,
-                        letterSpacing: 1.0,
-                        size: _size.width > 700 ? 35.0 : 25.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ],),
+                    ),
+
                     _roomButtons(),
 
                     _headerImage(),
 
                     Divider(
-                      height: 1.0,
-                      color: colors.white,
+                      thickness: 1.5,
+                      height: 10.0,
+                      color: colors.bgLight,
                     ),
-                    Align(
-                      child: Wrap(
-                        direction: Axis.horizontal,
-                        alignment: WrapAlignment.spaceEvenly,
-                        spacing: _size.width > 700 ? 30.0 : 20.0, runSpacing: _size.width > 700 ? 30.0 : 20.0,
-                        children: [
-                          for(int i = 0; i < _info.length; i++)
-                            HoverWidget(
-                              duration: Duration(milliseconds: 500),
-                              width: _size.width > 700 ? _size.width / 4.44 : _size.width,
-                              idle: ContainerChanges(
-                                padding: EdgeInsets.all(0.0),
-                                margin: EdgeInsets.all(20.0),
-                              ),
-                              onHover: ContainerChanges(
-                                decoration: BoxDecoration(
-                                  color: colors.bgDark,
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              child: Container(
-                                width: _size.width > 700 ? _size.width / 4.44 : _size.width,
-                                //height: _size.width > 700 ? _size.width / 5.0 : _size.width / 2.5,
-                                padding: EdgeInsets.all(20.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(_info[i]["icon"], size: 50.0, color: colors.blue,),
-                                    TextView(
-                                      text: _info[i]["title"],
-                                      padding: EdgeInsets.only(bottom: 5.0),
-                                      color: colors.white,
-                                      size: 15.0,
-                                      fontWeight: FontWeight.w700,
-                                      align: TextAlign.center,
-                                    ),
-                                    TextView(
-                                      text: _info[i]["info"],
-                                      color: colors.white,
-                                      size: 15.0,
-                                      fontWeight: FontWeight.w400,
-                                      align: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
+                    _infoCards(),
 
                     Divider(
-                      height: 1.0,
-                      color: colors.white,
+                      thickness: 1.5,
+                      height: 10.0,
+                      color: colors.bgLight,
                     ),
-                    Center(
-                      child: TextView(
-                        text: "DON’T MISS OUT ON THE RIVR EXPERIENCE ",
-                        color: colors.white,
-                        letterSpacing: 1.0,
-                        size: _size.width > 700 ? 30.0 : 25.0,
-                        fontWeight: FontWeight.w500,
-                        padding: EdgeInsets.symmetric(vertical: 40.0),
+                    TextView(text: "DON’T MISS OUT ON THE RIVR EXPERIENCE ",
+                      padding: EdgeInsets.symmetric(vertical: 40.0),
+                      color: colors.white,
+                      letterSpacing: 1.0,
+                      align: TextAlign.center,
+                      size: _isDesktop ? 25.0 : 22.5,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    _cards2(),
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40.0),
+                      child: Divider(
+                        thickness: 1.0,
+                        height: 10.0,
+                        color: colors.bgLight,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 40.0),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Wrap(
-                          direction: Axis.horizontal,
-                          alignment: WrapAlignment.spaceEvenly,
-                          runAlignment: WrapAlignment.center,
-                          spacing: _size.width > 700 ? 30.0 : 20.0, runSpacing: _size.width > 700 ? 30.0 : 20.0,
-                          children: [
-                            for(int i = 0; i < _cardInfo.length; i++)
-                              Container(
-                                width: _size.width > 700 ? _size.width / 4.44: _size.width,
-                                //height: _size.width > 700 ? _size.width / 5.0 : _size.width / 2.5,
-                                padding: EdgeInsets.all(10.0),
-                                decoration: BoxDecoration(
-                                  color: colors.bgLight,
-                                  borderRadius: BorderRadius.circular(5.0)
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(_cardInfo[i]["icon"], size: 50.0, color: colors.darkPurple,),
-                                    Expanded(
-                                      child: TextView(
-                                        text: _cardInfo[i]["title"],
-                                        padding: EdgeInsets.only( left: 20.0),
-                                        color: colors.darkPurple,
-                                        size: 17.5,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                          ],
+                    Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.center,
+                      spacing: _size.width > 700 ? 30.0 : 10.0, runSpacing: _size.width > 700 ? 30.0 : 10.0,
+                      children: [
+                        TextView(text: "dmstudios268@gmail.com",
+                          padding: EdgeInsets.only(right: 10.0),
+                          color: colors.white,
+                          size: 17.5,
+                          fontWeight: FontWeight.w400,
                         ),
-                      ),
-                    ),
-
-                    Divider(
-                      height: 1.0,
-                      color: colors.white,
-                    ),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 30.0,),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Wrap(
-                            direction: Axis.horizontal,
-                            alignment: WrapAlignment.center,
-                            spacing: _size.width > 700 ? 30.0 : 10.0, runSpacing: _size.width > 700 ? 30.0 : 10.0,
-                            children: [
-                              TextView(
-                                  text: "dmstudios268@gmail.com",
-                                  color: colors.white,
-                                  size: 18.0,
-                                  fontWeight: FontWeight.w400,
-                                  padding: EdgeInsets.only(right: 10.0)
-                              ),
-                              TextView(
-                                  text: "Instagram",
-                                  color: colors.white,
-                                  size: 18.0,
-                                  fontWeight: FontWeight.w400,
-                                  padding: EdgeInsets.only(left: 10.0)
-                              ),
-                            ],
-                          ),
-                        )
+                        TextView(text: "Instagram",
+                          padding: EdgeInsets.only(left: 10.0),
+                          color: colors.white,
+                          size: 17.5,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -298,17 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _headerImage(){
-    return ImageView.asset(imageKey: "assets/home.jpg",
-      aspectRatio: 3.0,
-      width: _size.width,
-      colorFilter: colors.bg.withOpacity(0.5,),
-      margin: EdgeInsets.only(top: 20.0, bottom: 40.0),
-      customLoader: Container(
-        color: colors.bg.withOpacity(0.25,),
-      ),
-    );
-  }
 
   Widget _roomButtons(){
     return Row(
@@ -327,9 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           onHover: ContainerChanges(
             decoration: BoxDecoration(
-              color: colors.bgDark,
-              border: Border.all(color: colors.bgDark, width: 1.5,),
-              borderRadius: BorderRadius.circular(5.0)
+                color: colors.bgDark,
+                border: Border.all(color: colors.bgDark, width: 1.5,),
+                borderRadius: BorderRadius.circular(5.0)
             ),
           ),
           borderRadius: 2.5,
@@ -350,9 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           onHover: ContainerChanges(
             decoration: BoxDecoration(
-              color: colors.bgDark,
-              border: Border.all(color: colors.bgDark, width: 1.5,),
-              borderRadius: BorderRadius.circular(5.0)
+                color: colors.bgDark,
+                border: Border.all(color: colors.bgDark, width: 1.5,),
+                borderRadius: BorderRadius.circular(5.0)
             ),
           ),
           borderRadius: 2.5,
@@ -367,6 +274,109 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+      ],
+    );
+  }
+
+  Widget _headerImage(){
+    return ImageView.asset(imageKey: "assets/home.jpg",
+      aspectRatio: 3.0,
+      width: _size.width,
+      colorFilter: colors.bgDark.withOpacity(0.75,),
+      margin: EdgeInsets.symmetric(vertical: _isDesktop ? 40 : 20.0,),
+      customLoader: Container(
+        color: colors.bgLight.withOpacity(0.25,),
+      ),
+    );
+  }
+
+  Widget _infoCards(){
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.spaceEvenly,
+      crossAxisAlignment: WrapCrossAlignment.start,
+      spacing: 20.0, runSpacing: 20.0,
+      children: [
+        for(int i = 0; i < _info.length; i++)
+          HoverWidget(
+            duration: Duration(milliseconds: 500,),
+            width: _isDesktop ? _size.width / 5 : _size.width,
+            idle: ContainerChanges(
+              padding: EdgeInsets.all(20.0),
+              margin: EdgeInsets.all(20.0),
+            ),
+            onHover: ContainerChanges(
+              decoration: BoxDecoration(
+                color: colors.bgDark,
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(_info[i]["icon"],
+                  size: 50.0,
+                  color: colors.blue,
+                ),
+                TextView(
+                  text: _info[i]["title"],
+                  padding: EdgeInsets.symmetric(vertical: 5.0,),
+                  color: colors.white,
+                  size: 20.0,
+                  fontWeight: FontWeight.w700,
+                  align: TextAlign.center,
+                ),
+                TextView(
+                  text: _info[i]["info"],
+                  color: colors.white,
+                  size: 15.0,
+                  fontWeight: FontWeight.w400,
+                  align: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget  _cards2(){
+    return Wrap(
+      direction: Axis.horizontal,
+      alignment: WrapAlignment.spaceEvenly,
+      runAlignment: WrapAlignment.center,
+      spacing: 20.0, runSpacing: 20.0,
+      children: [
+        for(int i = 0; i < _cardInfo.length; i++)
+          Container(
+            width: _isDesktop ? _size.width / 5 : _size.width,
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: colors.bgLight,
+              borderRadius: BorderRadius.circular(5.0,),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(_cardInfo[i]["icon"],
+                  size: 50.0,
+                  color: colors.darkPurple,
+                ),
+                Expanded(
+                  child: TextView(text: _cardInfo[i]["title"],
+                    padding: EdgeInsets.only(left: 20.0,),
+                    color: colors.darkPurple,
+                    size: 17.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

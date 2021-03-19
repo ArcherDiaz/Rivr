@@ -43,13 +43,13 @@ class _RoomScreenState extends State<RoomScreen> {
 
   Size _size;
   bool _isDesktop;
-  bool showBoard;
+  bool _showBoard;
 
   @override
   void initState() {
     _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;
-    showBoard = false;
+    _showBoard = false;
     super.initState();
     _peer = PeerJS(
       onPeer: (id){
@@ -106,6 +106,9 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           setState(() {
             _streams.add({
+              "widget": HtmlElementView(
+                viewType: id,
+              ),
               "id": id,
               "peer ID": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
@@ -232,7 +235,7 @@ class _RoomScreenState extends State<RoomScreen> {
                   }
                 },
               ),
-              if(showBoard == true)
+              if(_showBoard == true)
                 Container(
                 color: colors.white,
                 width: _size.width / 2,
@@ -396,7 +399,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ButtonView(
             onPressed: () {
               setState(() {
-                showBoard = !showBoard;
+                _showBoard = !_showBoard;
               });
             },
             borderRadius: 90.0,
@@ -433,17 +436,17 @@ class _RoomScreenState extends State<RoomScreen> {
               onPressed: () {
                 if(_peer.isCamFacingFront == true){
                   _peer.isCamFacingFront = false;
-                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.backCam);
+                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.backCam,);
                 }else{
                   _peer.isCamFacingFront = true;
-                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.frontCam);
+                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.frontCam,);
                 }
               },
               borderRadius: 90.0,
               color: _peer.isSharingScreen == true ? colors.white : colors.bg,
               padding: EdgeInsets.all(7.0),
               margin: EdgeInsets.symmetric(horizontal: 10.0),
-              child: Icon(Icons.flip_camera_ios_outlined,
+              child: Icon(_peer.isCamFacingFront == true ? Icons.camera_front_outlined : Icons.camera_rear_outlined,
                 size: _isDesktop == true ? 25.0 : 30.0,
                 color: _peer.isSharingScreen == true ? colors.bg :  colors.white,
               ),

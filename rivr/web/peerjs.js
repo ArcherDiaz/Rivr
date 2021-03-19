@@ -45,13 +45,12 @@ function getPermission(id, gettingPermission, facingMode){
         if(gettingPermission == false || connections.length > 0){
             //if the user is simply switching their camera OR
             //if there are any users connected to us, update their stream of us to this new one
-            updatePeerStream(elementID, stream);
+            updatePeerStream(id, stream);
         }
     }).catch(function(err){
         if(gettingPermission == true){
             returnPermissionResult(false);
         }
-        sendData(err);
         console.log("ERROR: " + err);
     });
 }

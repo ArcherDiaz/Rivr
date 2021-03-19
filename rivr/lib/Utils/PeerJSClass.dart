@@ -77,7 +77,7 @@ class PeerJS{
 
 
   void getPermissionJS(String myID, bool isGettingPermission, String facingMode){
-    getPermission(myID, isGettingPermission, facingMode);
+    getPermission(myID, isGettingPermission, facingMode,);
   }
   void shareScreenJS(String elementID, Function() onClose){
     isSharingScreen = !isSharingScreen;

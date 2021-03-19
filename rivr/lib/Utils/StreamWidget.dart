@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
-import 'package:rivr/Utils/WhiteBoard.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'dart:html' as html;
 
@@ -52,14 +51,14 @@ class _StreamWidgetState extends State<StreamWidget> {
       height: widget.state == SizeState.focused
           ?  widget.focusedSize.height
           : widget.state == SizeState.desktop ? widget.desktopSize.height : widget.mobileSize.height,
-      transformAlignment: FractionalOffset.center,
-      transform: Matrix4.identity()..rotateY(_isInverted == true ? 3.14 : 0.0,),
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5.0,),
-            child: HtmlElementView(
-              viewType: widget.streamData["id"],
+          Transform(
+            transform: Matrix4.identity()..rotateY(_isInverted == true ? 3.14 : 0.0,),
+            alignment: FractionalOffset.center,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5.0,),
+              child: widget.streamData["widget"],
             ),
           ),
           ButtonView.hover(
@@ -100,7 +99,6 @@ class _StreamWidgetState extends State<StreamWidget> {
   void _playVideo(){
     try{
       html.VideoElement video = html.document.getElementById(widget.streamData["id"]);
-      //html.VideoElement video = html.querySelector("#${widget.streamData["id"]}");
       if(video.paused){
         video.play();
       }
