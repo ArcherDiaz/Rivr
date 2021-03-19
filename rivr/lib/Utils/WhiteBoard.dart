@@ -134,9 +134,21 @@ class _WhiteBoardState extends State<WhiteBoard> {
                     ),
                     Visibility(
                       child: (selectedMode == SelectedMode.Color) ?
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: getColorList(),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10.0),
+                            child: Divider(
+                              thickness: 1.5,
+                              height: 10.0,
+                              color: colors.white.withOpacity(0.30),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: getColorList(),
+                          ),
+                        ],
                       ) :
                       Slider(
                         value: (selectedMode == SelectedMode.StrokeWidth) ? strokeWidth : opacity,
@@ -175,7 +187,7 @@ class _WhiteBoardState extends State<WhiteBoard> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Pick a color!'),
+              title: Text('Pick a color!'),
               content: SingleChildScrollView(
                 child: ColorPicker(
                   pickerColor: pickerColor,
@@ -201,7 +213,7 @@ class _WhiteBoardState extends State<WhiteBoard> {
       },
       child: ClipOval(
         child: Container(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: 16.0, top: 10.0),
           height: 36,
           width: 36,
           decoration: BoxDecoration(
@@ -226,10 +238,14 @@ class _WhiteBoardState extends State<WhiteBoard> {
       },
       child: ClipOval(
         child: Container(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: 16.0, top: 10.0),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+            border: Border.all(width: 2.0, color: selectedColor == color ? Colors.white : Colors.transparent,),
+          ),
           height: 36,
           width: 36,
-          color: color,
         ),
       ),
     );
