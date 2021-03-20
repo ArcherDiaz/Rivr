@@ -56,7 +56,7 @@ class _RoomScreenState extends State<RoomScreen> {
         setState(() {
           _peer.myPeerID = id;
         });
-        _peer.getPermissionJS(id, true, _peer.frontCam,);
+        _peer.getPermissionJS(id, true, _peer.backCam,);
       },
       onPermissionResult: (flag){
         if(flag == true){ ///permission accepted
@@ -437,9 +437,11 @@ class _RoomScreenState extends State<RoomScreen> {
                 if(_peer.isCamFacingFront == true){
                   _peer.isCamFacingFront = false;
                   _peer.getPermissionJS(_peer.myPeerID, false, _peer.backCam,);
+                  _peer.sendDataJS("hiii: back");
                 }else{
                   _peer.isCamFacingFront = true;
                   _peer.getPermissionJS(_peer.myPeerID, false, _peer.frontCam,);
+                  _peer.sendDataJS("hiii: front");
                 }
               },
               borderRadius: 90.0,
