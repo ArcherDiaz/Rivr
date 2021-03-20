@@ -237,11 +237,12 @@ class _RoomScreenState extends State<RoomScreen> {
               ),
               if(_showBoard == true)
                 Container(
-                color: colors.white,
-                width: _size.width / 2,
-                height: _size.width / 2,
-                child: WhiteBoard(),
-              ),
+                  color: colors.white,
+                  width: _size.width / 2,
+                  height: _size.width / 2,
+                  child: WhiteBoard(),
+                ),
+
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _controlPanel(),
