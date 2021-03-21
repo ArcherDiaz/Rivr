@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -13,10 +11,10 @@ class WhiteBoard extends StatefulWidget {
 }
 
 class _WhiteBoardState extends State<WhiteBoard> {
-  Color selectedColor = Colors.black;
+  Color selectedColor = Colors.white;
   Color pickerColor = Colors.black;
   double strokeWidth = 3.0;
-  List<DrawingPoints> points = List();
+  List<DrawingPoints> points = [];
   bool showBottomList = false;
   double opacity = 1.0;
   StrokeCap strokeCap = StrokeCap.butt;
@@ -177,14 +175,13 @@ class _WhiteBoardState extends State<WhiteBoard> {
   }
 
   getColorList() {
-    List<Widget> listWidget = List();
-    for (Color color in boardColors) {
+    List<Widget> listWidget = [];
+    for(Color color in boardColors) {
       listWidget.add(colorCircle(color));
     }
     Widget colorPicker = GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
+        showDialog(context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Pick a color!'),
@@ -213,15 +210,16 @@ class _WhiteBoardState extends State<WhiteBoard> {
       },
       child: ClipOval(
         child: Container(
-          padding: const EdgeInsets.only(bottom: 16.0, top: 10.0),
           height: 36,
           width: 36,
+          padding: const EdgeInsets.only(bottom: 16.0, top: 10.0),
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.red, Colors.green, Colors.blue],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )),
+            gradient: LinearGradient(
+              colors: [Colors.red, Colors.green, Colors.blue],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
         ),
       ),
     );
@@ -250,23 +248,31 @@ class _WhiteBoardState extends State<WhiteBoard> {
       ),
     );
   }
+
 }
 
 class DrawingPainter extends CustomPainter {
+
   DrawingPainter({this.pointsList});
   List<DrawingPoints> pointsList;
-  List<Offset> offsetPoints = List();
+  List<Offset> offsetPoints = [];
+
   @override
   void paint(Canvas canvas, Size size) {
     for (int i = 0; i < pointsList.length - 1; i++) {
-      if (pointsList[i] != null && pointsList[i + 1] != null) {
-        canvas.drawLine(pointsList[i].points, pointsList[i + 1].points,
-            pointsList[i].paint);
-      } else if (pointsList[i] != null && pointsList[i + 1] == null) {
+      if(pointsList[i] != null && pointsList[i + 1] != null) {
+        canvas.drawLine(
+          pointsList[i].points,
+          pointsList[i + 1].points,
+          pointsList[i].paint,
+        );
+      } else if(pointsList[i] != null && pointsList[i + 1] == null) {
         offsetPoints.clear();
         offsetPoints.add(pointsList[i].points);
         offsetPoints.add(Offset(
-            pointsList[i].points.dx + 0.1, pointsList[i].points.dy + 0.1));
+          pointsList[i].points.dx + 0.1,
+          pointsList[i].points.dy + 0.1,
+        ));
         canvas.drawPoints(PointMode.points, offsetPoints, pointsList[i].paint);
       }
     }
@@ -274,12 +280,16 @@ class DrawingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(DrawingPainter oldDelegate) => true;
+
 }
 
 class DrawingPoints {
+
   Paint paint;
   Offset points;
+
   DrawingPoints({this.points, this.paint});
+
 }
 
 enum SelectedMode { StrokeWidth, Opacity, Color }

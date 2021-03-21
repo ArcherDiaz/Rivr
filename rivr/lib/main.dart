@@ -6,6 +6,7 @@ import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:url_strategy/url_strategy.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
   setPathUrlStrategy();
   runApp(AppWrapper(),);
@@ -57,7 +58,6 @@ class AppRouterDelegate extends RouterDelegate<RoutePathClass> with ChangeNotifi
         if(_routeHistoryList.last.isLivePage)
           MaterialPage(
             child: RoomScreen(
-              key: ValueKey("RoomScreen"),
               route: _routeHistoryList.last,
               updatePage: _changePageRoute,
             ),

@@ -56,7 +56,7 @@ class _RoomScreenState extends State<RoomScreen> {
         setState(() {
           _peer.myPeerID = id;
         });
-        _peer.getPermissionJS(id, true, _peer.backCam,);
+        _peer.getPermissionJS(id, true, _peer.frontCam,);
       },
       onPermissionResult: (flag){
         if(flag == true){ ///permission accepted
@@ -237,7 +237,7 @@ class _RoomScreenState extends State<RoomScreen> {
               ),
               if(_showBoard == true)
                 Container(
-                  color: colors.white,
+                  color: colors.bgDark,
                   width: _size.width / 2,
                   height: _size.width / 2,
                   child: WhiteBoard(),
@@ -370,7 +370,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ButtonView(
             onPressed: () {
               setState(() {
-                _peer.muteMyAudioJS();
+                _peer.toggleAudioJS();
               });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -385,7 +385,7 @@ class _RoomScreenState extends State<RoomScreen> {
           ButtonView(
             onPressed: () {
               setState(() {
-                _peer.muteMyVideoJS();
+                _peer.toggleVideoJS();
               });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -435,15 +435,10 @@ class _RoomScreenState extends State<RoomScreen> {
           if(_isDesktop == false)
             ButtonView(
               onPressed: () {
-                if(_peer.isCamFacingFront == true){
-                  _peer.isCamFacingFront = false;
-                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.backCam,);
-                  _peer.sendDataJS("hiii: back");
-                }else{
-                  _peer.isCamFacingFront = true;
-                  _peer.getPermissionJS(_peer.myPeerID, false, _peer.frontCam,);
-                  _peer.sendDataJS("hiii: front");
-                }
+                setState(() {
+                  _peer.toggleCameraFaceJS();
+                });
+                _peer.sendDataJS({});
               },
               borderRadius: 90.0,
               color: _peer.isSharingScreen == true ? colors.white : colors.bg,

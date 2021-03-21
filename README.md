@@ -69,7 +69,7 @@ Instructions on how to use them in your own application are linked below.
  - pinging system for detecting dead user
  - randomized urls
  - random profile photos
- - mobile landscape mode, on stream focused bug. the stream freezes/pauses. uhh maybe have pause check on the ontap of the stream
+ - mobile landscape mode, on stream focused bug. the stream freezes/pauses. uhh maybe have a pause check on the ontap of the stream
 
 ## License
 

@@ -210,6 +210,17 @@ function volumeMeter(videoID, volume){
     video.volume = volume;
 }
 
+
+
 window.addEventListener("beforeunload", function(){
     leaveCall();
 });
+
+function playStream(elementID){
+    var video = document.getElementById(elementID);
+    if (typeof(video) != 'undefined' && video != null){
+        if(video.paused == true) {
+            video.play();
+        }
+    }
+}

@@ -96,9 +96,6 @@ function audioMeter(mediaStream, elementID){
             num = percentage;
             //console.log(num);
         }
-        if(elementID != peer.id){
-            console.log(elementID, percentage);
-        }
         returnStream(elementID, mediaStream, percentage);
     };
 

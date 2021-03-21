@@ -96,18 +96,22 @@ class PeerJS{
   }
 
 
-  void muteMyVideoJS(){
+  void toggleVideoJS(){
     isVideoOn = !isVideoOn;
     muteMyVideo(isVideoOn);
   }
-  void muteMyAudioJS(){
+  void toggleAudioJS(){
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
   }
+  void toggleCameraFaceJS(){
+    isCamFacingFront = !isCamFacingFront;
+    getPermissionJS(myPeerID, false, isCamFacingFront ? frontCam : backCam,);
+  }
+
   void leaveCallJS() {
     leaveCall();
   }
-
 
   void volumeMeter(String videoID, double volume){
     volumeMeter(videoID, volume);
