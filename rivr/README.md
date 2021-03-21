@@ -30,7 +30,7 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 
 ### **Overview**
 
-Like most projects, Rivr started out as a joke and a simple side project that would probably never be finished. But this quickly changed when the development process went at super sonic speeds! Hitting milestones after milestones before leaving light photons in the dust! As it propelled itself across the milky way.
+Like most projects, Rivr started out as a joke and a simple side project that would probably never be finished. But this quickly changed when the development process went at super sonic speeds! Hitting milestones after milestones before leaving photons in the dust! As it propelled itself across the milky way.
 
 ## Installation
 
@@ -64,6 +64,11 @@ Instructions on how to use them in your own application are linked below.
 | OneDrive | [plugins/onedrive/README.md][PlOd] |
 | Medium | [plugins/medium/README.md][PlMe] |
 | Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
+
+## TODO
+ - pinging system for detecting dead user
+ - randomized urls
+ - random profile photos
 
 ## License
 
