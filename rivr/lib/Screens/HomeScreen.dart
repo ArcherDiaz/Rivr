@@ -90,9 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
       color: colors.bg,
       child: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            vertical: _isDesktop ? 50.0 : 25.0,
-            horizontal: _isDesktop ? 100.0 : 15.0,
+          padding: EdgeInsets.only(
+            top: _isDesktop ? 50.0 : 25.0,
+            left: _isDesktop ? 100.0 : 15.0,
+            right: _isDesktop ? 100.0 : 15.0,
           ),
           child: Column(
             children: [
@@ -280,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _headerImage(){
     return ImageView.asset(imageKey: "assets/home.jpg",
-      aspectRatio: 3.0,
+      aspectRatio: _isDesktop == true ? 3.0 : 1.5,
       width: _size.width,
       colorFilter: colors.bgDark.withOpacity(0.75,),
       margin: EdgeInsets.symmetric(vertical: _isDesktop ? 40 : 20.0,),

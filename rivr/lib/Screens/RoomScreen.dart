@@ -2,6 +2,7 @@ import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
+import 'package:rivr/Utils/LoadingContainer.dart';
 import 'package:rivr/Utils/PeerJSClass.dart';
 import 'package:rivr/Utils/StreamingContainer.dart';
 import 'package:rivr/Utils/WhiteBoard.dart';
@@ -145,71 +146,57 @@ class _RoomScreenState extends State<RoomScreen> {
       child: Material(
         color: colors.bg,
         child: SafeArea(
-          child: _peer.myPeerID == null || _peer.permissionOn == null
-              ? _loadingView()
-              : _peer.permissionOn == true ? _streamingControls() : _permissionView(),
+          child: _load(),
         ),
       ),
     );
   }
 
-  Widget _loadingView(){
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CustomLoader(
-            color1: colors.white,
-            color2: colors.bgDark,
+  Widget _load(){
+    if(_peer.myPeerID == null || _peer.permissionOn == null){
+      return LoadingContainer(
+        text: _peer.myPeerID == null ? "Starting up servers.. " : "Retrieving access to media devices.. ",
+      );
+    }else if(_peer.permissionOn == false){
+      return Center(
+        child: Container(
+          margin: EdgeInsets.all(15.0,),
+          padding: EdgeInsets.all(10.0,),
+          decoration: BoxDecoration(
+            border: Border.all(color: colors.bgLight, width: 1.0,),
           ),
-          TextView(text: _peer.myPeerID == null ? "Starting up servers.. " : "Retrieving access to media devices.. " ,
-            padding: EdgeInsets.all(20.0),
-            size: 12.5,
-            align: TextAlign.center,
-            isSelectable: true,
-            color: _peer.myPeerID == null ? colors.darkPurple : colors.blue,
-            fontWeight: FontWeight.w500,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextView(text: "Microphone access is required to join a live room. Please allow the permissions requested to continue.",
+                size: 17.5,
+                align: TextAlign.center,
+                isSelectable: true,
+                lineSpacing: 2.0,
+                color: colors.white,
+                fontWeight: FontWeight.w500,
+              ),
+              ButtonView(
+                onPressed: (){
+                  _peer.getPermissionJS(_peer.myPeerID, true, _peer.frontCam,);
+                },
+                color: colors.bgDark,
+                margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0,),
+                padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0,),
+                child: TextView(text: "Give Permission",
+                  size: 15.0,
+                  color: colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _permissionView(){
-    return Container(
-      margin: EdgeInsets.all(15.0,),
-      padding: EdgeInsets.all(10.0,),
-      decoration: BoxDecoration(
-        border: Border.all(color: colors.bgLight, width: 1.0,),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          TextView(text: "Microphone access is required to join a live room. Please allow the permissions requested to continue.",
-            size: 17.5,
-            align: TextAlign.center,
-            isSelectable: true,
-            lineSpacing: 2.0,
-            color: colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-          ButtonView(
-            onPressed: (){
-              _peer.getPermissionJS(_peer.myPeerID, true, _peer.frontCam,);
-            },
-            color: colors.bgDark,
-            margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0,),
-            padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0,),
-            child: TextView(text: "Give Permission",
-              size: 15.0,
-              color: colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      );
+    }else{
+      return _streamingControls();
+    }
   }
 
   Widget _streamingControls(){
@@ -413,14 +400,17 @@ class _RoomScreenState extends State<RoomScreen> {
           if(_isDesktop == true)
             ButtonView(
               onPressed: () {
-                setState(() {
-                  _peer.shareScreenJS(_peer.myPeerID, (){
-                    ///when the screen share is closed, this little function is triggered
-                    setState(() {
-                      _peer.isSharingScreen = false;
+                if(_peer.isSharingScreen == false){
+                  setState(() {
+                    _peer.shareScreenJS(_peer.myPeerID, (){
+                      ///this is a callback for the user stops the screen share
+                      ///when the screen share is closed, this little function is triggered
+                      setState(() {
+                        _peer.isSharingScreen = false;
+                      });
                     });
                   });
-                });
+                }
               },
               borderRadius: 90.0,
               color: _peer.isSharingScreen == true ? colors.white : colors.bg,

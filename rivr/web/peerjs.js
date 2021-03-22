@@ -49,7 +49,6 @@ function getPermission(id, gettingPermission, facingMode){
         if(gettingPermission == true){
             returnPermissionResult(false);
         }
-        alert(err.toString());
         console.log("ERROR: " + err);
     });
 }
@@ -218,9 +217,14 @@ window.addEventListener("beforeunload", function(){
 
 function playStream(elementID){
     var video = document.getElementById(elementID);
-    if (typeof(video) != 'undefined' && video != null){
+    if(typeof(video) != 'undefined' && video != null){
         if(video.paused == true) {
+            alert("play Video!");
             video.play();
+        }else{
+            alert("video is not paused!");
         }
+    }else{
+        alert("video element does not exist!");
     }
 }
