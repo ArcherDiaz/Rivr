@@ -141,8 +141,8 @@ class _RoomScreenState extends State<RoomScreen> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _isDesktop = _size.width > 700 && _size.height > 500 ? true : false;
-    return WillPopScope(
-      onWillPop: _onBackPressed,
+    return BackButtonListener(
+      onBackPressed: _onBackPressed,
       child: Material(
         color: colors.bg,
         child: SafeArea(

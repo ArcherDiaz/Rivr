@@ -219,12 +219,7 @@ function playStream(elementID){
     var video = document.getElementById(elementID);
     if(typeof(video) != 'undefined' && video != null){
         if(video.paused == true) {
-            alert("play Video!");
             video.play();
-        }else{
-            alert("video is not paused!");
         }
-    }else{
-        alert("video element does not exist!");
     }
 }

@@ -67,7 +67,6 @@ class AppRouterDelegate extends RouterDelegate<RoutePathClass> with ChangeNotifi
         if (!route.didPop(result)) {
           return false;
         }
-
         _routeHistoryList.removeLast();
         notifyListeners();
         return true;
@@ -137,6 +136,42 @@ class AppRouteInformationParser extends RouteInformationParser<RoutePathClass> {
     }
 
     return null;
+  }
+
+}
+
+///This widget takes care of backButton presses
+class BackButtonListener extends StatefulWidget {
+  final Widget child;
+  final Future<bool> Function() onBackPressed;
+  BackButtonListener({this.child, this.onBackPressed,});
+  @override
+  BackButtonListenerState createState()=>BackButtonListenerState();
+}
+class BackButtonListenerState extends State<BackButtonListener> {
+
+  BackButtonDispatcher dispatcher;
+
+  @override
+  void initState() {
+    super.initState();
+    didUpdateWidget(widget);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(dispatcher != null) {
+      dispatcher.removeCallback(widget.onBackPressed);
+    }
+    dispatcher = Router.of(context).backButtonDispatcher.createChildBackButtonDispatcher();
+    dispatcher.addCallback(widget.onBackPressed);
+    dispatcher.takePriority();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 
 }
