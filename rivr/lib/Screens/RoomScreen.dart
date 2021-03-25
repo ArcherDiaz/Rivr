@@ -101,6 +101,9 @@ class _RoomScreenState extends State<RoomScreen> {
             video.volume = 0.0;
           }
           video.play();
+          video.addEventListener("pause", (event){
+            video.play();
+          });
 
           ui.platformViewRegistry.registerViewFactory(id, (viewID){
             return video;

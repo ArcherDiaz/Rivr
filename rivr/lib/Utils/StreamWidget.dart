@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:sad_lib/CustomWidgets.dart';
-import 'dart:js' as js;
 
 enum SizeState {mobile, desktop, focused}
 
@@ -32,14 +31,8 @@ class _StreamWidgetState extends State<StreamWidget> {
   void initState() {
     _isInverted = false;
     super.initState();
-    _playVideo();
   }
 
-  @override
-  void didUpdateWidget(covariant StreamWidget oldWidget) {
-    _playVideo();
-    super.didUpdateWidget(oldWidget);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,18 +87,6 @@ class _StreamWidgetState extends State<StreamWidget> {
         ],
       ),
     );
-  }
-
-  void _playVideo(){
-    js.context.callMethod('playStream', [widget.streamData["id"],]);
-//    try{
-//      html.VideoElement video = html.document.getElementById(widget.streamData["id"]);
-//      if(video.paused){
-//        video.play();
-//      }
-//    }catch(e){
-//      print(e.toString());
-//    }
   }
 
 }
