@@ -100,6 +100,7 @@ class _RoomScreenState extends State<RoomScreen> {
           if(id == _peer.myPeerID){
             video.volume = 0.0;
           }
+          video.volume = 0.0;
           video.play();
           video.addEventListener("pause", (event){
             video.play();
@@ -348,7 +349,7 @@ class _RoomScreenState extends State<RoomScreen> {
           BoxShadow(
             color: colors.bgDark.withOpacity(0.5,),
             offset: Offset(0.0, 5.0,),
-            blurRadius: 7.5,
+            blurRadius: 15.0,
           )
         ],
       ),
@@ -425,7 +426,7 @@ class _RoomScreenState extends State<RoomScreen> {
               ),
             ),
 
-          if(_isDesktop == false)
+          if(_isDesktop == false && 0 == 9)
             ButtonView(
               onPressed: () {
                 setState(() {

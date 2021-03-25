@@ -95,7 +95,9 @@ function audioMeter(mediaStream, id){
             num = percentage;
             //console.log(num);
         }
-        returnStream(id, mediaStream, percentage);
+        if(peer.destroyed == false &&  peer.disconnected == false){
+            returnStream(id, mediaStream, percentage);
+        }
     };
 }
 
@@ -156,6 +158,7 @@ function leaveCall(){
     });
     //destroy the peer object itself
     peer.destroy();
+    connections.clear();
     stream.getTracks().forEach(function(track) {
         //for each media track in our own stream (audio and video), stop them
         track.stop();

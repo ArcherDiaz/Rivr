@@ -37,11 +37,7 @@ function startPeer(){
 
 function getPermission(elementID, facingMode){
     navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: {
-                exact: facingMode,
-              },
-        },
+        video: false,
         audio: true,
     }).then(function(mediaStream){
         audioMeter(mediaStream, elementID);
@@ -250,7 +246,9 @@ function returnStream(elementID, mediaStream, percentage){
         video.id = elementID;
         video.style.width = '50%';
         video.style.border = percentage + "px solid #0000FF";
-        video.volume = 0.0;
+        if(elementID == peer.id){
+            video.volume = 0.0;
+        }
         document.body.appendChild(video);
         if('srcObject' in video) {
             video.srcObject = mediaStream;
