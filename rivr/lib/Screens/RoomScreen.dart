@@ -47,6 +47,13 @@ class _RoomScreenState extends State<RoomScreen> {
   bool _showBoard;
 
   @override
+  void dispose() {
+    _peer.leaveCallJS();
+    print("closing this page");
+    super.dispose();
+  }
+
+  @override
   void initState() {
     _dialogClass = DialogClass(background: colors.bg, buttonColor: colors.bgDark, buttonTextColor: colors.white, textColor: colors.white,);
     _isDesktop = true;

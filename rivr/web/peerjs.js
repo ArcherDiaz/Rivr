@@ -215,7 +215,7 @@ function volumeMeter(videoID, volume){
 
 
 window.addEventListener("beforeunload", function(){
-    leaveCall();
+    //leaveCall();
 });
 
 function playStream(elementID){
