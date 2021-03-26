@@ -91,7 +91,6 @@ class _RoomScreenState extends State<RoomScreen> {
         }else{
           ///else if there is no stream in the list with its "peer ID" field == [id], create it
           VideoElement video = VideoElement();
-          video.autoplay = true;
           video.attributes = {
             "id": id,
             "style": "object-fit: cover;",
@@ -100,7 +99,6 @@ class _RoomScreenState extends State<RoomScreen> {
           if(id == _peer.myPeerID){
             video.volume = 0.0;
           }
-          video.volume = 0.0;
           video.play();
           video.addEventListener("pause", (event){
             video.play();
@@ -115,7 +113,6 @@ class _RoomScreenState extends State<RoomScreen> {
                 viewType: id,
               ),
               "id": id,
-              "peer ID": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
             });
           });
