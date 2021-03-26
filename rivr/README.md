@@ -2,8 +2,9 @@
 
 ## From _**DM Studios**_
 
-[![Generic badge](https://img.shields.io/badge/Status-Ongoing-green.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/status-Ongoing-green.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/version-Marley-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/website-LIVE-red.svg)](https://rivrlive.web.app/)
 
 Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platform for anyone and everyone!
 
@@ -66,9 +67,10 @@ Instructions on how to use them in your own application are linked below.
 | Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
 
 ## TODO
- - pinging system for detecting dead user
- - randomized urls
- - random profile photos
+
+- pinging system for detecting dead user
+- randomized urls
+- random profile photos
 
 ## License
 

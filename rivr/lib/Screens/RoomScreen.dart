@@ -66,21 +66,17 @@ class _RoomScreenState extends State<RoomScreen> {
           });
           _getOtherUsers();
         }else{ ///permission denied
-          if(_peer.permissionOn == true){
-            _dialogClass.assureDialog(context, message: "Error!!!", negativeButton: false, positive: "OKAY",);
-          }else {
-            setState(() {
-              _peer.permissionOn = false;
-            });
-          }
+          setState(() {
+            _peer.permissionOn = false;
+          });
         }
       },
       onDataReceived: (data){
         print(data.toString());
       },
       onStream: (String id, MediaStream stream, double streamVolume){
-        if(_streams.any((element) => element["peer ID"] == id,)){ ///if any element in the streams array has its "peer ID" field == [id]
-          int _index = _streams.indexWhere((element) => element["peer ID"] == id,); ///get the index of the stream where "peer ID" field == [id]
+        if(_streams.any((element) => element["id"] == id,)){ ///if any element in the streams array has its "id" field == [id]
+          int _index = _streams.indexWhere((element) => element["id"] == id,); ///get the index of the stream where "id" field == [id]
           setState(() {
             if(streamVolume >= 5.5){
               _streams[_index]["is talking"] = true;
@@ -89,7 +85,7 @@ class _RoomScreenState extends State<RoomScreen> {
             }
           });
         }else{
-          ///else if there is no stream in the list with its "peer ID" field == [id], create it
+          ///else if there is no stream in the list with its "id" field == [id], create it
           VideoElement video = VideoElement();
           video.attributes = {
             "id": id,
