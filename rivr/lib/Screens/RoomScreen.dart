@@ -360,6 +360,11 @@ class _RoomScreenState extends State<RoomScreen> {
         children: [
           ButtonView(
             onPressed: () {
+              _peer.sendDataJS({
+                "peerID" : _peer.myPeerID,
+                "audio" : _peer.isMicOn,
+                "video" : _peer.isVideoOn,
+              });
               setState(() {
                 _peer.toggleAudioJS();
               });
@@ -375,6 +380,11 @@ class _RoomScreenState extends State<RoomScreen> {
           ),
           ButtonView(
             onPressed: () {
+              _peer.sendDataJS({
+                "peerID" : _peer.myPeerID,
+                "audio" : _peer.isMicOn,
+                "video" : _peer.isVideoOn,
+              });
               setState(() {
                 _peer.toggleVideoJS();
               });
