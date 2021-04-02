@@ -80,6 +80,13 @@ class _RoomScreenState extends State<RoomScreen> {
       },
       onDataReceived: (data){
         print(data.toString());
+        int i = _streams.indexWhere((element) => element["id"] == data["peerID"],);
+        setState(() {
+          _streams[i]["status"]["audio"] = data["audio"];
+          _streams[i]["status"]["video"] = data["video"];
+        });
+
+
       },
       onStream: (String id, MediaStream stream, double streamVolume){
         if(_streams.any((element) => element["id"] == id,)){ ///if any element in the streams array has its "id" field == [id]
@@ -96,8 +103,13 @@ class _RoomScreenState extends State<RoomScreen> {
           VideoElement video = VideoElement();
           video.attributes = {
             "id": id,
-            "style": "object-fit: cover;",
+            "style": "object-fit: contain;",
           };
+          video.addEventListener("loadedmetadata", (event) {
+            int i = _streams.indexWhere((element) => element["id"] == id,);
+            _streams[i]["stream height"] = video.videoHeight;
+            _streams[i]["stream width"] = video.videoWidth;
+          });
           video.srcObject = stream;
           if(id == _peer.myPeerID){
             video.volume = 0.0;
@@ -117,6 +129,19 @@ class _RoomScreenState extends State<RoomScreen> {
               ),
               "id": id,
               "is talking": (streamVolume >= 5.5) ? true : false,
+              "stream height" : null,
+              "stream width" : null,
+              "is inverted" : false,
+              "switch" : (bool flag, String id) {
+                int i = _streams.indexWhere((element) => element["id"] == id,);
+                setState(() {
+                  _streams[i]["is inverted"] = flag;
+                });
+              },
+              "status" : {
+                "video" : true,
+                "audio" : true,
+              }
             });
           });
         }
@@ -363,6 +388,10 @@ class _RoomScreenState extends State<RoomScreen> {
               setState(() {
                 _peer.toggleAudioJS();
               });
+              int i = _streams.indexWhere((element) => element["id"] == _peer.myPeerID,);
+              setState(() {
+                _streams[i]["status"]["audio"] = _peer.isMicOn;
+              });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
             borderRadius: 90.0,
@@ -377,6 +406,10 @@ class _RoomScreenState extends State<RoomScreen> {
             onPressed: () {
               setState(() {
                 _peer.toggleVideoJS();
+              });
+              int i = _streams.indexWhere((element) => element["id"] == _peer.myPeerID,);
+              setState(() {
+                _streams[i]["status"]["video"] = _peer.isVideoOn;
               });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),

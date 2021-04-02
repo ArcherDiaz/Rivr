@@ -153,8 +153,13 @@ function handleCall(call){
 function leaveCall(){
     connections.forEach(function(value, key, map) {
         //for each connected peer/user, close both the data and media connection between us
-        value["data"].close();
-        value["media"].close();
+        if (typeof(value["data"]) != 'undefined' && value["data"] != null){
+            value["data"].close();
+        }
+        if (typeof(value["media"]) != 'undefined' && value["media"] != null){
+            value["media"].close();
+        }
+
     });
     //destroy the peer object itself
     peer.destroy();
@@ -202,7 +207,9 @@ function updatePeerStream(elementID, newStream){
 //THIS FUNCTION WILL SEND OUT A MESSAGE TO ALL PEERS
 function sendData(data){
     connections.forEach(function(value, key, map) {
-        value["data"].send(data);
+        if (typeof(value["data"]) != 'undefined' && value["data"] != null){
+            value["data"].send(data);
+        }
     });
 }
 
@@ -217,12 +224,3 @@ function volumeMeter(videoID, volume){
 window.addEventListener("beforeunload", function(){
     //leaveCall();
 });
-
-function playStream(elementID){
-    var video = document.getElementById(elementID);
-    if(typeof(video) != 'undefined' && video != null){
-        if(video.paused == true) {
-            video.play();
-        }
-    }
-}

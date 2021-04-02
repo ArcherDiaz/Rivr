@@ -4,6 +4,7 @@ library dart_peer_js;
 import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:js/js.dart';
+import 'dart:convert';
 
 @JS()
 external void startPeer();
@@ -14,7 +15,7 @@ external void shareScreen(String elementID);
 @JS()
 external void connectNewUser(String theirID);
 @JS()
-external void sendData(dynamic data);
+external void sendData(String data);
 
 @JS()
 external void muteMyVideo(bool flag);
@@ -36,7 +37,7 @@ external set _onScreenShareClosed(void Function() f);
 @JS("returnStream")
 external set _returnStream(void Function(String id, MediaStream stream, double streamVolume) f);
 @JS("returnData")
-external set _returnData(void Function(dynamic data) f);
+external set _returnData(void Function(String data) f);
 
 
 
@@ -55,7 +56,7 @@ class PeerJS{
   dynamic Function(String myID) onPeer;
   dynamic Function(bool flag) onPermissionResult;
   dynamic Function(String id, MediaStream stream, double streamVolume) onStream;
-  dynamic Function(dynamic data) onDataReceived;
+  dynamic Function(Map<String, dynamic> data) onDataReceived;
   PeerJS({@required this.onPeer, @required this.onPermissionResult, @required this.onStream, this.onDataReceived,}){
     if(onPeer != null){
       _returnPeerID = allowInterop(onPeer);
@@ -67,7 +68,9 @@ class PeerJS{
       _returnStream = allowInterop(onStream);
     }
     if(onDataReceived != null) {
-      _returnData = allowInterop(onDataReceived);
+      _returnData = allowInterop((String data) {
+        onDataReceived(json.decode(data));
+      });
     }
   }
 
@@ -91,18 +94,28 @@ class PeerJS{
   void connectNewUserJS(String theirID){
     connectNewUser(theirID);
   }
-  void sendDataJS(dynamic data){
-    sendData(data);
+  void sendDataJS(Map<String, dynamic> data){
+    sendData(json.encode(data));
   }
 
 
   void toggleVideoJS(){
     isVideoOn = !isVideoOn;
     muteMyVideo(isVideoOn);
+    sendDataJS({
+      "peerID" : myPeerID,
+      "audio" : isMicOn,
+      "video" : isVideoOn,
+    });
   }
   void toggleAudioJS(){
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
+    sendDataJS({
+      "peerID" : myPeerID,
+      "audio" : isMicOn,
+      "video" : isVideoOn,
+    });
   }
   void toggleCameraFaceJS(){
     isCamFacingFront = !isCamFacingFront;

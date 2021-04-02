@@ -36,7 +36,6 @@ class _StreamContainerState extends State<StreamContainer> {
       children: [
         Expanded(
           child: StreamWidget(
-            key: ObjectKey(widget.streams[_focusedStream]["peer ID"],),
             onPressed: (){
               ///if this stream is already being focused on, remove the focus
               setState(() {
@@ -58,7 +57,6 @@ class _StreamContainerState extends State<StreamContainer> {
               for(int i = 0; i < widget.streams.length; i++)
                 if(_focusedStream != i)
                   StreamWidget(
-                    key: ObjectKey(widget.streams[i]["peer ID"],),
                     onPressed: (){
                       if(_focusedStream == i){
                         ///if this stream is already being focused on, remove the focus
@@ -91,7 +89,6 @@ class _StreamContainerState extends State<StreamContainer> {
         children: [
           Expanded(
             child: StreamWidget(
-              key: ObjectKey(widget.streams[_focusedStream]["peer ID"],),
               onPressed: (){
                 ///if this stream is already being focused on, remove the focus
                 setState(() {
@@ -219,7 +216,6 @@ class _StreamContainerState extends State<StreamContainer> {
 
           for(int i = 0; i < widget.streams.length; i++)
             StreamWidget(
-              key: ObjectKey(widget.streams[i]["peer ID"],),
               onPressed: (){
                 if(_focusedStream == i){
                   ///if this stream is already being focused on, remove the focus
