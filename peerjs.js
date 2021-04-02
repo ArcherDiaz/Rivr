@@ -37,7 +37,7 @@ function startPeer(){
 
 function getPermission(elementID, facingMode){
     navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
     }).then(function(mediaStream){
         audioMeter(mediaStream, elementID);
