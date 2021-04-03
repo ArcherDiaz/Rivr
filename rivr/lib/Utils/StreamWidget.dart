@@ -1,24 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:sad_lib/CustomWidgets.dart';
 
-enum SizeState {mobile, desktop, focused}
-
 class StreamWidget extends StatefulWidget {
   final void Function() onPressed;
   final Map<String, dynamic> streamData;
-  final Size mobileSize;
-  final Size desktopSize;
-  final Size focusedSize;
-  final SizeState state;
+  final Size size;
   const StreamWidget({Key key,
     @required this.onPressed,
     @required this.streamData,
-    @required this.state,
-    @required this.mobileSize,
-    @required this.desktopSize,
-    @required this.focusedSize,
+    @required this.size,
   }) : super(key: key);
   @override
   _StreamWidgetState createState() => _StreamWidgetState();
@@ -26,32 +17,33 @@ class StreamWidget extends StatefulWidget {
 
 class _StreamWidgetState extends State<StreamWidget> {
 
-  bool _isInverted;
+  final double _talkingPoint = 5.5;
+
   double ratio;
-  double videoBoxHeight;
   double videoBoxWidth;
+  double videoBoxHeight;
 
   @override
   void initState() {
-    _isInverted = false;
-    
-    videoBoxHeight = widget.state == SizeState.focused
-        ?  widget.focusedSize.height
-        : widget.state == SizeState.desktop ? widget.desktopSize.height : widget.mobileSize.height;
-
-    videoBoxWidth = widget.state == SizeState.focused
-        ? widget.focusedSize.width
-        : widget.state == SizeState.desktop ? widget.desktopSize.width : widget.mobileSize.width;
-    
+    videoBoxWidth = widget.size.width;
+    videoBoxHeight = widget.size.height;
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant StreamWidget oldWidget) {
+    videoBoxWidth = widget.size.width;
+    videoBoxHeight = widget.size.height;
     if(widget.streamData["stream width"] != null && widget.streamData["stream height"] != null) {
       ratio = widget.streamData["stream width"] / videoBoxWidth;
-      videoBoxHeight = widget.streamData["stream height"] / ratio;
-    }    
+      if(widget.streamData["status"]["video"] == false){
+        ///if there is no video then make the it a perfect square
+        videoBoxHeight = videoBoxWidth;
+      }else {
+        ///else get the correct height of the video stream relative to the width
+        videoBoxHeight = widget.streamData["stream height"] / ratio;
+      }
+    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -70,12 +62,13 @@ class _StreamWidgetState extends State<StreamWidget> {
             onHover: ContainerChanges(
               decoration: BoxDecoration(
                 color: colors.bg.withOpacity(0.3,),
-                borderRadius: BorderRadius.circular(5.0,),
+                borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 5.0 : 90.0,),
                 border: Border.all(color: colors.darkPurple, width: 2.5,),
               ),
             ),
+            borderRadius: widget.streamData["status"]["video"] == true ? 5.0 : 90.0,
             border: Border.all(
-              color: widget.streamData["is talking"] == true ? colors.blue : Colors.transparent,
+              color: widget.streamData["volume"] >= _talkingPoint ? colors.blue : Colors.transparent,
               width: 2.5,
             ),
           ),
@@ -99,6 +92,7 @@ class _StreamWidgetState extends State<StreamWidget> {
             Align(
               alignment: Alignment.bottomRight,
               child: Container(
+                margin: EdgeInsets.all(5.0),
                 padding: EdgeInsets.all(5.0),
                 decoration: BoxDecoration(
                   color: colors.darkPurple,
@@ -124,14 +118,14 @@ class _StreamWidgetState extends State<StreamWidget> {
   }
 
   Widget videoCircle() {
-    double diameter = videoBoxWidth > videoBoxHeight ? videoBoxHeight : videoBoxWidth;
     return ClipOval(
       child: ImageView.network(
         imageKey: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fHBlb3BsZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
         aspectRatio: 1.0,
-        width: diameter,
-        height: diameter,
+        width: videoBoxWidth,
+        height: videoBoxHeight,
       ),
     );
   }
+
 }

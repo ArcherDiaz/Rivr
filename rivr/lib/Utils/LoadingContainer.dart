@@ -16,9 +16,9 @@ class _LoadingContainerState extends State<LoadingContainer> {
     "Thank you for choosing Rivr today.\nAlthough we already knew you would :)",
     "Are you asking me why people eat potatoes Sir?",
     "If anything goes wrong just remember that it's not me, it's you. My platform is perfect.",
-    "What are they Selling?.. CHOCOLATEE!",
+    "What are they Selling?.. CHOCOLATEE!!!",
     "Rivir.. Rver... Rvr?.. Revir... Rivre....",
-    "The only game I have is depression, and it's the one playing me",
+    "The only game I play is depression, and it's the one playing me",
     "Imagine if we had money or were getting paid!\nRivr would be 100x better without a doubt.. *wink*",
     "Relax a little, you deserve it.",
   ];

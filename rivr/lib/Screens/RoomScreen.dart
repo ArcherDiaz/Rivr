@@ -26,8 +26,6 @@ class RoomScreen extends StatefulWidget {
 class _RoomScreenState extends State<RoomScreen> {
 
   //TODO: listen for when a user leaves the call, so that you can remove their video box
-  //TODO: listen for when a user mutes their video so that we can put only the circle instead of a black box
-  //TODO: listen for when a user mutes their audio so that we can put the mute icon by them
 
   //TODO: random idea i got from someone while looking for hang up call fixes, have room notifications:
     //  when a user just enters a room send out the message; [notify]: A new user has entered the room
@@ -89,14 +87,12 @@ class _RoomScreenState extends State<RoomScreen> {
 
       },
       onStream: (String id, MediaStream stream, double streamVolume){
-        if(_streams.any((element) => element["id"] == id,)){ ///if any element in the streams array has its "id" field == [id]
+        if(_streams.any((element) => element["id"] == id,)){ ///if any stream has its "id" field equal to [id]
           int _index = _streams.indexWhere((element) => element["id"] == id,); ///get the index of the stream where "id" field == [id]
           setState(() {
-            if(streamVolume >= 5.5){
-              _streams[_index]["is talking"] = true;
-            }else{
-              _streams[_index]["is talking"] = false;
-            }
+            _streams[_index]["stream height"] = stream.getVideoTracks()[0].getSettings()["height"];
+            _streams[_index]["stream width"] = stream.getVideoTracks()[0].getSettings()["width"];
+            _streams[_index]["volume"] = streamVolume;
           });
         }else{
           ///else if there is no stream in the list with its "id" field == [id], create it
@@ -105,11 +101,7 @@ class _RoomScreenState extends State<RoomScreen> {
             "id": id,
             "style": "object-fit: contain;",
           };
-          video.addEventListener("loadedmetadata", (event) {
-            int i = _streams.indexWhere((element) => element["id"] == id,);
-            _streams[i]["stream height"] = video.videoHeight;
-            _streams[i]["stream width"] = video.videoWidth;
-          });
+
           video.srcObject = stream;
           if(id == _peer.myPeerID){
             video.volume = 0.0;
@@ -128,7 +120,7 @@ class _RoomScreenState extends State<RoomScreen> {
                 viewType: id,
               ),
               "id": id,
-              "is talking": (streamVolume >= 5.5) ? true : false,
+              "volume": streamVolume,
               "stream height" : null,
               "stream width" : null,
               "is inverted" : false,
@@ -240,16 +232,6 @@ class _RoomScreenState extends State<RoomScreen> {
                 isDesktop: _isDesktop,
                 size: _size,
                 streams: _streams,
-                onMobileFocused: (flag) {
-                  if(flag == true && _isDesktop == false) {
-                    SystemChrome.setPreferredOrientations([
-                      DeviceOrientation.landscapeLeft,
-                      DeviceOrientation.landscapeRight,
-                    ]);
-                  } else if(_isDesktop == false){
-                    SystemChrome.setPreferredOrientations([]);
-                  }
-                },
               ),
               if(_showBoard == true)
                 Container(

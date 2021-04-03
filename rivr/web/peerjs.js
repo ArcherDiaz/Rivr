@@ -218,9 +218,3 @@ function volumeMeter(videoID, volume){
     var video = document.getElementById(videoID);
     video.volume = volume;
 }
-
-
-
-window.addEventListener("beforeunload", function(){
-    //leaveCall();
-});

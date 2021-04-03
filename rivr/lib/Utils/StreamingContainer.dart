@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:rivr/Utils/StreamWidget.dart';
 
 class StreamContainer extends StatefulWidget {
   final bool isDesktop;
   final Size size;
   final List<Map<String, dynamic>> streams;
-  final void Function(bool focus) onMobileFocused;
 
-  StreamContainer({Key key, this.isDesktop, this.size, this.streams, this.onMobileFocused,}) : super(key: key);
+  StreamContainer({Key key, this.isDesktop, this.size, this.streams,}) : super(key: key);
   @override
   _StreamContainerState createState() => _StreamContainerState();
 }
 
 class _StreamContainerState extends State<StreamContainer> {
 
-  int _focusedStream;
+  int _focusedStreamIndex;
   bool _isLandscape;
 
   @override
   Widget build(BuildContext context) {
     _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape ? true : false;
-    if(_focusedStream == null){
+    return _staggered();
+    if(_focusedStreamIndex == null){
       return unfocusedStreamingView();
     }else{
       if(widget.isDesktop == true){
@@ -39,14 +40,11 @@ class _StreamContainerState extends State<StreamContainer> {
             onPressed: (){
               ///if this stream is already being focused on, remove the focus
               setState(() {
-                _focusedStream = null;
+                _focusedStreamIndex = null;
               });
             },
-            streamData: widget.streams[_focusedStream],
-            state: SizeState.focused,
-            mobileSize: null,
-            desktopSize: null,
-            focusedSize: Size(double.infinity, double.infinity,),
+            streamData: widget.streams[_focusedStreamIndex],
+            size: Size(double.infinity, double.infinity,),
           ),
         ),
         SingleChildScrollView(
@@ -55,26 +53,23 @@ class _StreamContainerState extends State<StreamContainer> {
           child: Row(
             children: [
               for(int i = 0; i < widget.streams.length; i++)
-                if(_focusedStream != i)
+                if(_focusedStreamIndex != i)
                   StreamWidget(
                     onPressed: (){
-                      if(_focusedStream == i){
+                      if(_focusedStreamIndex == i){
                         ///if this stream is already being focused on, remove the focus
                         setState(() {
-                          _focusedStream = null;
+                          _focusedStreamIndex = null;
                         });
                       }else {
                         ///else set the focus
                         setState(() {
-                          _focusedStream = i;
+                          _focusedStreamIndex = i;
                         });
                       }
                     },
                     streamData: widget.streams[i],
-                    state: SizeState.desktop,
-                    mobileSize: null,
-                    desktopSize: Size(widget.size.width/8, widget.size.width/8,),
-                    focusedSize: null,
+                    size: Size(widget.size.width/8, widget.size.width/8,),
                   ),
             ],
           ),
@@ -92,14 +87,11 @@ class _StreamContainerState extends State<StreamContainer> {
               onPressed: (){
                 ///if this stream is already being focused on, remove the focus
                 setState(() {
-                  _focusedStream = null;
+                  _focusedStreamIndex = null;
                 });
               },
-              streamData: widget.streams[_focusedStream],
-              state: SizeState.focused,
-              mobileSize: null,
-              desktopSize: null,
-              focusedSize: Size((double.infinity), double.infinity),
+              streamData: widget.streams[_focusedStreamIndex],
+              size: Size((double.infinity), double.infinity),
             ),
           ),
           SingleChildScrollView(
@@ -108,27 +100,24 @@ class _StreamContainerState extends State<StreamContainer> {
             child: Column(
               children: [
                 for(int i = 0; i < widget.streams.length; i++)
-                  if(_focusedStream != i)
+                  if(_focusedStreamIndex != i)
                     StreamWidget(
                       key: ObjectKey(widget.streams[i]["peer ID"],),
                       onPressed: (){
-                        if(_focusedStream == i){
+                        if(_focusedStreamIndex == i){
                           ///if this stream is already being focused on, remove the focus
                           setState(() {
-                            _focusedStream = null;
+                            _focusedStreamIndex = null;
                           });
                         }else {
                           ///else set the focus
                           setState(() {
-                            _focusedStream = i;
+                            _focusedStreamIndex = i;
                           });
                         }
                       },
                       streamData: widget.streams[i],
-                      state: SizeState.mobile,
-                      mobileSize: Size((widget.size.height/2.5 - 5), widget.size.height/2.5 - 5,),
-                      desktopSize: null,
-                      focusedSize: null,
+                      size: Size((widget.size.height/2.5 - 5), widget.size.height/2.5 - 5,),
                     ),
               ],
             ),
@@ -140,18 +129,14 @@ class _StreamContainerState extends State<StreamContainer> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           StreamWidget(
-            key: ObjectKey(widget.streams[_focusedStream]["peer ID"],),
             onPressed: (){
               ///if this stream is already being focused on, remove the focus
               setState(() {
-                _focusedStream = null;
+                _focusedStreamIndex = null;
               });
             },
-            streamData: widget.streams[_focusedStream],
-            state: SizeState.focused,
-            mobileSize: null,
-            desktopSize: null,
-            focusedSize: Size(widget.size.width, widget.size.width),
+            streamData: widget.streams[_focusedStreamIndex],
+            size: Size(widget.size.width, widget.size.width),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -165,27 +150,23 @@ class _StreamContainerState extends State<StreamContainer> {
                 spacing: widget.isDesktop == true ? 20.0 : 0.0, runSpacing: 20.0,
                 children: [
                   for(int i = 0; i < widget.streams.length; i++)
-                    if(_focusedStream != i)
+                    if(_focusedStreamIndex != i)
                       StreamWidget(
-                        key: ObjectKey(widget.streams[i]["peer ID"],),
                         onPressed: (){
-                          if(_focusedStream == i){
+                          if(_focusedStreamIndex == i){
                             ///if this stream is already being focused on, remove the focus
                             setState(() {
-                              _focusedStream = null;
+                              _focusedStreamIndex = null;
                             });
                           }else {
                             ///else set the focus
                             setState(() {
-                              _focusedStream = i;
+                              _focusedStreamIndex = i;
                             });
                           }
                         },
                         streamData: widget.streams[i],
-                        state: SizeState.mobile,
-                        mobileSize: Size(widget.size.width/2, widget.size.width/3,),
-                        desktopSize: null,
-                        focusedSize: null,
+                        size: Size(widget.size.width/2, widget.size.width/3,),
                       ),
                 ],
               ),
@@ -195,7 +176,6 @@ class _StreamContainerState extends State<StreamContainer> {
       );
     }
   }
-
 
 
   Widget unfocusedStreamingView() {
@@ -217,29 +197,72 @@ class _StreamContainerState extends State<StreamContainer> {
           for(int i = 0; i < widget.streams.length; i++)
             StreamWidget(
               onPressed: (){
-                if(_focusedStream == i){
+                if(_focusedStreamIndex == i){
                   ///if this stream is already being focused on, remove the focus
                   setState(() {
-                    _focusedStream = null;
+                    _focusedStreamIndex = null;
                   });
                 }else {
                   ///else set the focus
                   setState(() {
-                    _focusedStream = i;
+                    _focusedStreamIndex = i;
                   });
-                  widget.onMobileFocused(true);
                 }
               },
               streamData: widget.streams[i],
-              state: widget.isDesktop == true ? SizeState.desktop : SizeState.mobile,
-              mobileSize: _isLandscape == true
-                  ? Size(widget.size.width/3.5, widget.size.width/6,)
+              size: widget.isDesktop || _isLandscape == true
+                  ? Size(widget.size.width/3.5 - 20, widget.size.width/6,)
                   : Size(widget.size.width/2, widget.size.width/3,),
-              desktopSize: Size((widget.size.width/3.5- 20), widget.size.width/6,),
-              focusedSize: null,
             ),
         ],
       ),
+    );
+  }
+
+
+  Widget _staggered(){
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: widget.isDesktop == true || _isLandscape
+          ? 4
+          : 2,
+      staggeredTileBuilder: (index){
+        if(index == _focusedStreamIndex){ ///if this stream is focused on
+          return StaggeredTile.fit(widget.isDesktop == true || _isLandscape
+              ? 3
+              : 2,
+          );
+        }else {
+          return StaggeredTile.fit(1);
+        }
+      },
+      itemCount: widget.streams.length,
+      physics: BouncingScrollPhysics(),
+      shrinkWrap: true,
+      mainAxisSpacing: 10.0,
+      crossAxisSpacing: 10.0,
+      itemBuilder: (newContext, i){
+        return LayoutBuilder(
+          builder: (context, constraints){
+            return StreamWidget(
+              onPressed: (){
+                if(_focusedStreamIndex == i){
+                  ///if this stream is already being focused on, remove the focus
+                  setState(() {
+                    _focusedStreamIndex = null;
+                  });
+                }else {
+                  ///else set the focus
+                  setState(() {
+                    _focusedStreamIndex = i;
+                  });
+                }
+              },
+              streamData: widget.streams[i],
+              size: Size(constraints.maxWidth, constraints.maxWidth,),
+            );
+          },
+        );
+      },
     );
   }
 
