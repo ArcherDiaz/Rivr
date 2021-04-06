@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
+import 'package:rivr/Utils/UserStream.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 
 class StreamWidget extends StatefulWidget {
   final void Function() onPressed;
-  final Map<String, dynamic> streamData;
+  final UserStream streamData;
   final Size size;
   const StreamWidget({Key key,
     @required this.onPressed,
@@ -34,14 +35,14 @@ class _StreamWidgetState extends State<StreamWidget> {
   void didUpdateWidget(covariant StreamWidget oldWidget) {
     videoBoxWidth = widget.size.width;
     videoBoxHeight = widget.size.height;
-    if(widget.streamData["stream width"] != null && widget.streamData["stream height"] != null) {
-      ratio = widget.streamData["stream width"] / videoBoxWidth;
-      if(widget.streamData["status"]["video"] == false){
+    if(widget.streamData.width != null && widget.streamData.height != null) {
+      ratio = widget.streamData.width / videoBoxWidth;
+      if(widget.streamData.videoStatus == false){
         ///if there is no video then make the it a perfect square
         videoBoxHeight = videoBoxWidth;
       }else {
         ///else get the correct height of the video stream relative to the width
-        videoBoxHeight = widget.streamData["stream height"] / ratio;
+        videoBoxHeight = widget.streamData.height / ratio;
       }
     }
     super.didUpdateWidget(oldWidget);
@@ -55,9 +56,9 @@ class _StreamWidgetState extends State<StreamWidget> {
       height: videoBoxHeight,
       idle: ContainerChanges(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 10.0 : 90.0,),
+          borderRadius: BorderRadius.circular(widget.streamData.videoStatus == true ? 10.0 : 90.0,),
           border: Border.all(
-            color: widget.streamData["volume"] >= _talkingPoint ? colors.blue : Colors.transparent,
+            color: widget.streamData.volume >= _talkingPoint ? colors.blue : Colors.transparent,
             width: 2.5,
           ),
         ),
@@ -65,14 +66,14 @@ class _StreamWidgetState extends State<StreamWidget> {
       onHover: ContainerChanges(
         decoration: BoxDecoration(
           color: colors.bg.withOpacity(0.3,),
-          borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 10.0 : 90.0,),
+          borderRadius: BorderRadius.circular(widget.streamData.videoStatus == true ? 10.0 : 90.0,),
           border: Border.all(color: colors.darkPurple, width: 2.5,),
         ),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          widget.streamData["status"]["video"] == true ? videoBox() : videoCircle(),
+          widget.streamData.videoStatus == true ? videoBox() : videoCircle(),
           GestureDetector(
             onTap: widget.onPressed,
             onDoubleTap: (){
@@ -88,7 +89,7 @@ class _StreamWidgetState extends State<StreamWidget> {
             child: ButtonView(
               onPressed: (){
                 setState(() {
-                  widget.streamData["switch"](!widget.streamData["is inverted"], widget.streamData["id"]);
+                  widget.streamData.switchInversion(!widget.streamData.isInverted, widget.streamData.id);
                 });
               },
               padding: EdgeInsets.all(5.0,),
@@ -99,7 +100,7 @@ class _StreamWidgetState extends State<StreamWidget> {
             ),
           ),
 
-          if(widget.streamData["status"]["audio"] == false)
+          if(widget.streamData.audioStatus == false)
             Align(
               alignment: Alignment.bottomRight,
               child: Container(
@@ -119,11 +120,11 @@ class _StreamWidgetState extends State<StreamWidget> {
 
   Widget videoBox() {
     return Transform(
-      transform: Matrix4.identity()..rotateY(widget.streamData["is inverted"] == true ? 3.14 : 0.0,),
+      transform: Matrix4.identity()..rotateY(widget.streamData.isInverted == true ? 3.14 : 0.0,),
       alignment: FractionalOffset.center,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.0,),
-        child: widget.streamData["widget"],
+        child: widget.streamData.widget,
       ),
     );
   }
