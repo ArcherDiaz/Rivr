@@ -49,28 +49,38 @@ class _StreamWidgetState extends State<StreamWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 750,),
+    return HoverWidget(
+      duration: Duration(milliseconds: 50,),
       width: videoBoxWidth,
       height: videoBoxHeight,
+      idle: ContainerChanges(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 10.0 : 90.0,),
+          border: Border.all(
+            color: widget.streamData["volume"] >= _talkingPoint ? colors.blue : Colors.transparent,
+            width: 2.5,
+          ),
+        ),
+      ),
+      onHover: ContainerChanges(
+        decoration: BoxDecoration(
+          color: colors.bg.withOpacity(0.3,),
+          borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 10.0 : 90.0,),
+          border: Border.all(color: colors.darkPurple, width: 2.5,),
+        ),
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
           widget.streamData["status"]["video"] == true ? videoBox() : videoCircle(),
-          ButtonView.hover(
-            onPressed: widget.onPressed,
-            onHover: ContainerChanges(
-              decoration: BoxDecoration(
-                color: colors.bg.withOpacity(0.3,),
-                borderRadius: BorderRadius.circular(widget.streamData["status"]["video"] == true ? 5.0 : 90.0,),
-                border: Border.all(color: colors.darkPurple, width: 2.5,),
-              ),
-            ),
-            borderRadius: widget.streamData["status"]["video"] == true ? 5.0 : 90.0,
-            border: Border.all(
-              color: widget.streamData["volume"] >= _talkingPoint ? colors.blue : Colors.transparent,
-              width: 2.5,
-            ),
+          GestureDetector(
+            onTap: widget.onPressed,
+            onDoubleTap: (){
+
+            },
+            onLongPress: (){
+              _dialog();
+            },
           ),
 
           Align(
@@ -88,6 +98,7 @@ class _StreamWidgetState extends State<StreamWidget> {
               ),
             ),
           ),
+
           if(widget.streamData["status"]["audio"] == false)
             Align(
               alignment: Alignment.bottomRight,
@@ -111,7 +122,7 @@ class _StreamWidgetState extends State<StreamWidget> {
       transform: Matrix4.identity()..rotateY(widget.streamData["is inverted"] == true ? 3.14 : 0.0,),
       alignment: FractionalOffset.center,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(5.0,),
+        borderRadius: BorderRadius.circular(10.0,),
         child: widget.streamData["widget"],
       ),
     );
@@ -125,6 +136,92 @@ class _StreamWidgetState extends State<StreamWidget> {
         width: videoBoxWidth,
         height: videoBoxHeight,
       ),
+    );
+  }
+
+
+  void _dialog(){
+    showModalBottomSheet(context: context, isDismissible: true, backgroundColor: colors.bg,
+      elevation: 20.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0),),),
+      builder: (context){
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            ListTile(
+              contentPadding: EdgeInsets.all(10.0),
+              leading: ImageView.network(
+                imageKey: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fHBlb3BsZXxlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                margin: EdgeInsets.only(right: 10.0),
+                aspectRatio: 1.0,
+                height: MediaQuery.of(context).size.width/4,
+                width: MediaQuery.of(context).size.width/4,
+              ),
+              title: TextView(text: "test",
+                size: 20.0,
+                fontWeight: FontWeight.w500,
+                color: colors.white,
+              ),
+              subtitle: TextView(text: "test ",
+                size: 17.5,
+                color: colors.white,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            Divider(color: colors.bgLight, thickness: 2.5, indent: 20.0, endIndent: 20.0,),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              padding: EdgeInsets.only(bottom: 10.0,),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  ButtonView(
+                    onPressed: (){
+
+                    },
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                    margin: EdgeInsets.only(left: 10.0, bottom: 5.0,),
+                    children: [
+                      Icon(Icons.event_note,
+                        color: colors.blue,
+                        size: 30.0,
+                      ),
+                      TextView(text: "testing button",
+                        size: 17.5,
+                        color: colors.blue,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ],
+                  ),
+                  ButtonView(
+                    onPressed: (){
+
+                    },
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                    margin: EdgeInsets.only(left: 10.0, bottom: 5.0,),
+                    children: [
+                      Icon(Icons.event_note,
+                        color: colors.blue,
+                        size: 30.0,
+                      ),
+                      TextView(text: "testing button",
+                        size: 17.5,
+                        color: colors.blue,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

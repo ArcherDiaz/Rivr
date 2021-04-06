@@ -20,16 +20,9 @@ class _StreamContainerState extends State<StreamContainer> {
   @override
   Widget build(BuildContext context) {
     _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape ? true : false;
-    return _staggered();
-    if(_focusedStreamIndex == null){
-      return unfocusedStreamingView();
-    }else{
-      if(widget.isDesktop == true){
-        return _desktopFocusedStreamingView();
-      }else{
-        return _mobileFocusedStreamingView();
-      }
-    }
+    return Center(
+      child: _staggered(),
+    );
   }
 
   Widget _desktopFocusedStreamingView(){
@@ -236,6 +229,7 @@ class _StreamContainerState extends State<StreamContainer> {
         }
       },
       itemCount: widget.streams.length,
+      padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: widget.isDesktop ? 50.0 : 10.0,),
       physics: BouncingScrollPhysics(),
       shrinkWrap: true,
       mainAxisSpacing: 10.0,
@@ -244,6 +238,7 @@ class _StreamContainerState extends State<StreamContainer> {
         return LayoutBuilder(
           builder: (context, constraints){
             return StreamWidget(
+              key: ObjectKey(widget.streams[i]["id"]),
               onPressed: (){
                 if(_focusedStreamIndex == i){
                   ///if this stream is already being focused on, remove the focus

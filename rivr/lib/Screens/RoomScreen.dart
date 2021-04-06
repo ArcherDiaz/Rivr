@@ -77,8 +77,7 @@ class _RoomScreenState extends State<RoomScreen> {
         }
       },
       onDataReceived: (data){
-        print(data.toString());
-        int i = _streams.indexWhere((element) => element["id"] == data["peerID"],);
+        int i = _streams.indexWhere((element) => element["id"] == data["id"],);
         setState(() {
           _streams[i]["status"]["audio"] = data["audio"];
           _streams[i]["status"]["video"] = data["video"];

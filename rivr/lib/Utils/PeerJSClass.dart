@@ -103,7 +103,7 @@ class PeerJS{
     isVideoOn = !isVideoOn;
     muteMyVideo(isVideoOn);
     sendDataJS({
-      "peerID" : myPeerID,
+      "id" : myPeerID,
       "audio" : isMicOn,
       "video" : isVideoOn,
     });
@@ -112,7 +112,7 @@ class PeerJS{
     isMicOn = !isMicOn;
     muteMyAudio(isMicOn);
     sendDataJS({
-      "peerID" : myPeerID,
+      "id" : myPeerID,
       "audio" : isMicOn,
       "video" : isVideoOn,
     });
