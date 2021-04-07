@@ -15,7 +15,7 @@ function startPeer(){
 
     peer.on('open', function(id) {
         getPermission(id, "user",);
-        getOtherUsers(id);
+        //getOtherUsers(id);
     });
 
     peer.on('connection', function(conn) {
@@ -70,37 +70,29 @@ function shareScreen(elementID){
 }
 
 function audioMeter(mediaStream, elementID){
-    var audioContext = new AudioContext();
-    var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
-    var processor = audioContext.createScriptProcessor(2048, 1, 1);
+    let audioContext = new AudioContext();
+    let analyzer = audioContext.createAnalyser();
+    analyzer.fftSize = 32;
+    let mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
 
-    mediaStreamSource.connect(processor);
-    processor.connect(audioContext.destination);
+    mediaStreamSource.connect(analyzer);
+    let data = new Uint8Array(analyzer.frequencyBinCount);
 
-    processor.onaudioprocess = function (e) {
-        var inputData = e.inputBuffer.getChannelData(0);
-        var inputDataLength = inputData.length;
-        var total = 0;
+    let loopingFunction = function(){
+        requestAnimationFrame(loopingFunction);
+        analyzer.getByteFrequencyData(data);
+        let total = 0;
 
-        for (var i = 0; i < inputDataLength; i++) {
-            total += Math.abs(inputData[i++]);
+        for(var i = 0; i < data.length; i++) {
+            total = total + data[i];
         }
-        
-        var rms = Math.sqrt(total / inputDataLength);
-        var percentage = rms * 100;
-        if(percentage > num){
-            num = percentage;
-            //console.log(num);
-        }
+        let average = total / data.length;
+        let percentage = average / (255 / 100);
+        console.log(percentage);
         returnStream(elementID, mediaStream, percentage);
     };
+    loopingFunction();
 
-    mediaStream.getAudioTracks()[0].addEventListener("mute", function(){
-        console.log(elementID,"ENEDED 2!!!");
-        mediaStreamSource.disconnect(processor);
-        processor.disconnect(audioContext.destination);
-    });
-    
 }
 
 

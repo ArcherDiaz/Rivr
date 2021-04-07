@@ -1,7 +1,6 @@
 var peer;
 var stream;
 window.AudioContext = (window.AudioContext || window.webkitAudioContext);
-var num = 0;
 var connections = new Map();
 
 function startPeer(){
@@ -91,10 +90,6 @@ function audioMeter(mediaStream, id){
         
         var rms = Math.sqrt(total / inputDataLength);
         var percentage = rms * 100;
-        if(percentage > num){
-            num = percentage;
-            //console.log(num);
-        }
         if(peer.destroyed == false &&  peer.disconnected == false){
             returnStream(id, mediaStream, percentage);
         }
