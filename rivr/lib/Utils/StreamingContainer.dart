@@ -21,9 +21,16 @@ class _StreamContainerState extends State<StreamContainer> {
   @override
   Widget build(BuildContext context) {
     _isLandscape = MediaQuery.of(context).orientation == Orientation.landscape ? true : false;
-    return Center(
-      child: _staggered(),
-    );
+    if(widget.streams.length == 1){
+      ///if there is only one stream
+      return singleStream();
+    }else if(widget.streams.length == 2){
+      ///if there are only two streams
+      return pairStream();
+    }else{
+      ///when there is more than 2 streams
+      return _staggered();
+    }
   }
 
 
@@ -76,12 +83,14 @@ class _StreamContainerState extends State<StreamContainer> {
   }
 
   Widget singleStream() {
-    return StreamWidget(
-      onPressed: (){},
-      streamData: widget.streams[0],
-      size: widget.isDesktop || _isLandscape == true
-          ? Size(widget.size.width/2, widget.size.width/2,)
-          : Size(widget.size.width, widget.size.width,),
+    return Center(
+      child: StreamWidget(
+        onPressed: (){},
+        streamData: widget.streams[0],
+        size: widget.isDesktop || _isLandscape == true
+            ? Size(widget.size.width/2, widget.size.width/2,)
+            : Size(widget.size.width, widget.size.width,),
+      ),
     );
   }
 

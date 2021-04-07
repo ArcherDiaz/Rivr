@@ -74,8 +74,8 @@ function audioMeter(mediaStream, elementID){
     let analyzer = audioContext.createAnalyser();
     analyzer.fftSize = 32;
     let mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
-
     mediaStreamSource.connect(analyzer);
+    //analyzer.connect(audioContext.destination);
     let data = new Uint8Array(analyzer.frequencyBinCount);
 
     let loopingFunction = function(){

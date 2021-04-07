@@ -10,7 +10,6 @@ import 'package:rivr/Utils/WhiteBoard.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
 import 'package:sad_lib/DialogClass.dart';
-import 'package:universal_ui/universal_ui.dart';
 import 'package:flutter/services.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -96,40 +95,18 @@ class _RoomScreenState extends State<RoomScreen> {
           });
         }else{
           ///else if there is no stream in the list with its "id" field == [id], create it
-          VideoElement video = VideoElement();
-          video.attributes = {
-            "id": id,
-            "style": "object-fit: contain;",
-          };
-
-          video.srcObject = stream;
-          if(id == _peer.myPeerID){
-            video.volume = 0.0;
-          }
-          video.play();
-          video.addEventListener("pause", (event){
-            video.play();
-          });
-
-          ui.platformViewRegistry.registerViewFactory(id, (viewID){
-            return video;
-          });
           setState(() {
             _streams.add(UserStream(
-              widget: HtmlElementView(
-                viewType: id,
-              ),
               id: id,
               volume: streamVolume,
-              isInverted: false,
+              muteVideo: id == _peer.myPeerID ? true : false,
+              mediaStream: stream,
               switchInversion: (bool flag, String id) {
                 int i = _streams.indexWhere((element) => element.id == id,);
                 setState(() {
                   _streams[i].isInverted = flag;
                 });
               },
-              audioStatus: true,
-              videoStatus: true,
             ));
           });
         }

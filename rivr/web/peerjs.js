@@ -39,7 +39,7 @@ function getPermission(id, gettingPermission, facingMode){
             audioMeter(mediaStream, id);
         }
         stream = mediaStream;
-        if(gettingPermission == false || connections.length > 0){
+        if(gettingPermission == false){
             //if the user is simply switching their camera OR
             //if there are any users connected to us, update their stream of us to this new one
             updatePeerStream(id, mediaStream);
@@ -72,28 +72,30 @@ function shareScreen(elementID){
 }
 
 function audioMeter(mediaStream, id){
-    var audioContext = new AudioContext();
-    var mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
-    var processor = audioContext.createScriptProcessor(2048, 1, 1);
-
+    let audioContext = new AudioContext();
+    let analyzer = audioContext.createAnalyser();
+    analyzer.fftSize = 32;
+    let mediaStreamSource = audioContext.createMediaStreamSource(mediaStream);
     mediaStreamSource.connect(processor);
-    processor.connect(audioContext.destination);
+    //analyzer.connect(audioContext.destination);
+    let data = new Uint8Array(analyzer.frequencyBinCount);
 
-    processor.onaudioprocess = function (e) {
-        var inputData = e.inputBuffer.getChannelData(0);
-        var inputDataLength = inputData.length;
-        var total = 0;
+    let loopingFunction = function(){
+        requestAnimationFrame(loopingFunction);
+        analyzer.getByteFrequencyData(data);
+        let total = 0;
 
-        for (var i = 0; i < inputDataLength; i++) {
-            total += Math.abs(inputData[i++]);
+        for(var i = 0; i < data.length; i++) {
+            total = total + data[i];
         }
-        
-        var rms = Math.sqrt(total / inputDataLength);
-        var percentage = rms * 100;
+        let average = total / data.length;
+        let percentage = average / (255 / 100);
+        console.log(percentage);
         if(peer.destroyed == false &&  peer.disconnected == false){
             returnStream(id, mediaStream, percentage);
         }
     };
+    loopingFunction();
 }
 
 

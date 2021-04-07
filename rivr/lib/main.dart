@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rivr/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:rivr/Screens/HomeScreen2.dart';
 import 'package:rivr/Screens/RoomScreen.dart';
 import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:url_strategy/url_strategy.dart';
@@ -23,6 +24,7 @@ class AppWrapper extends StatelessWidget {
     return MaterialApp.router(
       title: "Rivr | Online Live Streaming",
       color: colors.bg,
+      debugShowCheckedModeBanner: false,
       routerDelegate: _routerDelegate,
       routeInformationParser: _routeInformationParser,
     );
@@ -48,7 +50,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePathClass> with ChangeNotifi
       pages: [
         if(_routeHistoryList.last.isHomePage)
           MaterialPage(
-            child: HomeScreen(
+            child: HomeScreen2(
               key: ValueKey("HomeScreen"),
               route: _routeHistoryList.last,
               updatePage: _changePageRoute,
