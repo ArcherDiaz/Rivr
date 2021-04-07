@@ -5,6 +5,7 @@ import 'package:rivr/Utils/ColorsClass.dart' as colors;
 import 'package:rivr/Utils/LoadingContainer.dart';
 import 'package:rivr/Utils/PeerJSClass.dart';
 import 'package:rivr/Utils/StreamingContainer.dart';
+import 'package:rivr/Utils/UserStream.dart';
 import 'package:rivr/Utils/WhiteBoard.dart';
 import 'package:rivr/main.dart';
 import 'package:sad_lib/CustomWidgets.dart';
@@ -38,7 +39,7 @@ class _RoomScreenState extends State<RoomScreen> {
   DialogClass _dialogClass;
 
   PeerJS _peer;
-  List<Map<String, dynamic>> _streams = [];
+  List<UserStream> _streams = [];
 
   Size _size;
   bool _isDesktop;
@@ -77,21 +78,21 @@ class _RoomScreenState extends State<RoomScreen> {
         }
       },
       onDataReceived: (data){
-        int i = _streams.indexWhere((element) => element["id"] == data["id"],);
+        int i = _streams.indexWhere((element) => element.id == data["id"],);
         setState(() {
-          _streams[i]["status"]["audio"] = data["audio"];
-          _streams[i]["status"]["video"] = data["video"];
+          _streams[i].audioStatus = data["audio"];
+          _streams[i].videoStatus = data["video"];
         });
 
 
       },
       onStream: (String id, MediaStream stream, double streamVolume){
-        if(_streams.any((element) => element["id"] == id,)){ ///if any stream has its "id" field equal to [id]
-          int _index = _streams.indexWhere((element) => element["id"] == id,); ///get the index of the stream where "id" field == [id]
+        if(_streams.any((element) => element.id == id,)){ ///if any stream has its "id" field equal to [id]
+          int _index = _streams.indexWhere((element) => element.id == id,); ///get the index of the stream where "id" field == [id]
           setState(() {
-            _streams[_index]["stream height"] = stream.getVideoTracks()[0].getSettings()["height"];
-            _streams[_index]["stream width"] = stream.getVideoTracks()[0].getSettings()["width"];
-            _streams[_index]["volume"] = streamVolume;
+            _streams[_index].height = stream.getVideoTracks()[0].getSettings()["height"];
+            _streams[_index].width = stream.getVideoTracks()[0].getSettings()["width"];
+            _streams[_index].volume = streamVolume;
           });
         }else{
           ///else if there is no stream in the list with its "id" field == [id], create it
@@ -114,26 +115,22 @@ class _RoomScreenState extends State<RoomScreen> {
             return video;
           });
           setState(() {
-            _streams.add({
-              "widget": HtmlElementView(
+            _streams.add(UserStream(
+              widget: HtmlElementView(
                 viewType: id,
               ),
-              "id": id,
-              "volume": streamVolume,
-              "stream height" : null,
-              "stream width" : null,
-              "is inverted" : false,
-              "switch" : (bool flag, String id) {
-                int i = _streams.indexWhere((element) => element["id"] == id,);
+              id: id,
+              volume: streamVolume,
+              isInverted: false,
+              switchInversion: (bool flag, String id) {
+                int i = _streams.indexWhere((element) => element.id == id,);
                 setState(() {
-                  _streams[i]["is inverted"] = flag;
+                  _streams[i].isInverted = flag;
                 });
               },
-              "status" : {
-                "video" : true,
-                "audio" : true,
-              }
-            });
+              audioStatus: true,
+              videoStatus: true,
+            ));
           });
         }
       },
@@ -262,7 +259,7 @@ class _RoomScreenState extends State<RoomScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
+          ButtonView(
             child: TextView.rich(
               textSpan: [
                 TextView(text: "RIVR/",
@@ -278,7 +275,7 @@ class _RoomScreenState extends State<RoomScreen> {
                 ),
               ],
             ),
-            onTap: () {Clipboard.setData(new ClipboardData(text: "https://rivrlive.web.app/live?code=${widget.route.extra["code"]}"));},
+            onPressed: () {Clipboard.setData(new ClipboardData(text: "https://rivrlive.web.app/live?code=${widget.route.extra["code"]}"));},
           ),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.5),
@@ -369,9 +366,9 @@ class _RoomScreenState extends State<RoomScreen> {
               setState(() {
                 _peer.toggleAudioJS();
               });
-              int i = _streams.indexWhere((element) => element["id"] == _peer.myPeerID,);
+              int i = _streams.indexWhere((element) => element.id == _peer.myPeerID,);
               setState(() {
-                _streams[i]["status"]["audio"] = _peer.isMicOn;
+                _streams[i].audioStatus = _peer.isMicOn;
               });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
@@ -388,9 +385,9 @@ class _RoomScreenState extends State<RoomScreen> {
               setState(() {
                 _peer.toggleVideoJS();
               });
-              int i = _streams.indexWhere((element) => element["id"] == _peer.myPeerID,);
+              int i = _streams.indexWhere((element) => element.id == _peer.myPeerID,);
               setState(() {
-                _streams[i]["status"]["video"] = _peer.isVideoOn;
+                _streams[i].videoStatus = _peer.isVideoOn;
               });
             },
             margin: EdgeInsets.symmetric(horizontal: 10.0),
