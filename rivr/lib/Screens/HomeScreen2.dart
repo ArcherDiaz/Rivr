@@ -194,6 +194,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
                   fontWeight: FontWeight.w600,
                 ),
               ],
+              lineSpacing: 1.5,
               isSelectable: true,
               padding: EdgeInsets.only(top: 10.0, bottom: 30.0,),
             ),

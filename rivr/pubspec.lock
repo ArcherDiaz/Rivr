@@ -259,7 +259,7 @@ packages:
     description:
       path: "sad_lib/"
       ref: HEAD
-      resolved-ref: "240825e251e21f070a3fce4fbc0be7039f3ca12b"
+      resolved-ref: "7db167f005b049644c26f0d4ad25821eb3d8b7a8"
       url: "git://github.com/ArcherDiaz/SAD.git"
     source: git
     version: "0.0.1"
