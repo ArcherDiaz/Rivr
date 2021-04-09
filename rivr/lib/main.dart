@@ -50,7 +50,7 @@ class AppRouterDelegate extends RouterDelegate<RoutePathClass> with ChangeNotifi
       pages: [
         if(_routeHistoryList.last.isHomePage)
           MaterialPage(
-            child: HomeScreen2(
+            child: HomeScreen(
               key: ValueKey("HomeScreen"),
               route: _routeHistoryList.last,
               updatePage: _changePageRoute,
