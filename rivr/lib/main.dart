@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:rivr/Game/Shooter.dart';
 import 'package:rivr/Screens/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:rivr/Screens/HomeScreen2.dart';
@@ -10,7 +11,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
   setPathUrlStrategy();
-  runApp(AppWrapper(),);
+  runApp(MaterialApp(home: Shooter()),);
 }
 
 
