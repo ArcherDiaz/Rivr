@@ -11,7 +11,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
   setPathUrlStrategy();
-  runApp(MaterialApp(home: Shooter()),);
+  runApp(MaterialApp(home: AppWrapper()),);
 }
 
 

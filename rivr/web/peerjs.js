@@ -7,7 +7,8 @@ function startPeer(){
     peer = new Peer({
         secure: true,
         key: "peerjs",
-        host: 'rivr-peerjs-server.herokuapp.com',
+        host: 'rivrpeer.glitch.me',
+        path: "/",
     });
     peer.on('open', function(id) {
         returnPeerID(id);

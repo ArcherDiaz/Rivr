@@ -10,7 +10,8 @@ function startPeer(){
     peer = new Peer({
         secure: true,
         key: "peerjs",
-        host: 'rivr-peerjs-server.herokuapp.com',
+        host: 'rivrpeer.glitch.me',
+        path: "/",
     });
 
     peer.on('open', function(id) {
@@ -88,7 +89,7 @@ function audioMeter(mediaStream, elementID){
         }
         let average = total / data.length;
         let percentage = average / (255 / 100);
-        console.log(percentage);
+        //console.log(percentage);
         returnStream(elementID, mediaStream, percentage);
     };
     loopingFunction();
@@ -278,8 +279,4 @@ document.getElementById('clear').addEventListener('click', function(){
     }).catch((error) => {
         console.log("Error getting document:", error);
     });
-});
-
-window.addEventListener("beforeunload", function(){
-    hangUp();
 });
