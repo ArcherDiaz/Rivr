@@ -1,3 +1,10 @@
+<a href="https://www.buymeacoffee.com/meshamakes" target="_blank"  align="right">
+    <p  align="right">
+   <img   src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/2c46f7eb-a870-430c-8351-a3f6f12d62f0/dcc83j2-f1093682-5169-4cdf-bf9d-1f0a12b63e40.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOiIsImlzcyI6InVybjphcHA6Iiwib2JqIjpbW3sicGF0aCI6IlwvZlwvMmM0NmY3ZWItYTg3MC00MzBjLTgzNTEtYTNmNmYxMmQ2MmYwXC9kY2M4M2oyLWYxMDkzNjgyLTUxNjktNGNkZi1iZjlkLTFmMGExMmI2M2U0MC5naWYifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6ZmlsZS5kb3dubG9hZCJdfQ.7gmOTDVAM9TssxZc-xMhpCYPv5g0TJOWS7B5GfmossE" alt="Buy Me A Coffee" height="41" width="174">
+   </p>
+</a>
+
+
 # RIVR
 
 ## From _**DM Studios**_
@@ -32,39 +39,6 @@ Rivr is an :sunny: Antiguan :palm_tree: online audio and video streaming platfor
 ### **Overview**
 
 Like most projects, Rivr started out as a joke and a simple side project that would probably never be finished. But this quickly changed when the development process went at super sonic speeds! Hitting milestones after milestones before leaving photons in the dust! As it propelled itself across the milky way.
-
-## Installation
-
-Dillinger requires [Node.js](https://nodejs.org/) v10+ to run.
-
-Install the dependencies and devDependencies and start the server.
-
-```sh
-cd dillinger
-npm i
-node app
-```
-
-For production environments...
-
-```sh
-npm install --production
-NODE_ENV=production node app
-```
-
-## Plugins
-
-Dillinger is currently extended with the following plugins.
-Instructions on how to use them in your own application are linked below.
-
-| Plugin | README |
-| ------ | ------ |
-| Dropbox | [plugins/dropbox/README.md][PlDb] |
-| GitHub | [plugins/github/README.md][PlGh] |
-| Google Drive | [plugins/googledrive/README.md][PlGd] |
-| OneDrive | [plugins/onedrive/README.md][PlOd] |
-| Medium | [plugins/medium/README.md][PlMe] |
-| Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
 
 ## TODO
 
